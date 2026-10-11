@@ -409,3 +409,39 @@ body[data-brand].noise::after { opacity: 0.025; }
   .hook-chart__row { grid-template-columns: minmax(0, 1fr) 3rem; }
   .hook-chart__bar { grid-column: 1 / -1; grid-row: 2; }
 }
+
+/* ==========================================================================
+   VITALS CREW · vetted talent marketplace, light-first, rose accent
+   ========================================================================== */
+body[data-brand="crew"] {
+  --bg: #0C080A; --bg-2: #120B0F; --surface: #181014; --surface-2: #20151B;
+  --text: #F7EEF2; --text-2: #B9A6AF; --text-3: #A5929B; --bl: #F5DCE6;
+  --accent: #FF6F9F; --accent-2: #FFB25B; --accent-ink: #2A0614;
+}
+[data-theme="light"] body[data-brand="crew"] {
+  --bg: #FAF6F7; --bg-2: #F3ECEF; --surface: #FFFFFF; --surface-2: #F5EEF1;
+  --text: #1A0F14; --text-2: #5E4D55; --text-3: #63525A; --bl: #1A0F14;
+  --accent: #C2185B; --accent-2: #9A4A0A; --accent-ink: #FFFFFF;
+}
+[data-brand="crew"] main h1, [data-brand="crew"] main h2 { font-family: var(--font-body); font-weight: 700; letter-spacing: -0.035em; }
+[dir="rtl"] [data-brand="crew"] main h1, [dir="rtl"] [data-brand="crew"] main h2 { font-family: var(--font-ar); letter-spacing: 0; }
+[data-brand="crew"] main h3 { font-family: var(--font-body); }
+[dir="rtl"] [data-brand="crew"] main h3 { font-family: var(--font-ar); }
+.crew-shot { border-radius: var(--r-lg); border: 1px solid var(--line-strong); background: var(--surface); box-shadow: 0 30px 80px -30px color-mix(in srgb, var(--accent) 45%, transparent); overflow: hidden; }
+.crew-shot img { width: 100%; height: auto; display: block; }
+.crew-feat { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+.crew-feat--flip .crew-feat__copy { order: 2; }
+.crew-feat__copy { display: grid; gap: 1rem; justify-items: start; }
+.gates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.75rem, 1.5vw, 1rem); counter-reset: gate; }
+.gate { display: grid; gap: 0.5rem; align-content: start; padding: 1.4rem; border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface); }
+.gate::before { counter-increment: gate; content: "0" counter(gate); font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); }
+.gate h3 { font-size: 1.05rem; }
+.gate p { color: var(--text-2); font-size: 0.92rem; }
+.crew-stat { display: inline-flex; align-items: baseline; gap: 0.5rem; padding: 0.6rem 1rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.crew-stat b { font-size: 1.4rem; }
+@media (max-width: 960px) {
+  .crew-feat { grid-template-columns: minmax(0, 1fr); }
+  .crew-feat--flip .crew-feat__copy { order: 0; }
+  .gates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) { .gates { grid-template-columns: minmax(0, 1fr); } }

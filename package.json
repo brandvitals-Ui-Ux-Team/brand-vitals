@@ -5,10 +5,11 @@
   "description": "Brand Vitals website (static, bilingual) + Vitals GO app",
   "type": "module",
   "workspaces": [
-    "apps/hq"
+    "apps/hq",
+    "apps/crew"
   ],
   "scripts": {
-    "build": "npm run build:hq && npm run build:site",
+    "build": "npm run build:hq && npm run build:crew && npm run build:site",
     "build:site": "node scripts/build-site.mjs",
     "build:hq": "npm run build --workspace apps/hq",
     "dev": "npm run build:site && node server.js",
@@ -17,7 +18,9 @@
     "test:db": "node supabase/tests/migration.test.mjs",
     "test": "npm run build && npm run check && npm run test:db && npm run test:api",
     "gen:pages": "node scripts/gen-pages.mjs",
-    "test:api": "node --test api/tests/api.test.mjs"
+    "test:api": "node --test api/tests/api.test.mjs",
+    "build:crew": "npm run build --workspace apps/crew",
+    "dev:crew": "npm run dev --workspace apps/crew"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

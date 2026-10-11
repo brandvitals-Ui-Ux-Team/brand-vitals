@@ -131,10 +131,10 @@ ${rows.join("\n")}
 }
 
 // ---------------------------------------------------------------------------
-const hqBuild = path.join(OUT, "app");
-const keepApp = fs.existsSync(hqBuild);
+// The apps (Vitals GO in dist/app, Vitals Crew in dist/crew) are built first; keep them.
+const APP_DIRS = new Set(["app", "crew"]);
 if (fs.existsSync(OUT)) {
-  for (const e of fs.readdirSync(OUT)) if (!(keepApp && e === "app")) fs.rmSync(path.join(OUT, e), { recursive: true, force: true });
+  for (const e of fs.readdirSync(OUT)) if (!APP_DIRS.has(e)) fs.rmSync(path.join(OUT, e), { recursive: true, force: true });
 }
 copyTree(ROOT, OUT);
 

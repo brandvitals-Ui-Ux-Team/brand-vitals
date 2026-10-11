@@ -27,7 +27,8 @@ assets/js/dashboard.js    the CMS at /dashboard.html (edits pages, commits to Gi
 assets/js/vitals-score.js the free Vitals Score tool
 api/inspect.js            reads a site's HTML: SEO, Arabic readiness, tracking pixels (SSRF-guarded)
 api/psi.js                Google PageSpeed Insights proxy (keeps the API key server-side)
-apps/hq/                  Vitals GO app (React)
+apps/hq/                  Vitals GO app (React), served at /app
+apps/crew/                Vitals Crew app (React), served at /crew; reuses the GO design system
 supabase/migrations/      HQ database schema with row-level security
 supabase/tests/           runs the schema on real Postgres (PGlite) and tests RLS + client flows
 scripts/build-site.mjs    builds dist/: copies the site and generates Arabic pages under /ar/
@@ -114,3 +115,17 @@ All of these run on the server (`api/`), need the app to be live with Supabase, 
 Publishing runs once a day (Vercel Cron, `vercel.json`); for hourly publishing upgrade the Vercel plan and change the schedule.
 
 Tests: `npm run test:api` (server functions, no network) and `npm run test:db` (53 database checks).
+
+## Vitals Crew: vetted talent marketplace
+
+`apps/crew` is the Vitals Crew platform at `/crew/`, and `crew.html` is its public page. Three sides share one marketplace:
+
+- **Clients** post a brief, receive a shortlist of three with the reviewer's reason for each, hire into escrow, and approve deliveries that already passed QA.
+- **Talent** (freelancers or teams) sees reviewed briefs, sends proposals that go to the review team first, delivers, and is paid on approval.
+- **The review team** vets applicants in four gates (portfolio, paid test, interview, then QA on every delivery), approves briefs, screens proposals into shortlists, and checks each delivery against a five-point checklist. The Brand Vitals in-house team can bid and is reviewed the same way.
+
+Today it runs in demo mode: one shared store in the browser (`apps/crew/src/lib/store.ts`), with a switcher to view it as a client, a freelancer or a reviewer. Going live needs a Supabase schema for talents, applications, briefs, proposals and deliveries with row-level security per side, plus escrow through a payment provider (Paymob or Stripe Connect style payouts).
+
+```bash
+npm run dev:crew   # Vite dev server for the Crew app on :5174
+```

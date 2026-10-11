@@ -17,13 +17,14 @@
     studio: { name: "Vitals Studio", home: "studio.html", logo: "assets/img/brands/studio-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
     live: { name: "Vitals Events", home: "events.html", logo: "assets/img/brands/events-light.svg", forms: ["live"] },
-    hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] }
+    hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
+    crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] }
   };
   const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["studio.html", "web.html", "events.html", "go.html"];
-  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "go.html": "hq" };
+  const SUB_PAGES = ["studio.html", "web.html", "events.html", "go.html", "crew.html"];
+  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "go.html": "hq", "crew.html": "crew" };
   const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
@@ -37,6 +38,7 @@
     { path: "web.html", ar: "Vitals Web", en: "Vitals Web" },
     { path: "events.html", ar: "Vitals Events", en: "Vitals Events" },
     { path: "go.html", ar: "Vitals GO", en: "Vitals GO" },
+    { path: "crew.html", ar: "Vitals Crew", en: "Vitals Crew" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
@@ -575,6 +577,7 @@
     formWeb: ["فورم Vitals Web", "Vitals Web form"],
     formLive: ["فورم Vitals Events", "Vitals Events form"],
     formHq: ["فورم Vitals GO (وصول مبكر)", "Vitals GO early access form"],
+    formCrew: ["فورم Vitals Crew (بريف أو انضمام)", "Vitals Crew brief or join form"],
     deleteLead: ["حذف", "Delete"],
     deleteLeadQ: ["متأكد إنك عايز تحذف «{n}» نهائيًا؟", "Permanently delete “{n}”?"],
     leadDeleted: ["اتحذف العميل", "Lead deleted"],
@@ -3336,7 +3339,7 @@ grant execute on function public.bv_stats(int, text, text[], text[]) to authenti
     det.append(h("div", { class: "lead__body" },
       h("div", { class: "kvs" },
         item(t("lEmail"), l.email, true), item(t("lPhone"), l.phone, true), item(t("lCompany"), l.company), item(t("lService"), l.service),
-        item(t("lBudget"), l.budget), item(t("lSource"), src), item(t("lPage"), pageName(l.page || "") + " · " + t(({ consult: "formConsult", lead: "formLead", careers: "formCareers", studio: "formStudio", web: "formWeb", live: "formLive", hq: "formHq" })[l.form] || "formContact")),
+        item(t("lBudget"), l.budget), item(t("lSource"), src), item(t("lPage"), pageName(l.page || "") + " · " + t(({ consult: "formConsult", lead: "formLead", careers: "formCareers", studio: "formStudio", web: "formWeb", live: "formLive", hq: "formHq", crew: "formCrew" })[l.form] || "formContact")),
         item(t("lLang"), langName(l.lang)), item(t("lDate"), fmtDate(l.created_at))),
       l.message ? h("div", { class: "lead__msg" }, h("span", { class: "kv__k" }, t("lMessage")), h("p", { dir: "auto" }, l.message)) : null,
       h("div", { class: "lead__edit" },
