@@ -17,13 +17,13 @@
     studio: { name: "Vitals Studio", home: "studio.html", logo: "assets/img/brands/studio-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
     live: { name: "Vitals Events", home: "events.html", logo: "assets/img/brands/events-light.svg", forms: ["live"] },
-    hq: { name: "Vitals Approve", home: "approve.html", logo: "assets/img/brands/approve-light.svg", forms: ["hq"] }
+    hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] }
   };
   const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["studio.html", "web.html", "events.html", "approve.html"];
-  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "approve.html": "hq" };
+  const SUB_PAGES = ["studio.html", "web.html", "events.html", "go.html"];
+  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "go.html": "hq" };
   const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
@@ -36,7 +36,7 @@
     { path: "studio.html", ar: "Vitals Studio", en: "Vitals Studio" },
     { path: "web.html", ar: "Vitals Web", en: "Vitals Web" },
     { path: "events.html", ar: "Vitals Events", en: "Vitals Events" },
-    { path: "approve.html", ar: "Vitals Approve", en: "Vitals Approve" },
+    { path: "go.html", ar: "Vitals GO", en: "Vitals GO" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
@@ -574,7 +574,7 @@
     formStudio: ["فورم Vitals Studio", "Vitals Studio form"],
     formWeb: ["فورم Vitals Web", "Vitals Web form"],
     formLive: ["فورم Vitals Events", "Vitals Events form"],
-    formHq: ["فورم Vitals Approve (وصول مبكر)", "Vitals Approve early access form"],
+    formHq: ["فورم Vitals GO (وصول مبكر)", "Vitals GO early access form"],
     deleteLead: ["حذف", "Delete"],
     deleteLeadQ: ["متأكد إنك عايز تحذف «{n}» نهائيًا؟", "Permanently delete “{n}”?"],
     leadDeleted: ["اتحذف العميل", "Lead deleted"],

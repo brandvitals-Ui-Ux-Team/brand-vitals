@@ -28,7 +28,7 @@ export function Auth() {
 
   return <div className="auth">
     <div className="auth__side">
-      <img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals Approve" style={{ height: 30, width: "auto" }} />
+      <img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals GO" style={{ height: 30, width: "auto" }} />
       <div style={{ display: "grid", gap: 26 }}>
         <h2>{L("Every client conversation, approved and billed.", "كل كلام مع العميل، متوافق عليه ومتحاسب.")}</h2>
         <ul>

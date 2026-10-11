@@ -1,4 +1,4 @@
-// /api/ai — AI help inside Vitals Approve (members only).
+// /api/ai — AI help inside Vitals GO (members only).
 //   { action: "summarize", workspace_id, messages: [{author, body, visibility}] } → { summary, open_items[], extra_work[] }
 //   { action: "classify",  workspace_id, text }                                  → { kind: "revision"|"new_request"|"question"|"approval", reason }
 //   { action: "draft",     workspace_id, messages, lang }                         → { reply }
@@ -13,7 +13,7 @@ import { env, handle, json, readJson, requireMember } from "./_lib/server.js";
 const MODEL = env("ANTHROPIC_MODEL") || "claude-opus-5-5";
 const BETAS = ["server-side-fallback-2026-07-01"];
 
-const SYSTEM = `You help a marketing/creative agency manage work with its clients inside "Vitals Approve".
+const SYSTEM = `You help a marketing/creative agency manage work with its clients inside "Vitals GO".
 Clients write in Arabic (Egyptian, Gulf or Modern Standard) or English, sometimes mixed or in Franco-Arabic.
 "Extra work" means a request outside what was already agreed: new deliverables, extra versions/sizes/formats, new scope. A "revision" changes existing work (colours, text, sizes, fixes).
 Be concise and concrete. Never invent facts that are not in the conversation.`;

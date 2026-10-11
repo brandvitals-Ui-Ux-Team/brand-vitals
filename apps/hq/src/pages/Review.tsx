@@ -31,7 +31,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
   const [comment, setComment] = useState("");
   const [pins, setPins] = useState<Pin[]>([]);
   const [busy, setBusy] = useState(false);
-  useEffect(() => { document.title = data ? `${data.deliverable.title} · ${data.workspace.name}` : "Vitals Approve"; }, [data]);
+  useEffect(() => { document.title = data ? `${data.deliverable.title} · ${data.workspace.name}` : "Vitals GO"; }, [data]);
   if (data === undefined) return <Spinner />;
   if (data === null) return <div className="center" style={{ minHeight: "100vh", padding: 20 }}><div className="card card--pad stack" style={{ maxWidth: 420, textAlign: "center" }}><Info style={{ margin: "0 auto" }} /><h2>{L("This link isn't valid", "اللينك ده مش صالح")}</h2><p className="muted">{L("It may have been removed. Ask the agency for a new link.", "ممكن يكون اتشال. اطلب لينك جديد من الوكالة.")}</p></div></div>;
 
@@ -104,7 +104,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
       {d.status === "approved" && <div className="callout callout--ok"><CheckCircle2 /><span>{L("This version is approved. Thank you!", "النسخة دي متوافق عليها. شكرًا!")}</span></div>}
       <SharedThread load={() => api.reviewMessages(token)} post={(n, b) => api.reviewMessage(token, n, b)} />
       {data.client.portal_token && <Link className="btn btn--ghost" style={{ justifySelf: "center" }} to={"/c/" + data.client.portal_token}><LayoutGrid />{L("See everything waiting for you", "شوف كل اللي مستني موافقتك")}</Link>}
-      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Approvals by Vitals Approve", "الموافقات عبر Vitals Approve")}</div>
+      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Approvals by Vitals GO", "الموافقات عبر Vitals GO")}</div>
     </div>
   </div>;
 }

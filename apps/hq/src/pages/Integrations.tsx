@@ -1,4 +1,4 @@
-// Integrations: what Vitals Approve connects to today, and what's next.
+// Integrations: what Vitals GO connects to today, and what's next.
 // Webhooks are live now and reach Zapier / Make / n8n (thousands of apps),
 // Slack and Microsoft Teams channels.
 import { Check, Copy, Plus, Send, Trash2, Webhook as WebhookIcon } from "lucide-react";
@@ -52,13 +52,13 @@ export function Integrations() {
     return c.status === "live" ? <span className="pill pill--ok">{L("Live", "شغال")}</span> : <span className="pill">{L("Coming next", "قريبًا")}</span>;
   };
   const test = (h: typeof hooks[number]) => run(async () => {
-    const body = h.kind === "generic" ? { event: "test", actor: me.name, summary: "Test event from Vitals Approve", secret: h.secret } : { text: `Test from Vitals Approve (${ws.name}) ✅` };
+    const body = h.kind === "generic" ? { event: "test", actor: me.name, summary: "Test event from Vitals GO", secret: h.secret } : { text: `Test from Vitals GO (${ws.name}) ✅` };
     if (h.kind === "generic") await fetch(h.url, { method: "POST", mode: "no-cors", body: JSON.stringify(body) });
     else await fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ channel: h.kind, webhook: h.url, text: body.text }) }).then(async r => { if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "HTTP " + r.status); });
   }, L("Test sent", "اتبعت اختبار"));
 
   return <div className="page">
-    <div className="page-head"><div className="page-head__t"><h1>{L("Integrations", "الربط")}</h1><p className="muted">{L("Vitals Approve works with the tools your team and clients already use. No single app is required.", "Vitals Approve بيشتغل مع الأدوات اللي فريقك وعملاءك بيستخدموها. مفيش تطبيق واحد إجباري.")}</p></div></div>
+    <div className="page-head"><div className="page-head__t"><h1>{L("Integrations", "الربط")}</h1><p className="muted">{L("Vitals GO works with the tools your team and clients already use. No single app is required.", "Vitals GO بيشتغل مع الأدوات اللي فريقك وعملاءك بيستخدموها. مفيش تطبيق واحد إجباري.")}</p></div></div>
 
     <Connections />
 

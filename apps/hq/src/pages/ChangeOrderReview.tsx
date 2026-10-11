@@ -50,7 +50,7 @@ function Body({ data, token, setLang, reload }: { data: ChangeOrderPayload | nul
           <div className="grid2"><button className="btn btn--primary btn--lg" disabled={busy} onClick={() => decide("approved")}><CheckCircle2 />{L("Approve", "موافق")}</button><button className="btn btn--lg" disabled={busy} onClick={() => decide("declined")}><XCircle />{L("Decline", "رفض")}</button></div>
         </> : <div className={"callout " + (co.status === "approved" ? "callout--ok" : "callout--warn")}>{co.status === "approved" ? <CheckCircle2 /> : <XCircle />}<span>{co.status === "approved" ? L(`Approved by ${co.decided_by}`, `وافق عليه ${co.decided_by}`) : L(`Declined by ${co.decided_by}`, `رفضه ${co.decided_by}`)}{co.decided_at ? " · " + date(co.decided_at, lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}</span></div>}
       </div>
-      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Extra work approvals by Vitals Approve", "موافقات الشغل الإضافي عبر Vitals Approve")}</div>
+      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Extra work approvals by Vitals GO", "موافقات الشغل الإضافي عبر Vitals GO")}</div>
     </div>
   </div>;
 }

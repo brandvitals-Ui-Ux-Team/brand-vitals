@@ -1,6 +1,7 @@
 // Demo workspace with fictional sample data, so every screen has something real to show.
 import { token, uid } from "./backend";
 import type { Activity, ChangeOrder, Client, Deliverable, Feedback, Member, Message, Project, ScopeItem, SessionUser, Task, Tables, TableName, Version, Workspace } from "./types";
+import { demoDesign } from "./designs";
 
 type DB = { [K in TableName]: Tables[K][] };
 const ago = (days: number, hours = 0) => new Date(Date.now() - days * 86400000 - hours * 3600000).toISOString();
@@ -80,7 +81,7 @@ export function seed(u: SessionUser): DB {
   const versions: Version[] = [];
   deliverables.forEach((d, i) => {
     for (let n = 1; n <= d.current_version; n++)
-      versions.push({ id: uid(), workspace_id: W, deliverable_id: d.id, number: n, file_url: d.kind === "web" ? "" : art(d.title.split("·")[0].trim().slice(0, 22), hues[i], d.kind.toUpperCase(), n),
+      versions.push({ id: uid(), workspace_id: W, deliverable_id: d.id, number: n, file_url: d.kind === "web" ? "" : demoDesign(d.title, n) || art(d.title.split("·")[0].trim().slice(0, 22), hues[i], d.kind.toUpperCase(), n),
         file_name: d.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + `-v${n}.svg`, file_type: "image/svg+xml", link_url: "", note: n === 1 ? "First version" : "Updated per feedback", created_by: [mona.name, karim.name, salma.name][i % 3], created_at: ago(Math.max(0, 6 - n)) });
   });
 

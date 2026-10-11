@@ -25,7 +25,7 @@ export function Team() {
   const isAdmin = me?.role === "owner" || me?.role === "admin";
   const pending = invites.filter(i => !i.accepted_at);
   const roleLabel = (r: Role) => r === "owner" ? L("Owner", "مالك") : r === "admin" ? L("Admin", "مسؤول") : L("Member", "عضو");
-  const msg = (i: Invite) => L(`Join ${ws.name} on Vitals Approve: ${inviteUrl(i.token)}`, `انضم لـ ${ws.name} على Vitals Approve: ${inviteUrl(i.token)}`);
+  const msg = (i: Invite) => L(`Join ${ws.name} on Vitals GO: ${inviteUrl(i.token)}`, `انضم لـ ${ws.name} على Vitals GO: ${inviteUrl(i.token)}`);
 
   return <div className="page">
     <div className="page-head">
@@ -59,7 +59,7 @@ export function Team() {
       {created ? <div className="form">
         <p className="muted">{L("Send this link to your teammate. They sign up with any email and join your workspace.", "ابعت اللينك ده لزميلك. هيسجّل بأي إيميل وينضم لمساحة عملك.")}</p>
         <div className="row" style={{ flexWrap: "nowrap" }}><input className="inp mono" readOnly value={inviteUrl(created.token)} dir="ltr" onFocus={e => e.target.select()} /><button className="icon-btn" onClick={() => navigator.clipboard?.writeText(inviteUrl(created.token)).then(() => toast(L("Copied", "تم النسخ")))}><Copy /></button></div>
-        <div className="row"><a className="btn btn--wa" href={"https://wa.me/?text=" + encodeURIComponent(msg(created))} target="_blank" rel="noopener"><MessageCircle />WhatsApp</a><a className="btn" href={`mailto:${created.email}?subject=${encodeURIComponent("Vitals Approve")}&body=${encodeURIComponent(msg(created))}`}><Mail />{L("Email", "بريد")}</a></div>
+        <div className="row"><a className="btn btn--wa" href={"https://wa.me/?text=" + encodeURIComponent(msg(created))} target="_blank" rel="noopener"><MessageCircle />WhatsApp</a><a className="btn" href={`mailto:${created.email}?subject=${encodeURIComponent("Vitals GO")}&body=${encodeURIComponent(msg(created))}`}><Mail />{L("Email", "بريد")}</a></div>
       </div> : <div className="form">
         <Field label={L("Email", "البريد")}><input className="inp" type="email" value={email} onChange={e => setEmail(e.target.value)} dir="ltr" autoFocus /></Field>
         <Field label={L("Role", "الدور")}><select className="sel" value={role} onChange={e => setRole(e.target.value as "admin" | "member")}><option value="member">{L("Member: works on projects", "عضو: يشتغل على المشاريع")}</option><option value="admin">{L("Admin: also manages team and settings", "مسؤول: يدير الفريق والإعدادات كمان")}</option></select></Field>

@@ -1,4 +1,4 @@
-// Demo backend: a full working copy of Vitals Approve inside this browser.
+// Demo backend: a full working copy of Vitals GO inside this browser.
 // Tables live in localStorage; uploaded files in IndexedDB. Changes made in
 // one tab (for example a client approving on the review link) show up live
 // in the other tabs.
@@ -9,7 +9,7 @@ import { classify } from "./logic";
 import { seed } from "./seed";
 import type { ChangeOrderPayload, Client, ID, InvoicePayload, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, ThreadType, Workspace } from "./types";
 
-const KEY = "hq-demo-db-v1";
+const KEY = "hq-demo-db-v2";
 const USER_KEY = "hq-demo-user";
 type DB = { [K in TableName]: Tables[K][] };
 

@@ -10,7 +10,7 @@
 const SB_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
 const SB_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || "";
 const RESEND = process.env.RESEND_API_KEY || "";
-const FROM = process.env.EMAIL_FROM || "Vitals Approve <approvals@brandvitals.io>";
+const FROM = process.env.EMAIL_FROM || "Vitals GO <approvals@brandvitals.io>";
 
 const json = (res, code, body) => { res.statusCode = code; res.setHeader("Content-Type", "application/json; charset=utf-8"); res.end(JSON.stringify(body)); };
 const esc = s => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -38,7 +38,7 @@ function emailHtml({ text, link, linkLabel, agency }) {
   return `<!doctype html><html><body style="margin:0;background:#F6F7F5;font-family:Inter,Segoe UI,Arial,sans-serif">
   <div style="max-width:560px;margin:0 auto;padding:28px 20px"><div style="background:#fff;border:1px solid #E3E8E4;border-radius:16px;padding:26px">
   <p style="margin:0 0 18px;font-size:13px;color:#5E6B66;font-weight:600">${esc(agency || "")}</p>${paras}${btn}</div>
-  <p style="text-align:center;font-size:12px;color:#8A9690;margin-top:16px">Sent with Vitals Approve</p></div></body></html>`;
+  <p style="text-align:center;font-size:12px;color:#8A9690;margin-top:16px">Sent with Vitals GO</p></div></body></html>`;
 }
 
 export default async function handler(req, res) {

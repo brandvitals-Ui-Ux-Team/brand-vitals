@@ -107,7 +107,7 @@ function Body({ data, setLang, reload, token }: { data: PortalPayload | null | u
           <button className="btn btn--primary" disabled={busy} onClick={approveSelected}><Check />{L("Approve selected", "وافق على المختار")}</button>
         </div>
       </div>}
-      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Approvals by Vitals Approve", "الموافقات عبر Vitals Approve")}</div>
+      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Approvals by Vitals GO", "الموافقات عبر Vitals GO")}</div>
     </div>
   </div>;
 }

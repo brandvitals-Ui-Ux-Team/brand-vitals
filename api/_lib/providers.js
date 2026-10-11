@@ -1,4 +1,4 @@
-// Third-party providers: OAuth details and the API calls Vitals Approve makes.
+// Third-party providers: OAuth details and the API calls Vitals GO makes.
 // Each provider is enabled by setting its client id/secret in the environment.
 import { env } from "./server.js";
 

@@ -11,7 +11,7 @@ import type { Deliverable, Project, PublishTarget } from "../lib/types";
 import { useWorkspace } from "../lib/ws";
 import { Modal, useAction } from "./ui";
 
-const demoNote = (L: (a: string, b: string) => string) => <p className="faint small">{L("Works once Vitals Approve is live with accounts.", "بيشتغل لما Vitals Approve يشتغل بحسابات حقيقية.")}</p>;
+const demoNote = (L: (a: string, b: string) => string) => <p className="faint small">{L("Works once Vitals GO is live with accounts.", "بيشتغل لما Vitals GO يشتغل بحسابات حقيقية.")}</p>;
 
 export function SyncCard({ d, project }: { d: Deliverable; project: Project | undefined }) {
   const { L } = useI18n();

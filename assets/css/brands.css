@@ -37,7 +37,7 @@ body[data-brand="live"] {
   --text: #13111B; --text-2: #575166; --text-3: #5F596E; --bl: #13111B;
   --accent: #6D3FD8; --accent-2: #80600F; --accent-ink: #FFFFFF;
 }
-/* HQ is light-first (approve.html defaults the theme to light) */
+/* HQ is light-first (go.html defaults the theme to light) */
 body[data-brand="hq"] {
   --bg: #05080B; --bg-2: #081016; --surface: #0B1319; --surface-2: #101B23;
   --text: #ECF3F6; --text-2: #9DADB8; --text-3: #8696A1; --bl: #D6ECF5;

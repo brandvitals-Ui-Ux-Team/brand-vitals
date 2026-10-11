@@ -51,7 +51,7 @@ function Body({ data, setLang }: { data: InvoicePayload | null | undefined; setL
           : i.payment_url ? <a className="btn btn--primary btn--lg no-print" href={i.payment_url}><CreditCard />{L("Pay now", "ادفع دلوقتي")}</a>
           : <p className="muted small">{L("The agency will share payment details with you.", "الوكالة هتبعتلك تفاصيل الدفع.")}</p>}
       </div>
-      <div className="powered no-print"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Invoices by Vitals Approve", "الفواتير عبر Vitals Approve")}</div>
+      <div className="powered no-print"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Invoices by Vitals GO", "الفواتير عبر Vitals GO")}</div>
     </div>
   </div>;
 }

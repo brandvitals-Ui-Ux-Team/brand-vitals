@@ -1,4 +1,4 @@
-// Runs the Vitals Approve migration against real Postgres (PGlite) with Supabase stubs,
+// Runs the Vitals GO migration against real Postgres (PGlite) with Supabase stubs,
 // then exercises onboarding, RLS isolation, and the public review/change-order RPCs.
 // Usage: npm run test:db
 import { PGlite } from "@electric-sql/pglite";

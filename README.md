@@ -1,11 +1,11 @@
-# Brand Vitals · website + Vitals Approve
+# Brand Vitals · website + Vitals GO
 
 Two products in one repo, deployed together on Vercel:
 
 | Path | What it is | Tech |
 |---|---|---|
 | `/` and `/ar/` | **brandvitals.io**: the agency website and its four sub-brands (Studio, Web, Live, HQ), in English and Arabic | Static HTML/CSS/JS, edited from `/dashboard.html` |
-| `/app/` | **Vitals Approve**: client operations platform for agencies. Approvals with pin comments, client portal, team + client chat, content calendar, extra-work billing, reminders, integrations (email, WhatsApp, Slack, Teams, SMS, webhooks, Figma/Drive/video previews) | React + TypeScript (Vite), Supabase |
+| `/app/` | **Vitals GO**: client operations platform for agencies. Approvals with pin comments, client portal, team + client chat, content calendar, extra-work billing, reminders, integrations (email, WhatsApp, Slack, Teams, SMS, webhooks, Figma/Drive/video previews) | React + TypeScript (Vite), Supabase |
 | `/api/*` | Serverless functions for the free **Vitals Score** tool | Node (Vercel Functions) |
 
 ## Quick start (local)
@@ -27,7 +27,7 @@ assets/js/dashboard.js    the CMS at /dashboard.html (edits pages, commits to Gi
 assets/js/vitals-score.js the free Vitals Score tool
 api/inspect.js            reads a site's HTML: SEO, Arabic readiness, tracking pixels (SSRF-guarded)
 api/psi.js                Google PageSpeed Insights proxy (keeps the API key server-side)
-apps/hq/                  Vitals Approve app (React)
+apps/hq/                  Vitals GO app (React)
 supabase/migrations/      HQ database schema with row-level security
 supabase/tests/           runs the schema on real Postgres (PGlite) and tests RLS + client flows
 scripts/build-site.mjs    builds dist/: copies the site and generates Arabic pages under /ar/
@@ -46,14 +46,14 @@ Every page is written once with `data-en` / `data-ar` attributes. The build crea
 
 | Variable | What it enables |
 |---|---|
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Vitals Approve runs on a real database with accounts (without them HQ runs in demo mode inside the browser) |
-| `RESEND_API_KEY`, `EMAIL_FROM` | Vitals Approve sends branded emails to clients (resend.com, free tier). Without it, email opens the sender's mail app |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Vitals GO runs on a real database with accounts (without them HQ runs in demo mode inside the browser) |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Vitals GO sends branded emails to clients (resend.com, free tier). Without it, email opens the sender's mail app |
 | `PSI_API_KEY` | Speed and SEO scores in the Vitals Score tool (free key from Google Cloud: enable "PageSpeed Insights API") |
 
 3. Redeploy after adding variables. Every push to `main` deploys automatically.
 4. **Domain**: Settings → Domains → add `brandvitals.io`.
 
-## Vitals Approve: going live with Supabase
+## Vitals GO: going live with Supabase
 
 1. Create a free project at supabase.com.
 2. SQL Editor → run the files in `supabase/migrations/` in order (`20261011…_vitals_hq.sql`, `20261012…_approve_v2.sql`, `20261013…_channels_chat_integrations.sql`). All are safe to re-run. On Supabase the last one also turns on live chat updates and database-delivered webhooks (pg_net).
@@ -88,7 +88,7 @@ npm test           # build + both
 - `150+ brands` on the home page is the agency's own claim; keep it accurate.
 - The demo workspace in HQ uses fictional sample clients.
 
-## Vitals Approve: native integrations
+## Vitals GO: native integrations
 
 All of these run on the server (`api/`), need the app to be live with Supabase, and are switched on by environment variables in Vercel. Tokens and API keys are encrypted (AES-256-GCM) and stored in `connection_secrets`, a table no app user can read.
 

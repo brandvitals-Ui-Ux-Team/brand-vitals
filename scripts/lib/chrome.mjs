@@ -30,10 +30,10 @@ const eco = [
   ["studio.html", "assets/img/brands/studio-mark.svg", "Vitals Studio", "Production studio", "ستوديو إنتاج"],
   ["web.html", "assets/img/brands/web-mark.svg", "Vitals Web", "Websites, launched fast", "مواقع تنطلق بسرعة"],
   ["events.html", "assets/img/brands/events-mark.svg", "Vitals Events", "Launches, activations and events", "إطلاقات وفعاليات وتفعيلات"],
-  ["approve.html", "assets/img/brands/approve-mark.svg", "Vitals Approve", "Client approvals & team chat", "موافقات العملاء وتواصل الفريق"]
+  ["go.html", "assets/img/brands/go-mark.svg", "Vitals GO", "Client approvals & team chat", "موافقات العملاء وتواصل الفريق"]
 ];
 const ecoItems = () => eco.map(([href, img, name, en, ar]) =>
-  `<a class="eco-item" href="${href}"><img src="${img}" alt="" width="38" height="38"><span class="eco-item__txt"><span class="eco-item__name">${name}${href === "approve.html" ? ' <em class="eco-badge" data-en="New" data-ar="جديد">New</em>' : ""}</span>${bi("span", en, ar, 'class="eco-item__d"')}</span></a>`
+  `<a class="eco-item" href="${href}"><img src="${img}" alt="" width="38" height="38"><span class="eco-item__txt"><span class="eco-item__name">${name}${href === "go.html" ? ' <em class="eco-badge" data-en="New" data-ar="جديد">New</em>' : ""}</span>${bi("span", en, ar, 'class="eco-item__d"')}</span></a>`
 ).join("\n            ");
 
 const svcMenu = () => SERVICES.map(s => `<a class="eco-item eco-item--text" href="${s.file}">${bi("span", s.en, s.ar, 'class="eco-item__name"')}</a>`).join("\n            ");
@@ -151,7 +151,7 @@ export const FOOTER = `<footer class="footer">
             <li><a href="studio.html">Vitals Studio</a></li>
             <li><a href="web.html">Vitals Web</a></li>
             <li><a href="events.html">Vitals Events</a></li>
-            <li><a href="approve.html">Vitals Approve</a></li>
+            <li><a href="go.html">Vitals GO</a></li>
           </ul>
         </div>
       </div>

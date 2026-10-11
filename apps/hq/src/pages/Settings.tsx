@@ -54,7 +54,7 @@ export function Settings() {
       <div className="card__h"><h2 className="row"><Database size={18} />{L("Backend", "قاعدة البيانات")}</h2>{isDemo ? <span className="pill pill--warn">{L("Demo mode", "وضع تجريبي")}</span> : <span className="pill pill--ok">Supabase{cfg?.source === "local" ? " · " + L("this browser", "هذا المتصفح") : ""}</span>}</div>
       <div className="card__b form">
         {isDemo ? <>
-          <p className="muted small">{L("Right now everything is saved in this browser only, so it's perfect for trying Approve but not for a team. To go live:", "حاليًا كل حاجة محفوظة في المتصفح ده بس: ممتاز للتجربة لكن مش للفريق. عشان تشغّله فعليًا:")}</p>
+          <p className="muted small">{L("Right now everything is saved in this browser only, so it's perfect for trying Vitals GO but not for a team. To go live:", "حاليًا كل حاجة محفوظة في المتصفح ده بس: ممتاز للتجربة لكن مش للفريق. عشان تشغّله فعليًا:")}</p>
           <ol className="stack small" style={{ listStyle: "decimal", paddingInlineStart: 20, gap: 6 }}>
             <li>{L("Create a free project at supabase.com.", "أنشئ مشروع مجاني على supabase.com.")}</li>
             <li>{L("Open SQL Editor and run supabase/migrations/…_vitals_hq.sql from the repo.", "افتح SQL Editor وشغّل ملف supabase/migrations/…_vitals_hq.sql من الريبو.")}</li>

@@ -75,7 +75,7 @@ export function ChangeOrders() {
       <div className="card kpi"><span className="kpi__l">{L("Declined", "مرفوض")}</span><span className="kpi__v">{money(sum("declined"), ws.currency, lang)}</span><span className="kpi__s">{L("Worth a conversation", "يستاهل كلام")}</span></div>
     </div>
     <div className="seg" style={{ justifySelf: "start" }}>{(["all", "draft", "sent", "approved", "declined"] as const).map(k => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{({ all: L("All", "الكل"), draft: L("Drafts", "مسودات"), sent: L("Sent", "مُرسلة"), approved: L("Approved", "موافق عليها"), declined: L("Declined", "مرفوضة") })[k]}</button>)}</div>
-    <div className="card">{rows.length === 0 ? <Empty icon={<FileSignature />} title={L("No extra work yet", "مفيش شغل إضافي لسه")} text={L("When a client asks for something outside the agreement, Approve flags it and you price it here.", "لما العميل يطلب حاجة برا الاتفاق، Approve بينبّهك وتسعّرها هنا.")} /> :
+    <div className="card">{rows.length === 0 ? <Empty icon={<FileSignature />} title={L("No extra work yet", "مفيش شغل إضافي لسه")} text={L("When a client asks for something outside the agreement, Vitals GO flags it and you price it here.", "لما العميل يطلب حاجة برا الاتفاق، Vitals GO بينبّهك وتسعّرها هنا.")} /> :
       <div className="table-wrap"><table className="table">
         <thead><tr><th>{L("Extra work", "شغل إضافي")}</th><th className="hide-sm">{L("Client", "العميل")}</th><th>{L("Amount", "المبلغ")}</th><th>{L("Status", "الحالة")}</th><th className="hide-sm">{L("Date", "التاريخ")}</th><th /></tr></thead>
         <tbody>{rows.map(c => { const cl = clientOf(c.project_id); return <tr key={c.id}>

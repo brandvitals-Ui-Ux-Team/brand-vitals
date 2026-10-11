@@ -120,7 +120,7 @@ export function ProjectDetail() {
     {tab === "board" && <Board tasks={tasks} projects={projects} projectId={p.id} openId={openTask} onOpen={setOpenTask} />}
 
     {tab === "scope" && <div className="stack">
-      <div className="callout callout--info"><ShieldCheck /><div><b>{L("How tracking works", "إزاي بنتابع")}</b><p className="small muted">{L("Deliverables linked to these items are counted. When a client goes over the quantity or the included revision rounds, Approve flags it so you can bill it.", "التسليمات المربوطة بالبنود دي بتتعد. لما العميل يتخطى الكمية أو جولات التعديل، Approve بينبّهك عشان تحاسب عليها.")}</p></div></div>
+      <div className="callout callout--info"><ShieldCheck /><div><b>{L("How tracking works", "إزاي بنتابع")}</b><p className="small muted">{L("Deliverables linked to these items are counted. When a client goes over the quantity or the included revision rounds, Vitals GO flags it so you can bill it.", "التسليمات المربوطة بالبنود دي بتتعد. لما العميل يتخطى الكمية أو جولات التعديل، Vitals GO بينبّهك عشان تحاسب عليها.")}</p></div></div>
       <div className="card">
         <div className="card__h"><h2>{L("What's included", "المتفق عليه")}</h2><button className="btn btn--sm" onClick={() => setScopeEdit("new")}><Plus />{L("Add item", "إضافة بند")}</button></div>
         {scope.length === 0 ? <Empty icon={<ShieldCheck />} title={L("Nothing agreed yet", "لسه مفيش اتفاق")} text={L("Add what the contract includes, e.g. 12 posts per month with 2 revision rounds.", "أضف محتوى العقد، مثلًا 12 بوست شهريًا مع جولتين تعديل.")} action={<button className="btn btn--primary" onClick={() => setScopeEdit("new")}><Plus />{L("Add to agreement", "إضافة للاتفاق")}</button>} /> :

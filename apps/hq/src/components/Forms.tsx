@@ -143,7 +143,7 @@ export function ScopeForm({ onClose, projectId, item }: { onClose: () => void; p
     <button className="btn btn--primary" form="sform" disabled={busy}>{L("Save", "حفظ")}</button>
   </>}>
     <form id="sform" className="form" onSubmit={submit}>
-      <p className="muted small">{L("Write the agreement in a form Approve can track: what you deliver, how many, and how many revision rounds are included.", "اكتب العقد بشكل يقدر Approve يتابعه: بتسلّم إيه، وكام، وكام جولة تعديل متضمنة.")}</p>
+      <p className="muted small">{L("Write the agreement in a form Vitals GO can track: what you deliver, how many, and how many revision rounds are included.", "اكتب العقد بشكل يقدر Vitals GO يتابعه: بتسلّم إيه، وكام، وكام جولة تعديل متضمنة.")}</p>
       <div className="form-row">
         <Field label={L("Deliverable", "التسليمة")}><input className="inp" value={v.title || ""} onChange={e => setV({ ...v, title: e.target.value })} required autoFocus placeholder={L("e.g. Social posts", "مثال: بوستات سوشيال")} /></Field>
         <Field label={L("Type", "النوع")}><select className="sel" value={v.kind} onChange={e => setV({ ...v, kind: e.target.value as DeliverableKind })}>{KINDS.map(k => <option key={k} value={k}>{L(...KIND_LABEL[k])}</option>)}</select></Field>

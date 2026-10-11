@@ -49,7 +49,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return <div className="shell">
     <aside className={"side" + (side ? " open" : "")} aria-label={L("Main navigation", "التنقل الرئيسي")}>
-      <div className="side__brand"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Approve" /></div>
+      <div className="side__brand"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals GO" /></div>
       <Popover align="start" trigger={open => <button className="ws-switch" onClick={open}>
         <span className="ws-switch__logo">{ws.name.slice(0, 1).toUpperCase()}</span>
         <span style={{ minWidth: 0, flex: 1 }}><span className="ws-switch__name ellipsis" style={{ display: "block" }}>{ws.name}</span><span className="faint small">{me ? L(me.role === "owner" ? "Owner" : me.role === "admin" ? "Admin" : "Member", me.role === "owner" ? "مالك" : me.role === "admin" ? "مسؤول" : "عضو") : ""}</span></span>
@@ -77,7 +77,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
       <div className="side__foot">
         {isDemo && <div className="demo-pill"><ShieldAlert /><span>{L("Demo mode: data stays in this browser. Connect Supabase in Settings to go live.", "وضع تجريبي: البيانات في هذا المتصفح فقط. اربط Supabase من الإعدادات للتشغيل الفعلي.")}</span></div>}
-        <a className="nav-a" href="/approve.html"><span style={{ width: 17 }} />{L("About Vitals Approve", "عن Vitals Approve")}</a>
+        <a className="nav-a" href="/go.html"><span style={{ width: 17 }} />{L("About Vitals GO", "عن Vitals GO")}</a>
       </div>
     </aside>
     {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)" }} onClick={() => setSide(false)} />}

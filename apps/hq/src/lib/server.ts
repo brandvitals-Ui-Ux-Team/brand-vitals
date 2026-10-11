@@ -25,5 +25,5 @@ export const capabilities = () => (capsP ||= server<Capabilities>("/api/connect"
 
 // Server-side integrations need real accounts (Supabase) and server keys.
 export const liveOnlyReason = (en: boolean) => isDemo
-  ? (en ? "Available once Vitals Approve is live with accounts (Supabase). Demo data stays in your browser, so the server can't act on it." : "متاحة لما Vitals Approve يشتغل بحسابات حقيقية (Supabase). بيانات الديمو في متصفحك بس، فالسيرفر ما يقدرش يتعامل معاها.")
+  ? (en ? "Available once Vitals GO is live with accounts (Supabase). Demo data stays in your browser, so the server can't act on it." : "متاحة لما Vitals GO يشتغل بحسابات حقيقية (Supabase). بيانات الديمو في متصفحك بس، فالسيرفر ما يقدرش يتعامل معاها.")
   : "";

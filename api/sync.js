@@ -1,4 +1,4 @@
-// /api/sync — mirror Vitals Approve into ClickUp / Asana.
+// /api/sync — mirror Vitals GO into ClickUp / Asana.
 // Called by the database (pg_net trigger on activity, header x-sync-secret) or by
 // a signed-in member ({ deliverable_id }) for "sync now". Each deliverable gets
 // one task in the project's mapped list/project; client decisions become comments.
@@ -25,7 +25,7 @@ async function syncDeliverable(sb, deliverableId, note) {
       let { data: link } = await sb.from("external_links").select("*").eq("provider", provider).eq("entity_type", "deliverable").eq("entity_id", d.id).maybeSingle();
       if (!link) {
         const review = `${APP_URL()}/app/deliverables/${d.id}`;
-        const t = await api.createTask(secret, dest, { name: d.title, description: `Tracked in Vitals Approve: ${review}`, due: d.due_date });
+        const t = await api.createTask(secret, dest, { name: d.title, description: `Tracked in Vitals GO: ${review}`, due: d.due_date });
         const external_id = String(t.id || t.gid);
         const url = t.url || t.permalink_url || (provider === "asana" ? `https://app.asana.com/0/${dest}/${external_id}` : "");
         ({ data: link } = await sb.from("external_links").insert({ workspace_id: d.workspace_id, provider, entity_type: "deliverable", entity_id: d.id, external_id, url }).select("*").single());

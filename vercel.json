@@ -103,7 +103,7 @@
     },
     {
       "source": "/hq.html",
-      "destination": "/approve.html",
+      "destination": "/go.html",
       "permanent": true
     },
     {
@@ -113,7 +113,22 @@
     },
     {
       "source": "/ar/hq.html",
-      "destination": "/ar/approve.html",
+      "destination": "/ar/go.html",
+      "permanent": true
+    },
+    {
+      "source": "/approve.html",
+      "destination": "/go.html",
+      "permanent": true
+    },
+    {
+      "source": "/ar/approve.html",
+      "destination": "/ar/go.html",
+      "permanent": true
+    },
+    {
+      "source": "/approve",
+      "destination": "/go.html",
       "permanent": true
     }
   ],

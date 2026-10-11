@@ -30,7 +30,7 @@ export default handle(async (req, res) => {
         ids.push(await meta.publish(page.page_token, t, { imageUrl: v.file_url, caption: d.caption || d.title }));
       }
       await sb.from("deliverables").update({ published_at: new Date().toISOString(), publish_error: "" }).eq("id", d.id);
-      await sb.from("activity").insert({ workspace_id: d.workspace_id, type: "post.published", project_id: d.project_id, entity_id: d.id, actor: "Vitals Approve", summary: `published “${d.title}”`, data: { ids } });
+      await sb.from("activity").insert({ workspace_id: d.workspace_id, type: "post.published", project_id: d.project_id, entity_id: d.id, actor: "Vitals GO", summary: `published “${d.title}”`, data: { ids } });
       results.push({ id: d.id, ok: true });
     } catch (e) {
       await sb.from("deliverables").update({ publish_error: String(e.message || e).slice(0, 500) }).eq("id", d.id);

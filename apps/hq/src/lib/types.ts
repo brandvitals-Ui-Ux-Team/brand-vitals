@@ -1,4 +1,4 @@
-// Domain model for Vitals Approve. Mirrors supabase/migrations/*.sql.
+// Domain model for Vitals GO. Mirrors supabase/migrations/*.sql.
 export type ID = string;
 export type Lang = "en" | "ar";
 export type Role = "owner" | "admin" | "member";
