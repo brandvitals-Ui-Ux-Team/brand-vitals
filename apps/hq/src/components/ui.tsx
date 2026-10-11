@@ -97,8 +97,8 @@ export function MemberChip({ m }: { m: Member | undefined | null }) {
 export function StatusPill({ s }: { s: DeliverableStatus }) {
   const { L } = useI18n();
   const map: Record<DeliverableStatus, [string, string, string]> = {
-    draft: ["", "Draft", "مسودة"], in_review: ["pill--info", "Waiting on client", "عند العميل"],
-    changes: ["pill--warn", "Changes requested", "مطلوب تعديل"], approved: ["pill--ok", "Approved", "معتمد"]
+    draft: ["", "Draft", "مسودة"], in_review: ["pill--warn light", "With client", "عند العميل"],
+    changes: ["pill--bad light", "Changes", "تعديل"], approved: ["pill--ok light", "GO · approved", "GO · اتوافق"]
   };
   const [c, en, ar] = map[s];
   return <span className={"pill " + c}>{L(en, ar)}</span>;

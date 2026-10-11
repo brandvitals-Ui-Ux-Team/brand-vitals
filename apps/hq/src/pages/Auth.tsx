@@ -1,5 +1,5 @@
 import { CheckCircle2, MessageCircle, MessagesSquare, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api, isDemo } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { useAction, Field } from "../components/ui";
@@ -25,12 +25,14 @@ export function Auth() {
     return run(() => api.signIn(email.trim(), pw));
   };
   const demo = () => run(() => api.signUp("owner@demo.agency", "demo", L("Demo Owner", "مدير الحساب")));
+  // In demo mode, open the workspace right away; add ?signin to the URL to see this screen.
+  useEffect(() => { if (isDemo && !new URLSearchParams(location.search).has("signin")) demo(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
   return <div className="auth">
     <div className="auth__side">
       <img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals GO" style={{ height: 30, width: "auto" }} />
       <div style={{ display: "grid", gap: 26 }}>
-        <h2>{L("Every client conversation, approved and billed.", "كل كلام مع العميل، متوافق عليه ومتحاسب.")}</h2>
+        <h2>{L("Send. Approve. Get paid.", "ابعت. وافِق. اقبض.")}</h2>
         <ul>
           <li><MessageCircle />{L("Clients review, comment on the exact spot and approve from one link: by email, WhatsApp, Slack, Teams or SMS. No login.", "العميل يراجع ويعلّق على النقطة بالظبط ويوافق من لينك واحد: إيميل أو واتساب أو Slack أو Teams أو SMS. من غير تسجيل.")}</li>
           <li><MessagesSquare />{L("Team and client chat next to the work, with internal notes the client never sees.", "شات الفريق والعميل جنب الشغل، وملاحظات داخلية العميل عمره ما يشوفها.")}</li>

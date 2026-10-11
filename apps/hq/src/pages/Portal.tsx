@@ -104,7 +104,7 @@ function Body({ data, setLang, reload, token }: { data: PortalPayload | null | u
         <span>{L(`${picked.size} selected`, `${picked.size} متختارين`)}</span>
         <div className="row" style={{ flexWrap: "nowrap" }}>
           <input className="inp" style={{ maxWidth: 180, height: 34, background: "var(--bg)", color: "var(--text)" }} value={name} onChange={e => setName(e.target.value)} placeholder={L("Your name", "اسمك")} />
-          <button className="btn btn--primary" disabled={busy} onClick={approveSelected}><Check />{L("Approve selected", "وافق على المختار")}</button>
+          <button className="btn btn--primary btn--go" disabled={busy} onClick={approveSelected}><Check /><b>GO</b><span>{L("for selected", "للمختار")}</span></button>
         </div>
       </div>}
       <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Approvals by Vitals GO", "الموافقات عبر Vitals GO")}</div>

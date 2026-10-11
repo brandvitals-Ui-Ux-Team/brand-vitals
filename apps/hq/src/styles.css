@@ -464,3 +464,33 @@ a.li:hover, button.li:hover { background: var(--surface-2); }
   body, .public { background: #fff !important; color: #000 !important; }
   .invoice { box-shadow: none !important; border: 0 !important; }
 }
+
+/* ---------- Vitals GO · the green light ---------- */
+:root { --go: #12D18E; --go-ink: #032016; }
+.pill.light::before { width: 8px; height: 8px; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent); }
+.btn--go { background: var(--go); border-color: var(--go); color: var(--go-ink); gap: 8px; box-shadow: 0 10px 26px -12px rgba(18, 209, 142, .9); }
+.btn--go:hover { background: #2BE3A2; border-color: #2BE3A2; }
+.btn--go b { font-size: 1.15em; letter-spacing: .06em; }
+.btn--go span { font-weight: 600; opacity: .85; }
+.lights-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.lights-bar__i { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding-inline: 12px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; font-size: 13px; }
+.lights-bar__i:hover { border-color: var(--line-2); }
+.lights-bar__i i { width: 12px; height: 12px; border-radius: 50%; }
+.lights-bar__i--amber i { background: #FFB020; box-shadow: 0 0 10px rgba(255, 176, 32, .7); }
+.lights-bar__i--red i { background: #FF4D5E; box-shadow: 0 0 10px rgba(255, 77, 94, .6); }
+.lights-bar__i--green i { background: var(--go); box-shadow: 0 0 10px rgba(18, 209, 142, .8); }
+.today-card--go { background: #04100B; border-color: transparent; color: #EAF7F1; }
+.today-card--go .kpi__l, .today-card--go .faint { color: rgba(234, 247, 241, .7); }
+.today-card--go .big-stat b { color: var(--go); }
+.first-run { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 18px 20px; border-radius: var(--r-xl); background: #04100B; color: #EAF7F1; }
+.first-run__light { display: flex; gap: 6px; padding: 8px 10px; border-radius: 999px; background: #0B1A14; flex: none; }
+.first-run__light i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 9px; font-weight: 800; color: var(--go-ink); }
+.first-run__light i:nth-child(1) { background: #3a1a1e; } .first-run__light i:nth-child(2) { background: #3b2e12; }
+.first-run__light i:nth-child(3) { background: var(--go); box-shadow: 0 0 16px rgba(18, 209, 142, .8); }
+.first-run__b { flex: 1; min-width: 240px; display: grid; gap: 6px; }
+.first-run__b ol { display: grid; gap: 2px; padding-inline-start: 18px; list-style: decimal; color: rgba(234, 247, 241, .78); }
+.first-run .btn--ghost { color: rgba(234, 247, 241, .8); }
+.big-stat { flex-wrap: wrap; row-gap: 2px; }
+.today-card { min-width: 0; }
+@media (max-width: 1280px) { .page > .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .page > .grid4 { grid-template-columns: minmax(0, 1fr); } }

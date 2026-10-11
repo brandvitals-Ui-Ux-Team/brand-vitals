@@ -15,7 +15,8 @@ import type { DeliverableStatus } from "../lib/types";
 import { useWorkspace } from "../lib/ws";
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-export const STATUS_COLOR: Record<DeliverableStatus, string> = { draft: "var(--text-3)", in_review: "var(--info)", changes: "var(--warn)", approved: "var(--ok)" };
+// The three lights: amber with the client, red for changes, green for GO.
+export const STATUS_COLOR: Record<DeliverableStatus, string> = { draft: "var(--text-3)", in_review: "var(--warn)", changes: "var(--bad)", approved: "var(--ok)" };
 
 export function Calendar() {
   const { L, lang } = useI18n();

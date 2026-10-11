@@ -48,7 +48,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
       localStorage.setItem(nameKey, name.trim());
       await api.reviewRespond(token, { action, name: name.trim(), comment: comment.trim(), pins: action === "changes" ? pins : [] });
       setComment(""); setPins([]); setMode("idle");
-      toast(action === "approved" ? L("Approved. Thank you!", "تمت الموافقة. شكرًا!") : L("Sent to the team", "اتبعتت للفريق"));
+      toast(action === "approved" ? L("GO! Approved. Thank you.", "GO! اتوافق عليه. شكرًا.") : L("Sent to the team", "اتبعتت للفريق"));
       reload();
     } catch (e) { toast(String((e as Error).message), "err"); }
     finally { setBusy(false); }
@@ -64,7 +64,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
         <span className="faint small">{L("For your review", "للمراجعة")}</span>
         <h1>{d.title}</h1>
         <div className="row">
-          {d.status === "approved" ? <span className="pill pill--ok">{L("Approved", "تمت الموافقة")}</span> : d.status === "changes" ? <span className="pill pill--warn">{L("Changes requested · team is working on it", "اتطلب تعديل · الفريق شغال عليه")}</span> : d.status === "in_review" ? <span className="pill pill--info">{L("Waiting for your approval", "مستني موافقتك")}</span> : <span className="pill">{L("In progress", "قيد التنفيذ")}</span>}
+          {d.status === "approved" ? <span className="pill pill--ok light">{L("GO · approved", "GO · اتوافق")}</span> : d.status === "changes" ? <span className="pill pill--bad light">{L("Changes requested · team is working on it", "اتطلب تعديل · الفريق شغال عليه")}</span> : d.status === "in_review" ? <span className="pill pill--warn light">{L("Waiting for your GO", "مستني الـ GO بتاعك")}</span> : <span className="pill">{L("In progress", "قيد التنفيذ")}</span>}
           <span className="faint small">v{d.current_version}</span>
         </div>
       </div>
@@ -90,7 +90,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
         {mode === "idle" ? <>
           <label className="field"><span>{L("Your name", "اسمك")}</span><input className="inp" value={name} onChange={e => setName(e.target.value)} autoComplete="name" /></label>
           <div className="grid2">
-            <button className="btn btn--primary btn--lg" disabled={busy} onClick={() => respond("approved")}><CheckCircle2 />{L("Approve", "موافق")}</button>
+            <button className="btn btn--primary btn--lg btn--go" disabled={busy} onClick={() => respond("approved")}><CheckCircle2 /><b>GO</b><span>{L("Approve", "موافق")}</span></button>
             <button className="btn btn--lg" disabled={busy} onClick={() => setMode("changes")}><PencilRuler />{L("Request changes", "عايز تعديل")}</button>
           </div>
           <p className="faint small" style={{ textAlign: "center" }}>{L("Your approval is recorded with your name and the time.", "موافقتك بتتسجل باسمك والوقت.")}</p>

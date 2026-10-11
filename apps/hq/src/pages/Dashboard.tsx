@@ -40,6 +40,13 @@ export function Dashboard() {
   const earned = cos.filter(c => c.status === "approved" && (c.decided_at || "").startsWith(month)).reduce((s, c) => s + Number(c.amount), 0);
   const extraSpotted = feedback.filter(x => x.kind === "changes" && !x.resolved && x.classification === "new_request");
   const coWaiting = cos.filter(c => c.status === "sent");
+  // Time to green: average hours from "sent to client" to their GO, over the last 30 days.
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+  const greens = deliverables.filter(d => d.status === "approved" && d.sent_at && d.approved_at && d.approved_at >= since);
+  const ttg = greens.length ? greens.reduce((s, d) => s + (new Date(d.approved_at!).getTime() - new Date(d.sent_at!).getTime()), 0) / greens.length / 3600000 : null;
+  const ttgLabel = ttg == null ? "—" : ttg < 48 ? L(`${Math.max(1, Math.round(ttg))}h`, `${Math.max(1, Math.round(ttg))} ساعة`) : L(`${(ttg / 24).toFixed(1)}d`, `${(ttg / 24).toFixed(1)} يوم`);
+  const [firstRun, setFirstRun] = useState(() => { try { return !localStorage.getItem("go-first-send-" + ws.id); } catch { return false; } });
+  const doneFirstRun = () => { try { localStorage.setItem("go-first-send-" + ws.id, "1"); } catch { /* ignore */ } setFirstRun(false); };
 
   // waiting items grouped by client → one reminder per client
   const groups = useMemo(() => {
@@ -78,7 +85,21 @@ export function Dashboard() {
       <div className="row"><Link className="btn" to="/calendar"><CalendarDays />{L("Calendar", "التقويم")}</Link><button className="btn btn--primary btn--lg" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button></div>
     </div>
 
-    <div className="grid3">
+    {firstRun && <div className="first-run">
+      <div className="first-run__light" aria-hidden><i /><i /><i>GO</i></div>
+      <div className="first-run__b"><b>{L("Send your first approval in 60 seconds", "ابعت أول موافقة في ٦٠ ثانية")}</b>
+        <ol className="small"><li>{L("Pick a client and drop a file or a link", "اختار عميل وارفع ملف أو لينك")}</li><li>{L("Choose their channel: email, SMS, WhatsApp, Slack or a link", "اختار قناته: إيميل، رسالة، واتساب، Slack أو لينك")}</li><li>{L("Watch it turn green when they say GO", "شوفه بيقلب أخضر لما يقول GO")}</li></ol></div>
+      <div className="row"><button className="btn btn--primary btn--lg" onClick={() => { setSend(true); doneFirstRun(); }}><Send />{L("Start", "ابدأ")}</button><button className="btn btn--ghost" onClick={doneFirstRun}>{L("Later", "بعدين")}</button></div>
+    </div>}
+
+    <div className="lights-bar">
+      <Link to="/approvals" className="lights-bar__i lights-bar__i--amber"><i />{L(`${waiting.length} with clients`, `${waiting.length} عند العملاء`)}</Link>
+      <Link to="/approvals" className="lights-bar__i lights-bar__i--red"><i />{L(`${changes.length} changes`, `${changes.length} تعديل`)}</Link>
+      <Link to="/history" className="lights-bar__i lights-bar__i--green"><i />{L(`${deliverables.filter(d => d.status === "approved").length} GO`, `${deliverables.filter(d => d.status === "approved").length} GO`)}</Link>
+    </div>
+
+    <div className="grid4">
+      <div className="today-card today-card--go"><span className="kpi__l"><Sparkles size={15} />{L("Time to green", "الوقت لحد الأخضر")}</span><span className="big-stat"><b>{ttgLabel}</b><span className="faint small">{L(`avg over ${greens.length} GOs, 30 days`, `متوسط ${greens.length} موافقة، ٣٠ يوم`)}</span></span></div>
       <Link to="/approvals" className="today-card"><span className="kpi__l"><Clock3 size={15} />{L("Waiting on clients", "عند العملاء")}</span><span className="big-stat"><b>{waiting.length}</b>{groups[0] && <span className="faint small">{L(`oldest ${groups[0].oldest}d`, `أقدم واحدة ${groups[0].oldest} يوم`)}</span>}</span></Link>
       <Link to="/approvals" className="today-card"><span className="kpi__l"><PencilRuler size={15} />{L("Changes to make", "تعديلات مطلوبة")}</span><span className="big-stat"><b>{changes.length}</b></span></Link>
       <Link to="/extra-work" className="today-card" style={{ background: "var(--accent-soft)", borderColor: "transparent" }}><span className="kpi__l"><Wallet size={15} />{L("Extra work earned this month", "شغل إضافي اتحصّل الشهر ده")}</span><span className="big-stat"><b style={{ color: "var(--accent)" }}>{money(earned, ws.currency, lang)}</b>{coWaiting.length > 0 && <span className="faint small">{L(`+${coWaiting.length} awaiting`, `+${coWaiting.length} منتظرة`)}</span>}</span></Link>
