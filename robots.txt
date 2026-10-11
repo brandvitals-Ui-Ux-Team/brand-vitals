@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /cms/
+
+# AI / answer-engine crawlers welcome (GEO)
+User-agent: GPTBot
+Allow: /
+Disallow: /dashboard.html
+Disallow: /cms/
+User-agent: ClaudeBot
+Allow: /
+Disallow: /dashboard.html
+Disallow: /cms/
+User-agent: Google-Extended
+Allow: /
+Disallow: /dashboard.html
+Disallow: /cms/
+User-agent: PerplexityBot
+Allow: /
+Disallow: /dashboard.html
+Disallow: /cms/
+User-agent: CCBot
+Allow: /
+Disallow: /dashboard.html
+Disallow: /cms/
+
+Sitemap: https://brandvitals.io/sitemap.xml

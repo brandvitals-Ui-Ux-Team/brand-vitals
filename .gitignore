@@ -1,0 +1,27 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Node (not used by this static site, kept as a safeguard)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Logs / temp
+*.log
+*.tmp
+.impeccable/
+_qa/
+
+# Build output
+dist/
+.vercel/
+.env
+.env.*
+!.env.example

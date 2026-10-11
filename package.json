@@ -1,0 +1,24 @@
+{
+  "name": "brand-vitals",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Brand Vitals website (static, bilingual) + Vitals HQ app",
+  "type": "module",
+  "workspaces": [
+    "apps/hq"
+  ],
+  "scripts": {
+    "build": "npm run build:hq && npm run build:site",
+    "build:site": "node scripts/build-site.mjs",
+    "build:hq": "npm run build --workspace apps/hq",
+    "dev": "npm run build:site && node server.js",
+    "dev:hq": "npm run dev --workspace apps/hq",
+    "check": "node scripts/check-site.mjs"
+  },
+  "devDependencies": {
+    "cheerio": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
