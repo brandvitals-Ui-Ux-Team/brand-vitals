@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="112 0 2635 600" role="img" aria-label="Vitals Crew">
   <defs>
-    <linearGradient id="pcrewdark" x1="116" y1="0" x2="1454" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF8AB3"/><stop offset="1" stop-color="#FF4D86"/></linearGradient>
+    <linearGradient id="pcrewdark" x1="116" y1="0" x2="1454" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#A58BFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient>
     <clipPath id="pcrewdarkc"><rect x="150" y="0" width="1454" height="600"/></clipPath>
   </defs>
   <g fill="url(#pcrewdark)">

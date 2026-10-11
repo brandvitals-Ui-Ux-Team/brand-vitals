@@ -7,9 +7,10 @@ import { ago, date } from "../../../hq/src/lib/format";
 import { useI18n } from "../../../hq/src/lib/i18n";
 import { TalentCard } from "../components/TalentCard";
 import { APP_STEPS, Art, Avatar, BriefPill, CAT, Empty, LEVEL, LevelBadge, Modal, ProposalPill, ScoreBars, ScoreInput, StagePill, Stepper, appDone, useMoney, useToast } from "../components/ui";
-import { ME, actions, avg, talentOf, useDB } from "../lib/store";
+import { MAX_QA_ROUNDS, ME, actions, avg, talentOf, timeline, useDB } from "../lib/store";
 import type { Application, Brief, Delivery, Level, Proposal, Scores } from "../lib/types";
 import { HowWeVet } from "./shared";
+import { RuleMeters, Switches, TheRules, Timeline } from "../components/guarantee";
 
 export function OpsHome() {
   const { L, lang } = useI18n();
@@ -21,6 +22,9 @@ export function OpsHome() {
   const reviewed = db.deliveries.filter(x => x.qa !== "pending");
   const firstPass = reviewed.length ? Math.round((reviewed.filter(x => x.qa === "passed" && x.version === 1).length / Math.max(1, reviewed.filter(x => x.version === 1).length)) * 100) : 0;
   const rate = Math.round((db.stats.accepted_90d / db.stats.applied_90d) * 100);
+  const live = db.briefs.filter(b => b.status === "in_progress");
+  const switches = db.briefs.reduce((n, b) => n + b.switches.length, 0);
+  const onTrack = live.filter(b => timeline(b).daysLeft >= 0).length;
   const Q = ({ to, icon, n, en, ar, sub }: { to: string; icon: ReactElement; n: number; en: string; ar: string; sub: string }) =>
     <Link to={to} className="card kpi queue">{icon}<span className="kpi__v">{n}</span><span className="kpi__l">{L(en, ar)}</span><span className="kpi__s">{sub}</span></Link>;
   return <div className="page">
@@ -36,6 +40,11 @@ export function OpsHome() {
       <div className="card kpi"><span className="kpi__l"><Gauge />{L("QA pass on first try", "نجاح المراجعة من أول مرة")}</span><span className="kpi__v">{firstPass}%</span><span className="kpi__s">{L("Returned work never reaches the client", "الشغل المرتجع مابيوصلش للعميل")}</span></div>
       <div className="card kpi"><span className="kpi__l"><Clock />{L("Average review time", "متوسط وقت المراجعة")}</span><span className="kpi__v">{db.stats.review_hours}h</span><span className="kpi__s">{L("Target: under 24h", "الهدف: أقل من ٢٤ ساعة")}</span></div>
     </div>
+    <div className="grid2">
+      <div className="card kpi"><span className="kpi__l"><ShieldCheck />{L("Client timelines on track", "مواعيد العملاء ماشية")}</span><span className="kpi__v">{onTrack}/{live.length}</span><span className="kpi__s">{L("Every switch happens inside our buffer", "أي تبديل بيحصل جوه وقتنا")}</span></div>
+      <div className="card kpi"><span className="kpi__l"><Users />{L("Talent switches", "تبديلات المواهب")}</span><span className="kpi__v">{switches}</span><span className="kpi__s">{L("After 3 QA rounds or 2 off-brief rejections, at our cost", "بعد ٣ جولات مراجعة أو رفضين، على حسابنا")}</span></div>
+    </div>
+    <TheRules compact />
     <div className="card">
       <div className="card__h"><h2>{L("Latest activity", "آخر النشاط")}</h2></div>
       <div className="list">{db.activity.slice(0, 8).map(a => <div key={a.id} className="li"><Avatar name={a.who} size="sm" /><span className="li__main"><span style={{ whiteSpace: "normal" }}><b>{a.who}</b> {L(a.en, a.ar)}</span><span className="li__s">{ago(a.at, lang)}</span></span></div>)}</div>
@@ -85,7 +94,7 @@ function ReviewApp({ a, onClose }: { a: Application; onClose: () => void }) {
     <div className="stack">
       <Stepper steps={APP_STEPS} done={appDone(a.stage)} active={a.stage !== "rejected"} />
       <div className="row small muted">{a.title} · {L(...CAT[a.category])} · {a.city} · <a href={"https://" + a.links} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }} dir="ltr">{a.links}</a></div>
-      <div className="pick-art pick-art--static">{a.portfolio.map(p => <Art key={p} title={p} alt={p} />)}</div>
+      <div className="pieces pieces--static">{(a.pieces.length ? a.pieces : a.portfolio.map(t => ({ title: t, src: t, role: "" }))).map((p, i) => <div key={i} className="piece"><Art title={p.src} alt={p.title} /><span className="small ellipsis">{p.title}{p.role ? " · " + (p.role === "solo" ? L("did it all", "عمله كله") : p.role === "lead" ? L("led it", "قاده") : p.role === "part" ? L("part of a team", "جزء من فريق") : p.role) : ""}</span></div>)}</div>
       {a.history.length > 0 && <div className="tl">{a.history.map((h, i) => <div key={i} className="tl__i"><span className={"tl__ico " + (h.stage === "rejected" ? "tl__ico--bad" : h.stage === "approved" ? "tl__ico--ok" : "tl__ico--violet")}><ShieldCheck /></span><div><b className="small">{h.by}</b> <StagePill s={h.stage} /><p className="small">{h.note}</p><span className="small faint">{date(h.at, lang)}</span></div></div>)}</div>}
       {live && <div className="grid2" style={{ alignItems: "start" }}>
         <div className="card card--pad stack"><h3>{L("Scorecard", "التقييم")}</h3><ScoreInput value={s} onChange={setS} />
@@ -209,6 +218,9 @@ export function QAQueue() {
     <div className="split">
       <div className="card">{!cur || !b ? <Empty icon={<ClipboardCheck />} title={pending.length ? L("Pick a delivery", "اختار تسليم") : L("QA queue is clear", "مفيش تسليمات للمراجعة")} /> : <div className="card__b stack">
         <div className="row row--between"><div><h2>{cur.title} · v{cur.version}</h2><span className="small faint">{b.title} · {b.client} · {talentOf(db, cur.talent_id)?.name} · {ago(cur.submitted_at, lang)}</span></div></div>
+        <div className="grid2" style={{ alignItems: "start" }}><RuleMeters b={b} /><Timeline b={b} who="ops" /></div>
+        {b.qa_returns === MAX_QA_ROUNDS - 1 && <div className="callout callout--warn"><ShieldCheck /><span className="small">{L("This is the last QA round. Returning it moves the job to another member automatically; the client's deadline stays.", "دي آخر جولة مراجعة. لو رجّعتها الشغلانة هتتحول لعضو تاني تلقائيًا، وميعاد العميل ثابت.")}</span></div>}
+        <Switches b={b} />
         <Art title={cur.art} className="qa-art" alt={cur.title} />
         <p className="small"><b>{L("Talent note", "ملاحظة الموهبة")}:</b> {cur.note}</p>
         <div className="hint small"><Briefcase />{L("Brief", "البريف")}: {b.description}</div>

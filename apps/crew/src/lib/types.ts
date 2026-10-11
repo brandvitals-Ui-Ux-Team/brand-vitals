@@ -16,10 +16,11 @@ export interface Talent {
 }
 
 export type AppStage = "portfolio" | "test" | "interview" | "approved" | "rejected";
+export interface Piece { title: string; src: string; role: string }
 export interface StageEvent { stage: AppStage; at: string; by: string; note: string }
 export interface Application {
-  id: string; name: string; title: string; category: Category; kind: TalentKind; members: number; city: string;
-  links: string; portfolio: string[]; submitted_at: string; stage: AppStage; scores: Scores | null;
+  id: string; name: string; email: string; title: string; category: Category; kind: TalentKind; members: number; city: string;
+  links: string; portfolio: string[]; pieces: Piece[]; submitted_at: string; stage: AppStage; scores: Scores | null;
   history: StageEvent[]; level: Level | null;
 }
 
@@ -29,19 +30,26 @@ export interface Brief {
   budget: number; currency: string; deadline: string; mode: "shortlist" | "managed";
   status: BriefStatus; created_at: string; reviewer_note: string; preferred_talent: string | null;
   hired_proposal_id: string | null;
+  // Delivery guarantee: who is on it now, how many chances they have used, and every switch we made.
+  talent_id: string | null; kickoff_at: string | null; qa_returns: number; client_strikes: number; switches: Switch[];
+  // Job-post details (Upwork-style): optional so older demo rows still load.
+  skills?: string[]; size?: JobSize; duration?: string; level?: Level;
 }
+export type JobSize = "small" | "medium" | "large";
+export interface Switch { from: string; to: string; at: string; reason: "qa" | "client"; note: string }
 
 export type ProposalStatus = "screening" | "shortlisted" | "declined" | "hired" | "not_selected";
 export interface Proposal {
   id: string; brief_id: string; talent_id: string; price: number; days: number; pitch: string;
   status: ProposalStatus; score: number | null; why: string; feedback: string; created_at: string;
+  samples?: string[];
 }
 
 export type QA = "pending" | "passed" | "returned";
 export interface Delivery {
   id: string; brief_id: string; talent_id: string; title: string; art: string; version: number; note: string;
   submitted_at: string; qa: QA; qa_note: string; qa_checks: string[]; qa_by: string;
-  client: "waiting" | "approved" | "changes" | null; client_note: string;
+  client: "waiting" | "approved" | "changes" | null; client_note: string; client_kind?: "revision" | "off_brief";
 }
 
 export interface Activity { id: string; at: string; who: string; en: string; ar: string; brief_id?: string }

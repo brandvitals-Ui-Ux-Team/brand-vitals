@@ -1,8 +1,10 @@
-import { Briefcase, ClipboardCheck, FilePlus2, FileSearch, Home, LayoutGrid, Menu, Moon, RotateCcw, Send, ShieldCheck, Sun, UserCheck, Users, Wallet } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+// A plain, familiar dashboard frame: light sidebar, one primary action per role, and a
+// "viewing as" menu in the top bar for the demo (client / freelancer / reviewer).
+import { Briefcase, ChevronDown, ClipboardCheck, FilePlus2, Home, LayoutGrid, ListChecks, Menu, Moon, RotateCcw, Search, Send, ShieldCheck, Sun, UserCheck, UserRound, Users, Wallet } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useI18n } from "../../../hq/src/lib/i18n";
-import { ME, resetDemo, useDB } from "../lib/store";
+import { ME, meTalentId, resetDemo, talentOf, useDB } from "../lib/store";
 import type { Role } from "../lib/types";
 import { Avatar, useToast } from "./ui";
 
@@ -18,58 +20,67 @@ export function Shell({ children }: { children: ReactNode }) {
   const { L, lang, setLang } = useI18n();
   const [theme, setTheme] = useTheme();
   const [side, setSide] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const loc = useLocation();
   const nav = useNavigate();
   const toast = useToast();
   const db = useDB();
   const role = roleOf(loc.pathname);
-  useEffect(() => setSide(false), [loc.pathname]);
+  useEffect(() => { setSide(false); setMenu(false); }, [loc.pathname]);
+  useEffect(() => {
+    if (!menu) return;
+    const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenu(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [menu]);
 
+  const meT = talentOf(db, meTalentId()) || talentOf(db, ME.talent.id)!;
   const mine = db.briefs.filter(b => b.client === ME.client.company);
-  const shortlists = mine.filter(b => b.status === "shortlist").length;
-  const toApprove = db.deliveries.filter(x => x.client === "waiting" && mine.some(b => b.id === x.brief_id)).length;
-  const myProps = db.proposals.filter(p => p.talent_id === ME.talent.id);
-  const myJobs = db.briefs.filter(b => b.status === "in_progress" && myProps.some(p => p.id === b.hired_proposal_id)).length;
-  const opps = db.briefs.filter(b => b.status === "sourcing" && !myProps.some(p => p.brief_id === b.id)).length;
+  const toDecide = mine.filter(b => b.status === "shortlist").length + db.deliveries.filter(x => x.client === "waiting" && mine.some(b => b.id === x.brief_id)).length;
+  const myProps = db.proposals.filter(p => p.talent_id === meT.id);
+  const contracts = db.briefs.filter(b => b.status === "in_progress" && b.talent_id === meT.id).length;
+  const openJobs = db.briefs.filter(b => b.status === "sourcing" && !myProps.some(p => p.brief_id === b.id)).length;
   const qApps = db.applications.filter(a => ["portfolio", "test", "interview"].includes(a.stage)).length;
-  const qBriefs = db.briefs.filter(b => b.status === "review" || b.status === "sourcing").length;
+  const qJobs = db.briefs.filter(b => b.status === "review").length + db.proposals.filter(p => p.status === "screening").length;
   const qQA = db.deliveries.filter(x => x.qa === "pending").length;
 
   const A = ({ to, icon, label, count, end }: { to: string; icon: ReactNode; label: string; count?: number; end?: boolean }) =>
     <NavLink to={to} end={end} className={({ isActive }) => "nav-a" + (isActive ? " active" : "")}>{icon}<span>{label}</span>{!!count && <span className="count">{count}</span>}</NavLink>;
-  const who = role === "client" ? { n: ME.client.name, s: ME.client.company } : role === "talent" ? { n: ME.talent.name, s: L("Motion designer · Pro", "مصممة موشن · محترفة") } : { n: ME.ops.name, s: L("Vitals Crew review team", "فريق مراجعة Vitals Crew") };
+  const roles: [Role, string, string, ReactNode][] = [
+    ["client", L("Client", "عميل"), `${ME.client.name} · ${ME.client.company}`, <Briefcase />],
+    ["talent", L("Freelancer", "فريلانسر"), `${meT.name} · ${L(meT.title, meT.title_ar)}`, <UserRound />],
+    ["ops", L("Vitals reviewer", "مراجع Vitals"), `${ME.ops.name} · ${L("Review team", "فريق المراجعة")}`, <ShieldCheck />]
+  ];
+  const cur = roles.find(r => r[0] === role)!;
 
-  return <div className="shell">
+  return <div className="shell crew-shell">
     <aside className={"side" + (side ? " open" : "")} aria-label={L("Main navigation", "التنقل الرئيسي")}>
       <div className="side__brand"><NavLink to="/"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Crew" /></NavLink></div>
-      <div className="role-switch" role="tablist" aria-label={L("View as", "اعرض كـ")}>
-        {([["client", L("Client", "عميل")], ["talent", L("Talent", "موهبة")], ["ops", L("Review", "المراجعة")]] as [Role, string][]).map(([r, label]) =>
-          <button key={r} role="tab" aria-selected={role === r} className={role === r ? "on" : ""} onClick={() => nav("/" + r)}>{label}</button>)}
-      </div>
-      <div className="me-card"><Avatar name={who.n} /><span style={{ minWidth: 0 }}><b className="ellipsis" style={{ display: "block" }}>{who.n}</b><span className="faint small">{who.s}</span></span></div>
-
       {role === "client" && <>
-        <button className="big-send" onClick={() => nav("/client/new")}><FilePlus2 />{L("Post a brief", "انشر بريف")}</button>
-        <A to="/client" end icon={<Home />} label={L("Home", "الرئيسية")} count={shortlists + toApprove} />
-        <A to="/client/talent" icon={<Users />} label={L("Vetted talent", "المواهب المعتمدة")} />
+        <button className="big-send" onClick={() => nav("/client/post")}><FilePlus2 />{L("Post a job", "انشر شغلانة")}</button>
+        <A to="/client" end icon={<Home />} label={L("Dashboard", "الرئيسية")} count={toDecide} />
+        <A to="/client/jobs" icon={<ListChecks />} label={L("My jobs", "شغلاناتي")} />
+        <A to="/client/talent" icon={<Users />} label={L("Find talent", "دوّر على مواهب")} />
       </>}
       {role === "talent" && <>
-        <A to="/talent" end icon={<Home />} label={L("Home", "الرئيسية")} />
-        <A to="/talent/jobs" icon={<FileSearch />} label={L("Opportunities", "الفرص")} count={opps} />
+        <button className="big-send" onClick={() => nav("/talent/jobs")}><Search />{L("Find work", "دوّر على شغل")}</button>
+        <A to="/talent" end icon={<Home />} label={L("Dashboard", "الرئيسية")} />
+        <A to="/talent/jobs" icon={<Search />} label={L("Find work", "دوّر على شغل")} count={openJobs} />
         <A to="/talent/proposals" icon={<Send />} label={L("My proposals", "عروضي")} />
-        <A to="/talent/work" icon={<Briefcase />} label={L("Active work", "الشغل الحالي")} count={myJobs} />
+        <A to="/talent/work" icon={<Briefcase />} label={L("Contracts", "العقود الحالية")} count={contracts} />
         <A to="/talent/earnings" icon={<Wallet />} label={L("Earnings", "الأرباح")} />
+        <A to={"/talent/profile"} icon={<UserRound />} label={L("My profile", "بروفايلي")} />
       </>}
       {role === "ops" && <>
         <A to="/ops" end icon={<LayoutGrid />} label={L("Overview", "نظرة عامة")} />
-        <A to="/ops/applications" icon={<UserCheck />} label={L("Talent vetting", "اعتماد المواهب")} count={qApps} />
-        <A to="/ops/briefs" icon={<Briefcase />} label={L("Briefs & shortlists", "البريفات والترشيحات")} count={qBriefs} />
+        <A to="/ops/applications" icon={<UserCheck />} label={L("Applicants", "المتقدمين")} count={qApps} />
+        <A to="/ops/briefs" icon={<Briefcase />} label={L("Jobs & proposals", "الشغلانات والعروض")} count={qJobs} />
         <A to="/ops/qa" icon={<ClipboardCheck />} label={L("Delivery QA", "مراجعة الجودة")} count={qQA} />
-        <A to="/ops/talent" icon={<Users />} label={L("Talent network", "شبكة المواهب")} />
+        <A to="/ops/talent" icon={<Users />} label={L("Members", "الأعضاء")} />
       </>}
-
       <div className="side__foot">
-        <div className="demo-pill"><ShieldCheck /><span>{L("Demo: switch views above to see the same marketplace as a client, a freelancer and our review team.", "تجربة: بدّل من فوق عشان تشوف نفس المنصة كعميل وكفريلانسر وكفريق مراجعة.")}</span></div>
+        <div className="edge-note"><ShieldCheck /><span>{L("Every member, proposal and delivery is reviewed by Vitals.", "كل عضو وعرض وتسليم بيتراجع من Vitals.")}</span></div>
         <a className="nav-a" href="/crew.html"><span style={{ width: 17 }} />{L("About Vitals Crew", "عن Vitals Crew")}</a>
       </div>
     </aside>
@@ -77,11 +88,20 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="main">
       <header className="top">
         <button className="icon-btn top__burger" onClick={() => setSide(true)} aria-label={L("Open menu", "فتح القائمة")}><Menu /></button>
-        <span className="pill pill--plain role-pill">{role === "client" ? L("Client view", "عرض العميل") : role === "talent" ? L("Talent view", "عرض الموهبة") : L("Review team view", "عرض فريق المراجعة")}</span>
+        <div className="viewas" ref={menuRef}>
+          <button className="viewas__btn" onClick={() => setMenu(m => !m)} aria-expanded={menu}>
+            <span className="viewas__l">{L("Viewing as", "بتشوف كـ")}</span><b>{cur[1]}</b><ChevronDown size={15} />
+          </button>
+          {menu && <div className="menu viewas__menu">
+            <p className="small faint" style={{ padding: "6px 10px" }}>{L("Demo: the same marketplace from each side.", "تجربة: نفس المنصة من كل جانب.")}</p>
+            {roles.map(([r, label, who, icon]) => <button key={r} className={r === role ? "on" : ""} onClick={() => nav("/" + r)}>{icon}<span style={{ display: "grid", textAlign: "start" }}><b>{label}</b><span className="small faint">{who}</span></span></button>)}
+          </div>}
+        </div>
         <div className="top__r">
           <button className="lang-btn" onClick={() => setLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>
           <button className="icon-btn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={L("Toggle theme", "تبديل المظهر")}>{theme === "dark" ? <Sun /> : <Moon />}</button>
           <button className="icon-btn" onClick={() => { resetDemo(); toast(L("Demo data reset", "اتعمل ريست للبيانات التجريبية")); }} aria-label={L("Reset demo data", "إعادة ضبط البيانات")} title={L("Reset demo data", "إعادة ضبط البيانات")}><RotateCcw /></button>
+          <Avatar name={cur[2].split(" · ")[0]} />
         </div>
       </header>
       {children}

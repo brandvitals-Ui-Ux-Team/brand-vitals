@@ -61,7 +61,7 @@ export function Empty({ icon, title, text, action }: { icon: ReactNode; title: s
 
 // ---------- artwork (finished-looking demo designs) ----------
 export function Art({ title, className = "", alt = "" }: { title: string; className?: string; alt?: string }) {
-  const url = demoDesign(title, 2) || demoDesign(title, 1);
+  const url = title.startsWith("data:") ? title : demoDesign(title, 2) || demoDesign(title, 1);
   return <div className={"art " + className}>{url ? <img src={url} alt={alt} /> : null}</div>;
 }
 
