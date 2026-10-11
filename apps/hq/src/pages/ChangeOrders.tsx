@@ -26,15 +26,15 @@ export function ChangeOrderForm({ onClose, preset }: { onClose: () => void; pres
       if (c?.phone) window.open(changeOrderWhatsApp(c, sent, money(co.amount, co.currency, c.lang)), "_blank", "noopener");
     }
     onClose();
-  }, andSend ? L("Change order sent", "تم إرسال أمر التغيير") : L("Change order saved as draft", "تم حفظ أمر التغيير كمسودة"));
+  }, andSend ? L("Sent to the client", "اتبعتت للعميل") : L("Saved as draft", "اتحفظت كمسودة"));
   const valid = v.project_id && (v.title || "").trim();
-  return <Modal title={L("New change order", "أمر تغيير جديد")} onClose={onClose} footer={<>
+  return <Modal title={L("Add extra work", "إضافة شغل إضافي")} onClose={onClose} footer={<>
     <button className="btn" onClick={onClose}>{L("Cancel", "إلغاء")}</button>
     <button className="btn" disabled={busy || !valid} onClick={() => save(false)}>{L("Save draft", "حفظ كمسودة")}</button>
     <button className="btn btn--wa" disabled={busy || !valid} onClick={() => save(true)}><Send />{L("Send on WhatsApp", "ابعت على واتساب")}</button>
   </>}>
     <div className="form">
-      <p className="muted small">{L("The client gets a link to approve or decline. Approved change orders count as recovered revenue.", "العميل بيوصله لينك يوافق أو يرفض. أوامر التغيير الموافق عليها بتتحسب إيراد مُسترد.")}</p>
+      <p className="muted small">{L("The client gets a link to approve or decline. Approved extra work counts as earned revenue.", "العميل بيوصله لينك يوافق أو يرفض. الشغل الإضافي الموافق عليه بيتحسب إيراد.")}</p>
       {!preset.project_id && <Field label={L("Project", "المشروع")}><select className="sel" value={v.project_id || ""} onChange={e => setV({ ...v, project_id: e.target.value })}><option value="">{L("Choose…", "اختر…")}</option>{projects.map(p => <option key={p.id} value={p.id}>{clients.find(c => c.id === p.client_id)?.name} · {p.name}</option>)}</select></Field>}
       <Field label={L("What's the extra work?", "إيه الشغل الإضافي؟")}><input className="inp" value={v.title || ""} onChange={e => setV({ ...v, title: e.target.value })} autoFocus /></Field>
       <Field label={L("Details for the client", "التفاصيل للعميل")}><textarea className="txt" value={v.description || ""} onChange={e => setV({ ...v, description: e.target.value })} /></Field>
@@ -69,18 +69,18 @@ export function ChangeOrders() {
 
   return <div className="page">
     <div className="page-head">
-      <div className="page-head__t"><h1>{L("Change orders", "أوامر التغيير")}</h1><p className="muted">{L("Extra work outside the contract, priced and approved by the client.", "شغل إضافي خارج العقد، بسعر، والعميل يوافق عليه.")}</p></div>
-      <button className="btn btn--primary" onClick={() => setCreate(true)}><Plus />{L("New change order", "أمر تغيير جديد")}</button>
+      <div className="page-head__t"><h1>{L("Extra work", "الشغل الإضافي")}</h1><p className="muted">{L("Anything outside the agreement, priced and approved by the client before you start.", "أي حاجة برا الاتفاق، بسعر، والعميل يوافق عليها قبل ما تبدأ.")}</p></div>
+      <button className="btn btn--primary" onClick={() => setCreate(true)}><Plus />{L("Add extra work", "إضافة شغل إضافي")}</button>
     </div>
     <div className="grid3">
-      <div className="card kpi kpi--accent"><span className="kpi__l">{L("Recovered (approved)", "مُسترد (موافق عليه)")}</span><span className="kpi__v">{money(sum("approved"), ws.currency, lang)}</span><span className="kpi__s">{cos.filter(c => c.status === "approved").length} {L("change orders", "أوامر")}</span></div>
+      <div className="card kpi kpi--accent"><span className="kpi__l">{L("Earned (approved)", "اتحصّل (موافق عليه)")}</span><span className="kpi__v">{money(sum("approved"), ws.currency, lang)}</span><span className="kpi__s">{cos.filter(c => c.status === "approved").length} {L("items", "عناصر")}</span></div>
       <div className="card kpi"><span className="kpi__l">{L("Awaiting client", "بانتظار العميل")}</span><span className="kpi__v">{money(sum("sent"), ws.currency, lang)}</span><span className="kpi__s">{cos.filter(c => c.status === "sent").length} {L("open", "مفتوحة")}</span></div>
       <div className="card kpi"><span className="kpi__l">{L("Declined", "مرفوض")}</span><span className="kpi__v">{money(sum("declined"), ws.currency, lang)}</span><span className="kpi__s">{L("Worth a conversation", "يستاهل كلام")}</span></div>
     </div>
     <div className="seg" style={{ justifySelf: "start" }}>{(["all", "draft", "sent", "approved", "declined"] as const).map(k => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{({ all: L("All", "الكل"), draft: L("Drafts", "مسودات"), sent: L("Sent", "مُرسلة"), approved: L("Approved", "موافق عليها"), declined: L("Declined", "مرفوضة") })[k]}</button>)}</div>
-    <div className="card">{rows.length === 0 ? <Empty icon={<FileSignature />} title={L("No change orders", "لا توجد أوامر تغيير")} text={L("When a client asks for something outside the scope, HQ flags it and you can price it here.", "لما العميل يطلب حاجة خارج النطاق، HQ بينبّهك وتقدر تسعّرها هنا.")} /> :
+    <div className="card">{rows.length === 0 ? <Empty icon={<FileSignature />} title={L("No extra work yet", "مفيش شغل إضافي لسه")} text={L("When a client asks for something outside the agreement, Approve flags it and you price it here.", "لما العميل يطلب حاجة برا الاتفاق، Approve بينبّهك وتسعّرها هنا.")} /> :
       <div className="table-wrap"><table className="table">
-        <thead><tr><th>{L("Change order", "أمر التغيير")}</th><th className="hide-sm">{L("Client", "العميل")}</th><th>{L("Amount", "المبلغ")}</th><th>{L("Status", "الحالة")}</th><th className="hide-sm">{L("Date", "التاريخ")}</th><th /></tr></thead>
+        <thead><tr><th>{L("Extra work", "شغل إضافي")}</th><th className="hide-sm">{L("Client", "العميل")}</th><th>{L("Amount", "المبلغ")}</th><th>{L("Status", "الحالة")}</th><th className="hide-sm">{L("Date", "التاريخ")}</th><th /></tr></thead>
         <tbody>{rows.map(c => { const cl = clientOf(c.project_id); return <tr key={c.id}>
           <td><b>{c.title}</b>{c.description && <div className="faint small ellipsis" style={{ maxWidth: 380 }}>{c.description}</div>}{c.deliverable_id && <Link className="small" style={{ color: "var(--accent)" }} to={"/deliverables/" + c.deliverable_id}>{L("View deliverable", "عرض التسليمة")}</Link>}</td>
           <td className="hide-sm">{cl?.name}</td>
@@ -99,6 +99,6 @@ export function ChangeOrders() {
         </tr>; })}</tbody>
       </table></div>}</div>
     {create && <ChangeOrderForm onClose={() => setCreate(false)} preset={{}} />}
-    {del && <Confirm danger title={L("Delete change order?", "حذف أمر التغيير؟")} text={del.title} yes={L("Delete", "حذف")} onClose={() => setDel(null)} onYes={() => run(() => api.remove("change_orders", del.id))} />}
+    {del && <Confirm danger title={L("Delete this extra work?", "حذف الشغل الإضافي ده؟")} text={del.title} yes={L("Delete", "حذف")} onClose={() => setDel(null)} onYes={() => run(() => api.remove("change_orders", del.id))} />}
   </div>;
 }

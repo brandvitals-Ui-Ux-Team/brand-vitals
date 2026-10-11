@@ -40,11 +40,11 @@ export function Ledger() {
 
   return <div className="page">
     <div className="page-head">
-      <div className="page-head__t"><h1>{L("Approval ledger", "سجل الموافقات")}</h1><p className="muted">{L("Who approved what, and when. Timestamped from the client's own link, so there is no “I never approved that”.", "مين وافق على إيه وإمتى. متسجل من لينك العميل نفسه، فمفيش «أنا ما وافقتش على ده».")}</p></div>
+      <div className="page-head__t"><h1>{L("History", "السجل")}</h1><p className="muted">{L("Who approved what, and when. Timestamped from the client's own link, so there is no “I never approved that”.", "مين وافق على إيه وإمتى. متسجل من لينك العميل نفسه، فمفيش «أنا ما وافقتش على ده».")}</p></div>
       <button className="btn" onClick={exportCsv} disabled={!rows.length}><Download />{L("Export CSV", "تصدير CSV")}</button>
     </div>
     <div className="row">
-      <div className="seg">{(["all", "approval", "changes", "co"] as const).map(k => <button key={k} className={kind === k ? "on" : ""} onClick={() => setKind(k)}>{({ all: L("All", "الكل"), approval: L("Approvals", "موافقات"), changes: L("Change requests", "طلبات تعديل"), co: L("Change orders", "أوامر تغيير") })[k]}</button>)}</div>
+      <div className="seg">{(["all", "approval", "changes", "co"] as const).map(k => <button key={k} className={kind === k ? "on" : ""} onClick={() => setKind(k)}>{({ all: L("All", "الكل"), approval: L("Approvals", "موافقات"), changes: L("Change requests", "طلبات تعديل"), co: L("Extra work", "شغل إضافي") })[k]}</button>)}</div>
       <select className="sel" style={{ width: "auto" }} value={client} onChange={e => setClient(e.target.value)}><option value="">{L("All clients", "كل العملاء")}</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
     </div>
     <div className="card">{rows.length === 0 ? <Empty icon={<ScrollText />} title={L("No entries yet", "لا توجد سجلات بعد")} text={L("Client decisions from review links appear here automatically.", "قرارات العملاء من لينكات المراجعة بتظهر هنا تلقائيًا.")} /> :

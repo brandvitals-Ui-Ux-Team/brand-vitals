@@ -1,4 +1,4 @@
-// Demo backend: a full working copy of Vitals HQ inside this browser.
+// Demo backend: a full working copy of Vitals Approve inside this browser.
 // Tables live in localStorage; uploaded files in IndexedDB. Changes made in
 // one tab (for example a client approving on the review link) show up live
 // in the other tabs.
@@ -7,7 +7,7 @@ import { nowIso, token, uid } from "./backend";
 import { emitChange } from "./bus";
 import { classify } from "./logic";
 import { seed } from "./seed";
-import type { ChangeOrderPayload, ID, ReviewPayload, SessionUser, TableName, Tables, Workspace } from "./types";
+import type { ChangeOrderPayload, ID, Pin, PortalPayload, ReviewPayload, SessionUser, TableName, Tables, Workspace } from "./types";
 
 const KEY = "hq-demo-db-v1";
 const USER_KEY = "hq-demo-user";
@@ -16,9 +16,20 @@ type DB = { [K in TableName]: Tables[K][] };
 const empty = (): DB => ({ workspaces: [], members: [], invites: [], clients: [], projects: [], scope_items: [], deliverables: [], versions: [], feedback: [], change_orders: [], tasks: [], comments: [], activity: [] });
 
 function load(): DB {
-  try { const raw = localStorage.getItem(KEY); if (raw) return Object.assign(empty(), JSON.parse(raw)); } catch { /* ignore */ }
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const db: DB = Object.assign(empty(), JSON.parse(raw));
+      db.clients.forEach(c => { if (!c.portal_token) c.portal_token = token(); });
+      db.deliverables.forEach(d => { if (d.publish_date === undefined) d.publish_date = null; if (d.reminded_at === undefined) d.reminded_at = null; });
+      db.feedback.forEach(f => { if (!Array.isArray(f.pins)) f.pins = []; });
+      db.workspaces.forEach(w => { if (!w.remind_after_days) w.remind_after_days = 2; });
+      return db;
+    }
+  } catch { /* ignore */ }
   return empty();
 }
+const cleanPins = (p: Pin[] | undefined): Pin[] => (Array.isArray(p) ? p : []).slice(0, 30).map(x => ({ x: Math.min(100, Math.max(0, Number(x.x) || 0)), y: Math.min(100, Math.max(0, Number(x.y) || 0)), text: String(x.text || "").slice(0, 500) }));
 
 // ---- IndexedDB file store -------------------------------------------------
 const IDB_NAME = "hq-demo-files";
@@ -91,7 +102,7 @@ export class LocalBackend implements Backend {
     const u = this.user(); if (!u) throw new Error("Not signed in");
     const ws: Workspace = { id: uid(), name, currency, owner_id: u.id, created_at: nowIso(),
       wa_template_en: "Hi {client}, {item} is ready for your review: {link}",
-      wa_template_ar: "أهلًا {client}، {item} جاهز للمراجعة: {link}" };
+      wa_template_ar: "أهلًا {client}، {item} جاهز للمراجعة: {link}", remind_after_days: 2 };
     this.db.workspaces.push(ws);
     this.db.members.push({ id: uid(), workspace_id: ws.id, user_id: u.id, role: "owner", name: ownerName || u.name, email: u.email, created_at: nowIso() });
     this.save();
@@ -170,12 +181,12 @@ export class LocalBackend implements Backend {
     const w = this.db.workspaces.find(x => x.id === d.workspace_id)!;
     const s = d.scope_item_id ? this.db.scope_items.find(x => x.id === d.scope_item_id) : null;
     return {
-      workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang }, project: { name: p.name },
-      deliverable: { id: d.id, title: d.title, kind: d.kind, status: d.status, current_version: d.current_version, revision_count: d.revision_count, approved_at: d.approved_at },
+      workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang, portal_token: c.portal_token }, project: { name: p.name },
+      deliverable: { id: d.id, title: d.title, kind: d.kind, status: d.status, current_version: d.current_version, revision_count: d.revision_count, approved_at: d.approved_at, publish_date: d.publish_date },
       revisions_included: s ? s.revisions_included : null,
       versions: this.db.versions.filter(v => v.deliverable_id === d.id).sort((a, b) => b.number - a.number),
       feedback: this.db.feedback.filter(f => f.deliverable_id === d.id).sort((a, b) => a.created_at.localeCompare(b.created_at))
-        .map(f => ({ kind: f.kind, author_name: f.author_name, comment: f.comment, version_number: f.version_number, created_at: f.created_at }))
+        .map(f => ({ kind: f.kind, author_name: f.author_name, comment: f.comment, version_number: f.version_number, created_at: f.created_at, pins: f.pins || [] }))
     };
   }
   async reviewRespond(tok: string, r: ReviewResponse) {
@@ -187,15 +198,16 @@ export class LocalBackend implements Backend {
     const s = d.scope_item_id ? this.db.scope_items.find(x => x.id === d.scope_item_id) : null;
     if (r.action === "approved") {
       d.status = "approved"; d.approved_at = nowIso();
-      this.db.feedback.push({ id: uid(), workspace_id: d.workspace_id, deliverable_id: d.id, version_number: d.current_version, kind: "approved", author_name: name, comment, classification: null, resolved: true, created_at: nowIso() });
+      this.db.feedback.push({ id: uid(), workspace_id: d.workspace_id, deliverable_id: d.id, version_number: d.current_version, kind: "approved", author_name: name, comment, classification: null, resolved: true, pins: [], created_at: nowIso() });
       this.activity(d.workspace_id, "approval.approved", d.project_id, d.id, name, `approved “${d.title}” v${d.current_version}`);
     } else {
-      if (!comment) throw new Error("Please describe the changes");
+      const pins = cleanPins(r.pins);
+      if (!comment && !pins.length) throw new Error("Please describe the changes");
       d.status = "changes"; d.revision_count += 1;
       if (s && d.revision_count > s.revisions_included) d.out_of_scope = true;
-      const cls = classify(comment).kind;
-      this.db.feedback.push({ id: uid(), workspace_id: d.workspace_id, deliverable_id: d.id, version_number: d.current_version, kind: "changes", author_name: name, comment, classification: cls, resolved: false, created_at: nowIso() });
-      this.activity(d.workspace_id, "approval.changes", d.project_id, d.id, name, `requested changes on “${d.title}” v${d.current_version}`, { classification: cls });
+      const cls = classify(comment + " " + pins.map(p => p.text).join(" ")).kind;
+      this.db.feedback.push({ id: uid(), workspace_id: d.workspace_id, deliverable_id: d.id, version_number: d.current_version, kind: "changes", author_name: name, comment, classification: cls, resolved: false, pins, created_at: nowIso() });
+      this.activity(d.workspace_id, "approval.changes", d.project_id, d.id, name, `requested changes on “${d.title}” v${d.current_version}`, { classification: cls, pins: pins.length });
     }
     this.save();
   }
@@ -215,6 +227,25 @@ export class LocalBackend implements Backend {
     co.status = dcs.action; co.decided_by = (dcs.name || "").trim().slice(0, 120) || "Client"; co.decided_at = nowIso();
     this.activity(co.workspace_id, "change_order." + dcs.action, co.project_id, co.id, co.decided_by, `${dcs.action} change order “${co.title}”`, { amount: co.amount, currency: co.currency });
     this.save();
+  }
+  async portalGet(tok: string): Promise<PortalPayload | null> {
+    const c = this.db.clients.find(x => x.portal_token === tok);
+    if (!c) return null;
+    const w = this.db.workspaces.find(x => x.id === c.workspace_id)!;
+    const projects = this.db.projects.filter(p => p.client_id === c.id);
+    const pids = new Set(projects.map(p => p.id));
+    const recent = Date.now() - 45 * 86400000;
+    const items = this.db.deliverables
+      .filter(d => pids.has(d.project_id) && d.status !== "draft" && (d.status !== "approved" || new Date(d.approved_at || 0).getTime() > recent))
+      .sort((a, b) => (a.publish_date || a.due_date || a.created_at).localeCompare(b.publish_date || b.due_date || b.created_at))
+      .map(d => {
+        const v = this.db.versions.find(x => x.deliverable_id === d.id && x.number === d.current_version);
+        return { title: d.title, kind: d.kind, status: d.status, review_token: d.review_token, project: projects.find(p => p.id === d.project_id)!.name, current_version: d.current_version,
+          publish_date: d.publish_date, due_date: d.due_date, sent_at: d.sent_at, approved_at: d.approved_at, thumb: v ? { file_url: v.file_url, file_type: v.file_type, link_url: v.link_url } : null };
+      });
+    const change_orders = this.db.change_orders.filter(x => pids.has(x.project_id) && x.status !== "draft").sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .map(x => ({ title: x.title, amount: x.amount, currency: x.currency, status: x.status, token: x.token, created_at: x.created_at }));
+    return { workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang }, items, change_orders };
   }
 }
 

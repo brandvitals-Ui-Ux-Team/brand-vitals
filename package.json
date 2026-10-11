@@ -2,7 +2,7 @@
   "name": "brand-vitals",
   "private": true,
   "version": "2.0.0",
-  "description": "Brand Vitals website (static, bilingual) + Vitals HQ app",
+  "description": "Brand Vitals website (static, bilingual) + Vitals Approve app",
   "type": "module",
   "workspaces": [
     "apps/hq"

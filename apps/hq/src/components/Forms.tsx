@@ -48,9 +48,9 @@ export function DeliverableForm({ onClose, projectId }: { onClose: () => void; p
         </select></Field>
         <Field label={L("Type", "النوع")}><select className="sel" value={kind} onChange={e => setKind(e.target.value as DeliverableKind)}>{KINDS.map(k => <option key={k} value={k}>{L(...KIND_LABEL[k])}</option>)}</select></Field>
       </div>
-      <Field label={L("Counts against scope item", "يُحتسب من بند النطاق")} hint={L("Links the deliverable to the contract so revisions and quantities are tracked.", "يربط التسليمة بالعقد لتتبع التعديلات والكميات.")}>
+      <Field label={L("Counts toward", "بيتحسب من")} hint={L("Links the deliverable to the contract so revisions and quantities are tracked.", "يربط التسليمة بالعقد لتتبع التعديلات والكميات.")}>
         <select className="sel" value={sid} onChange={e => { setSid(e.target.value); const s = scope.find(x => x.id === e.target.value); if (s) setKind(s.kind); }}>
-          <option value="">{L("Not in scope / ad-hoc", "خارج النطاق / مؤقت")}</option>
+          <option value="">{L("Not in the agreement (extra)", "مش في الاتفاق (إضافي)")}</option>
           {scope.map(s => <option key={s.id} value={s.id}>{s.title} · {s.quantity}{s.period === "month" ? L("/month", "/شهر") : ""} · {L(`${s.revisions_included} revisions`, `${s.revisions_included} تعديلات`)}</option>)}
         </select>
       </Field>
@@ -129,13 +129,13 @@ export function ScopeForm({ onClose, projectId, item }: { onClose: () => void; p
   const { ws } = useWorkspace();
   const [v, setV] = useState<Partial<ScopeItem>>(item || { project_id: projectId, kind: "design", quantity: 4, period: "month", revisions_included: 2, extra_price: 0 });
   const { busy, run } = useAction();
-  const submit = (e: React.FormEvent) => { e.preventDefault(); run(async () => { await saveScopeItem(ws, { ...v, project_id: projectId }); onClose(); }, L("Scope saved", "تم حفظ النطاق")); };
-  return <Modal title={item ? L("Edit scope item", "تعديل بند النطاق") : L("Add scope item", "إضافة بند للنطاق")} onClose={onClose} footer={<>
+  const submit = (e: React.FormEvent) => { e.preventDefault(); run(async () => { await saveScopeItem(ws, { ...v, project_id: projectId }); onClose(); }, L("Agreement saved", "اتحفظ الاتفاق")); };
+  return <Modal title={item ? L("Edit agreement item", "تعديل بند الاتفاق") : L("Add to agreement", "إضافة للاتفاق")} onClose={onClose} footer={<>
     <button className="btn" onClick={onClose} type="button">{L("Cancel", "إلغاء")}</button>
     <button className="btn btn--primary" form="sform" disabled={busy}>{L("Save", "حفظ")}</button>
   </>}>
     <form id="sform" className="form" onSubmit={submit}>
-      <p className="muted small">{L("Write the contract in a form HQ can enforce: what you deliver, how many, and how many revision rounds are included.", "اكتب العقد بشكل يقدر HQ يطبّقه: بتسلّم إيه، وكام، وكام جولة تعديل متضمنة.")}</p>
+      <p className="muted small">{L("Write the agreement in a form Approve can track: what you deliver, how many, and how many revision rounds are included.", "اكتب العقد بشكل يقدر Approve يتابعه: بتسلّم إيه، وكام، وكام جولة تعديل متضمنة.")}</p>
       <div className="form-row">
         <Field label={L("Deliverable", "التسليمة")}><input className="inp" value={v.title || ""} onChange={e => setV({ ...v, title: e.target.value })} required autoFocus placeholder={L("e.g. Social posts", "مثال: بوستات سوشيال")} /></Field>
         <Field label={L("Type", "النوع")}><select className="sel" value={v.kind} onChange={e => setV({ ...v, kind: e.target.value as DeliverableKind })}>{KINDS.map(k => <option key={k} value={k}>{L(...KIND_LABEL[k])}</option>)}</select></Field>

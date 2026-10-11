@@ -1,4 +1,4 @@
-import { CheckSquare, FileSignature, FolderKanban, Image as ImageIcon, Inbox, LayoutDashboard, Plus, ScrollText, Search, Settings, Users, UsersRound } from "lucide-react";
+import { CalendarDays, CheckSquare, FileSignature, FolderKanban, Image as ImageIcon, Inbox, LayoutDashboard, Plus, ScrollText, Search, Settings, Users, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -31,11 +31,12 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
       { group: G.act, label: L("New deliverable", "تسليمة جديدة"), icon: <Plus />, go: go("/approvals?new=1") },
       { group: G.act, label: L("New project", "مشروع جديد"), icon: <Plus />, go: go("/projects?new=1") },
       { group: G.act, label: L("New client", "عميل جديد"), icon: <Plus />, go: go("/clients?new=1") },
-      { group: G.nav, label: L("Dashboard", "الرئيسية"), icon: <LayoutDashboard />, go: go("/") },
+      { group: G.nav, label: L("Home", "الرئيسية"), icon: <LayoutDashboard />, go: go("/") },
       { group: G.nav, label: L("Approvals", "الموافقات"), icon: <Inbox />, go: go("/approvals") },
       { group: G.nav, label: L("My tasks", "مهامي"), icon: <CheckSquare />, go: go("/tasks") },
-      { group: G.nav, label: L("Change orders", "أوامر التغيير"), icon: <FileSignature />, go: go("/change-orders") },
-      { group: G.nav, label: L("Approval ledger", "سجل الموافقات"), icon: <ScrollText />, go: go("/ledger") },
+      { group: G.nav, label: L("Calendar", "التقويم"), icon: <CalendarDays />, go: go("/calendar") },
+      { group: G.nav, label: L("Extra work", "الشغل الإضافي"), icon: <FileSignature />, go: go("/extra-work") },
+      { group: G.nav, label: L("History", "السجل"), icon: <ScrollText />, go: go("/history") },
       { group: G.nav, label: L("Team", "الفريق"), icon: <Users />, go: go("/team") },
       { group: G.nav, label: L("Settings", "الإعدادات"), icon: <Settings />, go: go("/settings") },
       ...projects.map(p => ({ group: G.p, label: p.name, sub: clientName(p.client_id), icon: <FolderKanban />, go: go("/projects/" + p.id) })),

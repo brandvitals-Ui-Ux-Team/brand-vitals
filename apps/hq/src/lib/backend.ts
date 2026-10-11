@@ -1,12 +1,12 @@
 // The app talks to one Backend. Two implementations:
 //  - LocalBackend: demo mode, everything in this browser (localStorage + IndexedDB)
 //  - SupabaseBackend: real multi-user SaaS (Postgres + Auth + Storage + RLS)
-import type { ChangeOrderPayload, ID, ReviewPayload, SessionUser, TableName, Tables, Workspace } from "./types";
+import type { ChangeOrderPayload, ID, Pin, PortalPayload, ReviewPayload, SessionUser, TableName, Tables, Workspace } from "./types";
 
 export type Row<T extends TableName> = Tables[T];
 export type Filter<T extends TableName> = Partial<Row<T>>;
 
-export interface ReviewResponse { action: "approved" | "changes"; name: string; comment: string }
+export interface ReviewResponse { action: "approved" | "changes"; name: string; comment: string; pins?: Pin[] }
 export interface CODecision { action: "approved" | "declined"; name: string }
 
 export interface Backend {
@@ -34,6 +34,7 @@ export interface Backend {
   reviewRespond(token: string, r: ReviewResponse): Promise<void>;
   changeOrderGet(token: string): Promise<ChangeOrderPayload | null>;
   changeOrderRespond(token: string, d: CODecision): Promise<void>;
+  portalGet(token: string): Promise<PortalPayload | null>;
   // demo only
   resetDemo?(): Promise<void>;
 }

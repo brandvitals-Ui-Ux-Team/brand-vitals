@@ -1,11 +1,11 @@
-# Brand Vitals · website + Vitals HQ
+# Brand Vitals · website + Vitals Approve
 
 Two products in one repo, deployed together on Vercel:
 
 | Path | What it is | Tech |
 |---|---|---|
 | `/` and `/ar/` | **brandvitals.io**: the agency website and its four sub-brands (Studio, Web, Live, HQ), in English and Arabic | Static HTML/CSS/JS, edited from `/dashboard.html` |
-| `/app/` | **Vitals HQ**: SaaS for agencies. Client approvals on WhatsApp, scope tracking, paid change orders, tasks, approval ledger | React + TypeScript (Vite), Supabase |
+| `/app/` | **Vitals Approve**: SaaS for agencies. Client approvals on WhatsApp with pin comments, a client portal, content calendar, extra-work billing, reminders, tasks, history | React + TypeScript (Vite), Supabase |
 | `/api/*` | Serverless functions for the free **Vitals Score** tool | Node (Vercel Functions) |
 
 ## Quick start (local)
@@ -27,7 +27,7 @@ assets/js/dashboard.js    the CMS at /dashboard.html (edits pages, commits to Gi
 assets/js/vitals-score.js the free Vitals Score tool
 api/inspect.js            reads a site's HTML: SEO, Arabic readiness, tracking pixels (SSRF-guarded)
 api/psi.js                Google PageSpeed Insights proxy (keeps the API key server-side)
-apps/hq/                  Vitals HQ app (React)
+apps/hq/                  Vitals Approve app (React)
 supabase/migrations/      HQ database schema with row-level security
 supabase/tests/           runs the schema on real Postgres (PGlite) and tests RLS + client flows
 scripts/build-site.mjs    builds dist/: copies the site and generates Arabic pages under /ar/
@@ -46,16 +46,16 @@ Every page is written once with `data-en` / `data-ar` attributes. The build crea
 
 | Variable | What it enables |
 |---|---|
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Vitals HQ runs on a real database with accounts (without them HQ runs in demo mode inside the browser) |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Vitals Approve runs on a real database with accounts (without them HQ runs in demo mode inside the browser) |
 | `PSI_API_KEY` | Speed and SEO scores in the Vitals Score tool (free key from Google Cloud: enable "PageSpeed Insights API") |
 
 3. Redeploy after adding variables. Every push to `main` deploys automatically.
 4. **Domain**: Settings → Domains → add `brandvitals.io`.
 
-## Vitals HQ: going live with Supabase
+## Vitals Approve: going live with Supabase
 
 1. Create a free project at supabase.com.
-2. SQL Editor → paste and run `supabase/migrations/20261011000000_vitals_hq.sql`.
+2. SQL Editor → run the files in `supabase/migrations/` in order (`20261011…_vitals_hq.sql`, then `20261012…_approve_v2.sql`). Both are safe to re-run.
 3. Authentication → URL Configuration → set Site URL to `https://brandvitals.io/app/`.
 4. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (Project Settings → API) to Vercel and redeploy.
 

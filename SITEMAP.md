@@ -12,7 +12,7 @@ clients, metrics, testimonials or prices. Prices always read "Tailored quote".
 
 | Where | Change |
 | --- | --- |
-| Header nav | New "Ecosystem / الكيانات" item with a dropdown of five entries (symbol + name + one-line descriptor). Vitals HQ carries an "Early access" badge. Keyboard: Enter/Space/ArrowDown opens, arrows move, Esc closes and returns focus, Tab leaves. |
+| Header nav | New "Ecosystem / الكيانات" item with a dropdown of five entries (symbol + name + one-line descriptor). Vitals Approve carries an "Early access" badge. Keyboard: Enter/Space/ArrowDown opens, arrows move, Esc closes and returns focus, Tab leaves. |
 | Mobile drawer | "Ecosystem" becomes an accordion listing the same five entries. |
 | Footer | New "Ecosystem" column linking all five. |
 | Home | New section "One ecosystem, one growth system" with a card per sub-brand in its accent color. |
@@ -23,8 +23,8 @@ clients, metrics, testimonials or prices. Prices always read "Tailored quote".
 1. Brand Vitals · Growth agency → `index.html`
 2. Vitals Studio · Production studio → `studio.html`
 3. Vitals Web · Websites, launched fast → `web.html`
-4. Vitals Live · Brand experiences and events → `live.html`
-5. Vitals HQ · Agency and client platform (badge: Early access) → `hq.html`
+4. Vitals Events · Brand experiences and events → `events.html`
+5. Vitals Approve · Agency and client platform (badge: Early access) → `approve.html`
 
 ## Home: new section (between "Who we work with" and FAQ)
 
@@ -84,7 +84,7 @@ Motif: blueprint grid, browser-chrome frames, code brackets, week ruler.
 6. **FAQ.** Hosting, domain, who owns the site, edits after launch, timeline delays.
 7. **Final CTA + form.** Package, name, phone, email, company, current site, notes.
 
-## live.html · Vitals Live (atmospheric, stage)
+## events.html · Vitals Events (atmospheric, stage)
 
 Theme: bg #0A0710, surface #150F1E, text #F5F0FF, muted #A396B8, accent violet #B266FF,
 spotlight warm #FFD27A.
@@ -104,7 +104,7 @@ Motif: spotlight cones and beams (CSS), stage-floor perspective lines, slow ambi
 6. **Final CTA + event brief form.** Name, phone, email, company, event type, city, date,
    guests, budget, idea.
 
-## hq.html · Vitals HQ (product, clean, light-first)
+## approve.html · Vitals Approve (product, clean, light-first)
 
 Theme (light default): bg #F6F7F5, surface #FFFFFF, text #0E1512, muted #5E6B66, accent
 signal green derived from the master teal. Dark variant uses the master dark background.
@@ -123,7 +123,7 @@ check marks, a thin pulse line. Status: Early access.
 5. **Works with your current tools.** A layer on top, not a forced migration.
 6. **Pricing model.** Per client workspace; unlimited client guests free. "Add every
    client. Never pay for a seat they barely use."
-7. **Approach comparison.** "General project tools" vs "Vitals HQ" across eight rows.
+7. **Approach comparison.** "General project tools" vs "Vitals Approve" across eight rows.
    No competitor names.
 8. **Early access form.** Agency name, team size, active clients, tools used today,
    email, WhatsApp.

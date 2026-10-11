@@ -1,11 +1,11 @@
-// Runs the Vitals HQ migration against real Postgres (PGlite) with Supabase stubs,
+// Runs the Vitals Approve migration against real Postgres (PGlite) with Supabase stubs,
 // then exercises onboarding, RLS isolation, and the public review/change-order RPCs.
 // Usage: npm run test:db
 import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import fs from "node:fs";
 
-const migration = fs.readFileSync(new URL("../migrations/20261011000000_vitals_hq.sql", import.meta.url), "utf8");
+const migrations = ["20261011000000_vitals_hq.sql", "20261012000000_approve_v2.sql"].map(f => fs.readFileSync(new URL("../migrations/" + f, import.meta.url), "utf8"));
 const db = new PGlite({ extensions: { pgcrypto } });
 const ok = (c, m) => { if (!c) { console.error("FAIL:", m); process.exitCode = 1; } else console.log("ok  ", m); };
 
@@ -20,7 +20,8 @@ await db.exec(`
   create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
   grant usage on schema public, auth, storage to anon, authenticated;
 `);
-await db.exec(migration);
+for (const m of migrations) await db.exec(m);
+for (const m of migrations) await db.exec(m); // must be safe to re-run
 await db.exec(`grant all on all tables in schema public to authenticated; grant select on all tables in schema public to anon;`);
 console.log("migration applied");
 
@@ -109,6 +110,25 @@ ok(seenNow === 1, "after accepting the invite, B sees agency A's data");
 let memberDelete = false;
 try { const r = await as(B, "authenticated", `delete from public.members where workspace_id = $1 and role = 'owner' returning id`, [w.id]); memberDelete = r.rows.length === 0; } catch { memberDelete = true; }
 ok(memberDelete, "a plain member cannot remove the owner");
+
+// v2: pins, portal, publish date
+await as(A, "authenticated", "update public.deliverables set status = 'in_review', current_version = 3, publish_date = '2026-11-05' where id = $1", [d.id]);
+await as(null, "anon", `select public.hq_review_respond('tok123', 'changes', 'Omar', '', '[{"x":40,"y":120,"text":"كبّر اللوجو"},{"x":10,"y":20,"text":"add another version for stories"}]'::jsonb)`);
+const pinned = (await as(A, "authenticated", "select pins, classification from public.feedback where deliverable_id = $1 order by created_at desc limit 1", [d.id])).rows[0];
+ok(pinned.pins.length === 2 && Number(pinned.pins[0].y) === 100, "pins saved, coordinates clamped to 0-100");
+ok(pinned.classification === "new_request", "pin text is classified too");
+await as(A, "authenticated", "update public.deliverables set status = 'in_review' where id = $1", [d.id]);
+let emptyBlocked = false;
+try { await as(null, "anon", "select public.hq_review_respond('tok123', 'changes', 'Omar', '', '[]'::jsonb)"); } catch { emptyBlocked = true; }
+ok(emptyBlocked, "a change request needs a comment or at least one pin");
+const ptok = (await as(A, "authenticated", "select portal_token from public.clients where id = $1", [c.id])).rows[0].portal_token;
+ok(ptok && ptok.length >= 24, "every client gets a portal token");
+const portal = (await as(null, "anon", "select public.hq_portal_get($1) r", [ptok])).rows[0].r;
+ok(portal && portal.client.name === "Client X" && portal.items.length === 1 && portal.items[0].publish_date === "2026-11-05", "anon portal lists the client's items with publish dates");
+ok(portal.change_orders.length === 1 && portal.change_orders[0].token === "co1", "portal lists non-draft change orders");
+ok((await as(null, "anon", "select public.hq_portal_get('nope') r")).rows[0].r === null, "unknown portal token returns null");
+let anonList = (await as(null, "anon", "select count(*)::int n from public.clients")).rows[0].n;
+ok(anonList === 0, "anon still cannot list clients (portal tokens stay private)");
 
 // cascade
 await as(A, "authenticated", `delete from public.projects where id = $1`, [p.id]);

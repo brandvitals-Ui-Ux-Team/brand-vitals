@@ -28,14 +28,14 @@ export function Auth() {
 
   return <div className="auth">
     <div className="auth__side">
-      <img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals HQ" style={{ height: 30, width: "auto" }} />
+      <img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals Approve" style={{ height: 30, width: "auto" }} />
       <div style={{ display: "grid", gap: 26 }}>
         <h2>{L("Stop free revisions. Get approvals on WhatsApp.", "وقّف التعديلات المجانية. خُد الموافقات على واتساب.")}</h2>
         <ul>
           <li><MessageCircle />{L("Clients review and approve from a WhatsApp link. No login, no app to install.", "العميل يراجع ويوافق من لينك على واتساب. من غير تسجيل ولا تطبيق.")}</li>
           <li><ShieldCheck />{L("Every request is checked against the contract: revisions counted, extra work flagged.", "كل طلب يتقارن بالعقد: التعديلات بتتعد، والشغل الإضافي بيتعلّم عليه.")}</li>
-          <li><Sparkles />{L("Out-of-scope requests become priced change orders the client approves in one tap.", "الطلبات خارج النطاق تتحوّل لأوامر تغيير بسعر، والعميل يوافق بضغطة.")}</li>
-          <li><ScrollText />{L("A ledger of who approved what, and when. No more “I never said that”.", "سجل بمين وافق على إيه وإمتى. خلاص مفيش «أنا ما قلتش كده».")}</li>
+          <li><Sparkles />{L("Requests outside the agreement become priced extra work the client approves in one tap.", "الطلبات اللي برا الاتفاق بتتحوّل لشغل إضافي بسعر، والعميل يوافق بضغطة.")}</li>
+          <li><ScrollText />{L("A history of who approved what, and when. No more “I never said that”.", "سجل بمين وافق على إيه وإمتى. خلاص مفيش «أنا ما قلتش كده».")}</li>
         </ul>
       </div>
       <p style={{ color: "#7F948C", fontSize: 12 }}>{L("A Brand Vitals company", "إحدى شركات Brand Vitals")}</p>

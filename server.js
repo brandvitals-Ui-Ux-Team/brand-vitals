@@ -1,7 +1,7 @@
 // Local preview server that mirrors production (Vercel):
 //   - serves the built site from dist/ (run `npm run build:site` first, or `npm run dev`)
 //   - /api/* runs the serverless functions in api/
-//   - /app/* falls back to the Vitals HQ single-page app
+//   - /app/* falls back to the Vitals Approve single-page app
 // Usage: node server.js [port]
 import http from "node:http";
 import fs from "node:fs";

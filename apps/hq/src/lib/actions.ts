@@ -2,7 +2,7 @@
 // log (which also powers the Approvals Ledger and notifications).
 import { api } from "./api";
 import { nowIso, token } from "./backend";
-import { coUrl, fillTemplate, reviewUrl, waLink } from "./format";
+import { coUrl, fillTemplate, portalUrl, reviewUrl, waLink } from "./format";
 import type { ChangeOrder, Client, Deliverable, Feedback, ID, Lang, Member, Project, ScopeItem, Task, Workspace } from "./types";
 
 export async function log(ws: Workspace, actor: string, type: string, summary: string, project_id: ID | null = null, entity_id: ID | null = null, data: Record<string, unknown> = {}) {
@@ -12,7 +12,7 @@ export async function log(ws: Workspace, actor: string, type: string, summary: s
 // ---------- clients / projects / scope ----------
 export async function saveClient(ws: Workspace, me: Member, c: Partial<Client> & { id?: ID }) {
   if (c.id) return api.update("clients", c.id, c);
-  const row = await api.insert("clients", { workspace_id: ws.id, name: c.name || "", contact_name: c.contact_name || "", phone: c.phone || "", email: c.email || "", lang: c.lang || "ar", notes: c.notes || "" });
+  const row = await api.insert("clients", { workspace_id: ws.id, name: c.name || "", contact_name: c.contact_name || "", phone: c.phone || "", email: c.email || "", lang: c.lang || "ar", notes: c.notes || "", portal_token: token() });
   await log(ws, me.name, "client.created", `added client “${row.name}”`, null, row.id);
   return row;
 }
@@ -32,7 +32,7 @@ export async function createDeliverable(ws: Workspace, me: Member, d: Partial<De
   const row = await api.insert("deliverables", {
     workspace_id: ws.id, project_id: d.project_id!, scope_item_id: d.scope_item_id || null, title: d.title || "", kind: d.kind || "design",
     status: "draft", due_date: d.due_date || null, assignee_id: d.assignee_id || null, review_token: token(), current_version: 0, revision_count: 0,
-    out_of_scope: false, sent_at: null, approved_at: null
+    out_of_scope: false, sent_at: null, approved_at: null, publish_date: d.publish_date || null, reminded_at: null
   });
   await log(ws, me.name, "deliverable.created", `created deliverable “${row.title}”`, row.project_id, row.id);
   return row;
@@ -74,7 +74,7 @@ export function reminderWhatsApp(ws: Workspace, client: Client, d: Deliverable) 
 
 // Agency records an approval received outside HQ (call, meeting, email).
 export async function recordApproval(ws: Workspace, me: Member, d: Deliverable, who: string, note: string) {
-  await api.insert("feedback", { workspace_id: ws.id, deliverable_id: d.id, version_number: d.current_version, kind: "approved", author_name: who || "Client", comment: (note ? note + " · " : "") + `recorded by ${me.name}`, classification: null, resolved: true });
+  await api.insert("feedback", { workspace_id: ws.id, deliverable_id: d.id, version_number: d.current_version, kind: "approved", author_name: who || "Client", comment: (note ? note + " · " : "") + `recorded by ${me.name}`, classification: null, resolved: true, pins: [] });
   await api.update("deliverables", d.id, { status: "approved", approved_at: nowIso() });
   await log(ws, me.name, "approval.recorded", `recorded ${who || "client"}'s approval of “${d.title}” v${d.current_version}`, d.project_id, d.id);
 }
@@ -125,4 +125,32 @@ export async function inviteMember(ws: Workspace, me: Member, email: string, rol
   const row = await api.insert("invites", { workspace_id: ws.id, email: email.trim().toLowerCase(), role, token: token(), accepted_at: null });
   await log(ws, me.name, "team.invited", `invited ${row.email}`);
   return row;
+}
+
+// ---------- one-step send (the "Send for approval" flow) ----------
+export async function quickSend(ws: Workspace, me: Member, input: { project_id: ID; title: string; kind: Deliverable["kind"]; scope_item_id: ID | null; publish_date: string | null; file: File | null; link: string; note: string; draftOnly?: boolean }) {
+  const d = await createDeliverable(ws, me, { project_id: input.project_id, title: input.title, kind: input.kind, scope_item_id: input.scope_item_id, publish_date: input.publish_date, assignee_id: me.id });
+  if (!input.file && !input.link.trim()) return d; // planned item, no file yet
+  const withVersion = await addVersion(ws, me, d, { file: input.file, link: input.link, note: input.note });
+  return input.draftOnly ? withVersion : sendForReview(ws, me, withVersion);
+}
+
+// Send several ready items at once (e.g. a month of posts) and share the client portal.
+export async function sendBatch(ws: Workspace, me: Member, items: Deliverable[]) {
+  const ready = items.filter(d => d.current_version > 0 && (d.status === "draft" || d.status === "changes"));
+  for (const d of ready) await sendForReview(ws, me, d);
+  return ready.length;
+}
+export function portalMessage(ws: Workspace, client: Client, count: number) {
+  const name = client.contact_name || client.name;
+  return client.lang === "ar"
+    ? `أهلًا ${name}، عندك ${count} ${count === 1 ? "حاجة مستنية" : "حاجات مستنية"} موافقتك. تقدر تراجعهم كلهم من هنا: ${portalUrl(client.portal_token)}\n— ${ws.name}`
+    : `Hi ${name}, you have ${count} item${count === 1 ? "" : "s"} waiting for your approval. Review them all here: ${portalUrl(client.portal_token)}\n— ${ws.name}`;
+}
+export const portalWhatsApp = (ws: Workspace, client: Client, count: number) => waLink(client.phone, portalMessage(ws, client, count));
+
+// One reminder per client (not per item), then remember we reminded them.
+export async function markReminded(items: Deliverable[]) {
+  const at = nowIso();
+  await Promise.all(items.map(d => api.update("deliverables", d.id, { reminded_at: at })));
 }

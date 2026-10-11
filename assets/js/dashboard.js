@@ -16,14 +16,15 @@
     bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers"] },
     studio: { name: "Vitals Studio", home: "studio.html", logo: "assets/img/brands/studio-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
-    live: { name: "Vitals Live", home: "live.html", logo: "assets/img/brands/live-light.svg", forms: ["live"] },
-    hq: { name: "Vitals HQ", home: "hq.html", logo: "assets/img/brands/hq-light.svg", forms: ["hq"] }
+    live: { name: "Vitals Events", home: "events.html", logo: "assets/img/brands/events-light.svg", forms: ["live"] },
+    hq: { name: "Vitals Approve", home: "approve.html", logo: "assets/img/brands/approve-light.svg", forms: ["hq"] }
   };
   const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["studio.html", "web.html", "live.html", "hq.html"];
-  const pageBrand = p => (p && p.brand) || (SUB_PAGES.includes(p && p.path) ? p.path.replace(".html", "") : "bv");
+  const SUB_PAGES = ["studio.html", "web.html", "events.html", "approve.html"];
+  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "approve.html": "hq" };
+  const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
     { path: "solutions.html", ar: "الخدمات", en: "Services" },
@@ -34,8 +35,8 @@
     { path: "careers.html", ar: "الوظائف", en: "Careers" },
     { path: "studio.html", ar: "Vitals Studio", en: "Vitals Studio" },
     { path: "web.html", ar: "Vitals Web", en: "Vitals Web" },
-    { path: "live.html", ar: "Vitals Live", en: "Vitals Live" },
-    { path: "hq.html", ar: "Vitals HQ", en: "Vitals HQ" },
+    { path: "events.html", ar: "Vitals Events", en: "Vitals Events" },
+    { path: "approve.html", ar: "Vitals Approve", en: "Vitals Approve" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
@@ -572,8 +573,8 @@
     formCareers: ["طلب توظيف", "Job application"],
     formStudio: ["فورم Vitals Studio", "Vitals Studio form"],
     formWeb: ["فورم Vitals Web", "Vitals Web form"],
-    formLive: ["فورم Vitals Live", "Vitals Live form"],
-    formHq: ["فورم Vitals HQ (وصول مبكر)", "Vitals HQ early access form"],
+    formLive: ["فورم Vitals Events", "Vitals Events form"],
+    formHq: ["فورم Vitals Approve (وصول مبكر)", "Vitals Approve early access form"],
     deleteLead: ["حذف", "Delete"],
     deleteLeadQ: ["متأكد إنك عايز تحذف «{n}» نهائيًا؟", "Permanently delete “{n}”?"],
     leadDeleted: ["اتحذف العميل", "Lead deleted"],

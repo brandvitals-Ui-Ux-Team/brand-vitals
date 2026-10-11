@@ -1,7 +1,7 @@
 import { Inbox, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { DeliverableForm } from "../components/Forms";
+import { SendFlow } from "../components/SendFlow";
 import { Empty, KIND_LABEL, MemberChip, StatusPill, Thumb } from "../components/ui";
 import { date, isOverdue } from "../lib/format";
 import { useRows } from "../lib/hooks";
@@ -44,7 +44,7 @@ export function Approvals() {
   return <div className="page">
     <div className="page-head">
       <div className="page-head__t"><h1>{L("Approvals", "الموافقات")}</h1><p className="muted">{L("Every deliverable, its version, and where it stands with the client.", "كل تسليمة، ونسختها، ووضعها مع العميل.")}</p></div>
-      <button className="btn btn--primary" onClick={() => setSp({ new: "1" })}><Plus />{L("New deliverable", "تسليمة جديدة")}</button>
+      <button className="btn btn--primary" onClick={() => setSp({ new: "1" })}><Plus />{L("Send for approval", "ابعت للموافقة")}</button>
     </div>
     <div className="tabs">{TABS.map(([k, en, ar]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{L(en, ar)}<span className="count">{count(k)}</span></button>)}</div>
     <div className="row">
@@ -52,7 +52,7 @@ export function Approvals() {
       <select className="sel" style={{ maxWidth: 220 }} value={client} onChange={e => setClient(e.target.value)}><option value="">{L("All clients", "كل العملاء")}</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
     </div>
     <div className="card">
-      {rows.length === 0 ? <Empty icon={<Inbox />} title={L("Nothing here", "لا يوجد شيء هنا")} text={L("Create a deliverable, upload a version and send it to the client on WhatsApp.", "أنشئ تسليمة، وارفع نسخة، وابعتها للعميل على واتساب.")} action={<button className="btn btn--primary" onClick={() => setSp({ new: "1" })}><Plus />{L("New deliverable", "تسليمة جديدة")}</button>} /> :
+      {rows.length === 0 ? <Empty icon={<Inbox />} title={L("Nothing here", "لا يوجد شيء هنا")} text={L("Create a deliverable, upload a version and send it to the client on WhatsApp.", "أنشئ تسليمة، وارفع نسخة، وابعتها للعميل على واتساب.")} action={<button className="btn btn--primary" onClick={() => setSp({ new: "1" })}><Plus />{L("Send for approval", "ابعت للموافقة")}</button>} /> :
         <div className="table-wrap"><table className="table">
           <thead><tr><th>{L("Deliverable", "التسليمة")}</th><th className="hide-sm">{L("Client", "العميل")}</th><th>{L("Status", "الحالة")}</th><th className="hide-sm">{L("Revisions", "التعديلات")}</th><th className="hide-sm">{L("Due", "الموعد")}</th><th className="hide-sm">{L("Owner", "المسؤول")}</th></tr></thead>
           <tbody>{rows.map(d => {
@@ -68,6 +68,6 @@ export function Approvals() {
           })}</tbody>
         </table></div>}
     </div>
-    {sp.get("new") && <DeliverableForm onClose={() => setSp({})} />}
+    {sp.get("new") && <SendFlow onClose={() => setSp({})} />}
   </div>;
 }

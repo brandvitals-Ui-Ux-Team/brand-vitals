@@ -1,10 +1,12 @@
-import { ArrowLeft, Mail, MessageCircle, MoreHorizontal, Pencil, Plus, Trash2, UsersRound } from "lucide-react";
+import { ArrowLeft, CalendarDays, Copy, ExternalLink, LayoutGrid, Mail, MessageCircle, MoreHorizontal, Pencil, Plus, Send, Trash2, UsersRound } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ClientForm, ProjectForm } from "../components/Forms";
-import { Avatar, Confirm, COPill, Empty, Popover, StatusPill, useAction } from "../components/ui";
+import { SendFlow } from "../components/SendFlow";
+import { Avatar, Confirm, COPill, Empty, Popover, StatusPill, useAction, useToast } from "../components/ui";
+import { portalWhatsApp } from "../lib/actions";
 import { api } from "../lib/api";
-import { date, money, waLink } from "../lib/format";
+import { date, money, portalUrl, waLink } from "../lib/format";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
 import type { Client } from "../lib/types";
@@ -63,6 +65,8 @@ export function ClientDetail() {
   const [edit, setEdit] = useState(false);
   const [newP, setNewP] = useState(false);
   const [del, setDel] = useState(false);
+  const [send, setSend] = useState(false);
+  const toast = useToast();
   if (loading) return <div className="page"><div className="spinner" /></div>;
   if (!c) return <div className="page"><Empty icon={<UsersRound />} title={L("Client not found", "العميل غير موجود")} action={<Link className="btn" to="/clients">{L("All clients", "كل العملاء")}</Link>} /></div>;
   const ids = new Set(projects.map(p => p.id));
@@ -79,6 +83,7 @@ export function ClientDetail() {
         <p className="muted">{c.contact_name}{c.notes ? " · " + c.notes : ""}</p>
       </div>
       <div className="row">
+        <button className="btn btn--primary" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button>
         {c.phone && <a className="btn btn--wa" href={waLink(c.phone, "")} target="_blank" rel="noopener"><MessageCircle />WhatsApp</a>}
         {c.email && <a className="btn" href={"mailto:" + c.email}><Mail />{L("Email", "بريد")}</a>}
         <Popover trigger={open => <button className="icon-btn" onClick={open} aria-label={L("More", "المزيد")}><MoreHorizontal /></button>}>{close => <>
@@ -100,20 +105,31 @@ export function ClientDetail() {
           <div className="list">{ds.slice(0, 20).map(d => <Link key={d.id} to={"/deliverables/" + d.id} className="li"><span className="li__main"><span className="li__t">{d.title}</span><span className="li__s">{projects.find(p => p.id === d.project_id)?.name} · v{d.current_version} · {date(d.created_at, lang)}</span></span><StatusPill s={d.status} /></Link>)}</div>}
       </div>
       <div className="stack" style={{ gap: 16 }}>
+        <div className="card card--pad stack">
+          <h3 className="row"><LayoutGrid size={17} />{L("Client portal", "بوابة العميل")}</h3>
+          <p className="muted small">{L("One permanent link for this client: everything waiting for their approval, extra work to confirm, and recent approvals. Pin it in your WhatsApp chat with them.", "لينك واحد ثابت للعميل ده: كل اللي مستني موافقته، والشغل الإضافي، وآخر الموافقات. ثبّته في شات الواتساب معاه.")}</p>
+          <div className="row" style={{ flexWrap: "nowrap" }}><input className="inp mono" readOnly dir="ltr" value={portalUrl(c.portal_token)} onFocus={e => e.target.select()} /><button className="icon-btn" onClick={() => navigator.clipboard?.writeText(portalUrl(c.portal_token)).then(() => toast(L("Portal link copied", "اتنسخ لينك البوابة")))} aria-label={L("Copy", "نسخ")}><Copy /></button></div>
+          <div className="row">
+            {c.phone && <a className="btn btn--sm btn--wa" href={portalWhatsApp(ws, c, ds.filter(d => d.status === "in_review").length)} target="_blank" rel="noopener"><MessageCircle />{L("Send on WhatsApp", "ابعت على واتساب")}</a>}
+            <a className="btn btn--sm" href={portalUrl(c.portal_token)} target="_blank" rel="noopener"><ExternalLink />{L("Preview", "معاينة")}</a>
+            <Link className="btn btn--sm btn--ghost" to="/calendar"><CalendarDays />{L("Calendar", "التقويم")}</Link>
+          </div>
+        </div>
         <div className="card">
           <div className="card__h"><h2>{L("Projects", "المشاريع")}</h2><button className="btn btn--sm" onClick={() => setNewP(true)}><Plus />{L("New", "جديد")}</button></div>
           <div className="list">{projects.map(p => <Link key={p.id} to={"/projects/" + p.id} className="li"><span className="dot-color" style={{ background: p.color }} /><span className="li__main"><span className="li__t">{p.name}</span></span>{p.status !== "active" && <span className="pill">{p.status}</span>}</Link>)}
             {projects.length === 0 && <p className="muted small" style={{ padding: 16 }}>{L("No projects yet.", "لا توجد مشاريع بعد.")}</p>}</div>
         </div>
         <div className="card">
-          <div className="card__h"><h2>{L("Change orders", "أوامر التغيير")}</h2></div>
+          <div className="card__h"><h2>{L("Extra work", "الشغل الإضافي")}</h2></div>
           <div className="list">{myCos.map(x => <div key={x.id} className="li"><span className="li__main"><span className="li__t">{x.title}</span></span><b className="small">{money(x.amount, x.currency, lang)}</b><COPill s={x.status} /></div>)}
             {myCos.length === 0 && <p className="muted small" style={{ padding: 16 }}>{L("None yet.", "لا يوجد بعد.")}</p>}</div>
         </div>
       </div>
     </div>
     {edit && <ClientForm client={c} onClose={() => setEdit(false)} />}
+    {send && <SendFlow clientId={c.id} onClose={() => setSend(false)} />}
     {newP && <ProjectForm clientId={c.id} onClose={() => setNewP(false)} />}
-    {del && <Confirm danger title={L("Delete this client?", "حذف هذا العميل؟")} text={L("All their projects, deliverables and change orders will be deleted too.", "هتتحذف كل مشاريعه وتسليماته وأوامر التغيير كمان.")} yes={L("Delete client", "حذف العميل")} onClose={() => setDel(false)} onYes={() => run(async () => { await api.remove("clients", c.id); nav("/clients"); }, L("Client deleted", "تم حذف العميل"))} />}
+    {del && <Confirm danger title={L("Delete this client?", "حذف هذا العميل؟")} text={L("All their projects, deliverables and extra work will be deleted too.", "هتتحذف كل مشاريعه وتسليماته والشغل الإضافي كمان.")} yes={L("Delete client", "حذف العميل")} onClose={() => setDel(false)} onYes={() => run(async () => { await api.remove("clients", c.id); nav("/clients"); }, L("Client deleted", "تم حذف العميل"))} />}
   </div>;
 }

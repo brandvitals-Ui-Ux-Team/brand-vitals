@@ -2,13 +2,14 @@ import { ArrowLeft, Check, CheckCircle2, Copy, ExternalLink, FileSignature, Link
 import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TaskForm } from "../components/Forms";
+import { isImage, PinImage } from "../components/Pins";
 import { Avatar, Confirm, Empty, Field, KIND_LABEL, MemberChip, Modal, Popover, Preview, Prio, StatusPill, useAction, useToast } from "../components/ui";
 import { addVersion, log, recordApproval, reminderWhatsApp, reviewWhatsApp, sendForReview, setFeedbackClass } from "../lib/actions";
 import { api } from "../lib/api";
 import { ago, date, reviewUrl } from "../lib/format";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
-import { daysBetween, overRevisionLimit } from "../lib/logic";
+import { daysBetween, fbText, overRevisionLimit } from "../lib/logic";
 import type { Deliverable, Feedback } from "../lib/types";
 import { useWorkspace } from "../lib/ws";
 import { ChangeOrderForm } from "./ChangeOrders";
@@ -73,7 +74,7 @@ export function DeliverableDetail() {
           <button onClick={() => { close(); copy(); }}><Copy />{L("Copy review link", "نسخ لينك المراجعة")}</button>
           <a href={link} target="_blank" rel="noopener" onClick={close}><ExternalLink />{L("Open client view", "افتح صفحة العميل")}</a>
           {d.status !== "approved" && d.current_version > 0 && <button onClick={() => { close(); setRecord(true); }}><CheckCircle2 />{L("Record approval received elsewhere", "سجّل موافقة اتاخدت برا")}</button>}
-          <button onClick={() => { close(); setCoFrom("manual"); }}><FileSignature />{L("Create change order", "إنشاء أمر تغيير")}</button>
+          <button onClick={() => { close(); setCoFrom("manual"); }}><FileSignature />{L("Bill as extra work", "احسبها شغل إضافي")}</button>
           <hr />
           <button onClick={() => { close(); setDel(true); }} style={{ color: "var(--bad)" }}><Trash2 />{L("Delete deliverable", "حذف التسليمة")}</button>
         </>}</Popover>
@@ -81,14 +82,14 @@ export function DeliverableDetail() {
     </div>
 
     {d.current_version === 0 && <div className="callout callout--info"><Upload /><div><b>{L("Upload the first version", "ارفع أول نسخة")}</b><p className="small muted">{L("Add a file (image, video, PDF) or a link (Figma, Drive, staging site). Then send it to the client on WhatsApp.", "أضف ملفًا (صورة، فيديو، PDF) أو رابطًا (فيجما، درايف، موقع تجريبي). بعدها ابعته للعميل على واتساب.")}</p><button className="btn btn--primary btn--sm" style={{ marginTop: 8 }} onClick={() => setUpload(true)}><Upload />{L("Upload", "رفع")}</button></div></div>}
-    {openNewRequests.length > 0 && <div className="callout callout--violet"><Sparkles /><div style={{ flex: 1 }}><b>{L("This looks like new work, not a revision", "ده شكله شغل جديد، مش تعديل")}</b><p className="small">“{openNewRequests[openNewRequests.length - 1].comment}”</p><div className="row" style={{ marginTop: 8 }}><button className="btn btn--primary btn--sm" onClick={() => setCoFrom(openNewRequests[openNewRequests.length - 1])}><FileSignature />{L("Turn into a change order", "حوّله لأمر تغيير")}</button><button className="btn btn--sm" onClick={() => run(() => setFeedbackClass(openNewRequests[openNewRequests.length - 1], "revision"))}>{L("It's a normal revision", "ده تعديل عادي")}</button></div></div></div>}
+    {openNewRequests.length > 0 && <div className="callout callout--violet"><Sparkles /><div style={{ flex: 1 }}><b>{L("This looks like new work, not a revision", "ده شكله شغل جديد، مش تعديل")}</b><p className="small">“{fbText(openNewRequests[openNewRequests.length - 1])}”</p><div className="row" style={{ marginTop: 8 }}><button className="btn btn--primary btn--sm" onClick={() => setCoFrom(openNewRequests[openNewRequests.length - 1])}><FileSignature />{L("Bill it as extra work", "احسبها شغل إضافي")}</button><button className="btn btn--sm" onClick={() => run(() => setFeedbackClass(openNewRequests[openNewRequests.length - 1], "revision"))}>{L("It's a normal revision", "ده تعديل عادي")}</button></div></div></div>}
     {over && d.status !== "approved" && <div className="callout callout--warn"><ShieldAlert /><div style={{ flex: 1 }}><b>{L(`Revision ${d.revision_count} of ${item!.revisions_included} included`, `التعديل رقم ${d.revision_count} من ${item!.revisions_included} متضمنة`)}</b><p className="small muted">{L("The client has used all included revision rounds. Further rounds can be billed.", "العميل استخدم كل جولات التعديل المتضمنة. الجولات الإضافية ممكن تتحاسب.")}</p><button className="btn btn--sm" style={{ marginTop: 8 }} onClick={() => setCoFrom("manual")}><FileSignature />{L("Bill extra revision", "احسب تعديل إضافي")}</button></div></div>}
 
     <div className="split">
       <div className="stack" style={{ gap: 16 }}>
         {sorted.length > 0 && <div className="tabs">{sorted.map(v => <button key={v.id} className={(shown?.number === v.number) ? "on" : ""} onClick={() => setPick(v.number)}>v{v.number}{v.number === d.current_version && <span className="count">{L("latest", "الأحدث")}</span>}</button>)}</div>}
         {shown ? <>
-          <Preview v={shown} kind={d.kind} />
+          {isImage(shown) ? <PinImage v={shown} pins={feedback.filter(f => f.version_number === shown.number && f.pins && f.pins.length).flatMap(f => f.pins)} color="var(--warn)" /> : <Preview v={shown} kind={d.kind} />}
           <div className="row row--between small faint"><span>{shown.created_by} · {ago(shown.created_at, lang)}{shown.note ? " · " + shown.note : ""}</span>{shown.link_url && <a className="row" style={{ gap: 4, color: "var(--accent)" }} href={shown.link_url} target="_blank" rel="noopener noreferrer"><Link2 size={14} />{shown.link_url.replace(/^https?:\/\//, "").slice(0, 40)}</a>}</div>
         </> : <div className="card"><Empty icon={<Upload />} title={L("No versions yet", "لا توجد نسخ بعد")} /></div>}
 
@@ -103,9 +104,10 @@ export function DeliverableDetail() {
                   {f.kind === "changes" && f.resolved && <span className="pill pill--plain pill--ok">{L("Addressed", "اتنفّذ")}</span>}
                 </div>
                 {f.comment && <div className="quote">{f.comment}</div>}
+                {f.pins && f.pins.length > 0 && <ol className="pinlist" style={{ marginTop: 6 }}>{f.pins.map((p, i) => <li key={i}><span className="pin pin--static" style={{ background: "var(--warn)" }}>{i + 1}</span><span>{p.text}</span></li>)}</ol>}
                 {f.kind === "changes" && !f.resolved && <div className="row" style={{ marginTop: 6 }}>
                   <button className="btn btn--ghost btn--sm" onClick={() => run(() => setFeedbackClass(f, f.classification === "new_request" ? "revision" : "new_request"))}>{f.classification === "new_request" ? L("Mark as revision", "اعتبره تعديل") : L("Mark as new request", "اعتبره طلب جديد")}</button>
-                  {f.classification === "new_request" && <button className="btn btn--sm" onClick={() => setCoFrom(f)}><FileSignature />{L("Change order", "أمر تغيير")}</button>}
+                  {f.classification === "new_request" && <button className="btn btn--sm" onClick={() => setCoFrom(f)}><FileSignature />{L("Extra work", "شغل إضافي")}</button>}
                   <button className="btn btn--ghost btn--sm" onClick={() => setNewTask(true)}><Plus />{L("Task", "مهمة")}</button>
                 </div>}
               </div>
@@ -120,6 +122,7 @@ export function DeliverableDetail() {
           <div className="row row--between small"><span className="muted">{L("Client", "العميل")}</span>{client ? <Link to={"/clients/" + client.id}><b>{client.name}</b></Link> : "—"}</div>
           <div className="row row--between small"><span className="muted">{L("Owner", "المسؤول")}</span>
             <select className="sel" style={{ width: "auto", height: 30 }} value={d.assignee_id || ""} onChange={e => run(() => api.update("deliverables", d.id, { assignee_id: e.target.value || null }))}><option value="">—</option>{members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</select></div>
+          <div className="row row--between small"><span className="muted">{L("Publish date", "تاريخ النشر")}</span><input className="inp" type="date" style={{ width: "auto", height: 30 }} value={d.publish_date || ""} onChange={e => run(() => api.update("deliverables", d.id, { publish_date: e.target.value || null }))} /></div>
           <div className="row row--between small"><span className="muted">{L("Due date", "الموعد")}</span><input className="inp" type="date" style={{ width: "auto", height: 30 }} value={d.due_date || ""} onChange={e => run(() => api.update("deliverables", d.id, { due_date: e.target.value || null }))} /></div>
           {d.sent_at && <div className="row row--between small"><span className="muted">{L("Sent", "اتبعتت")}</span><span>{ago(d.sent_at, lang)}{d.status === "in_review" ? L(` · ${daysBetween(d.sent_at)}d waiting`, ` · منتظر ${daysBetween(d.sent_at)} يوم`) : ""}</span></div>}
           {d.approved_at && <div className="row row--between small"><span className="muted">{L("Approved", "اتوافق")}</span><span>{date(d.approved_at, lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</span></div>}
@@ -130,7 +133,7 @@ export function DeliverableDetail() {
         </div>
 
         <div className="card card--pad stack">
-          <h3>{L("Scope", "النطاق")}</h3>
+          <h3>{L("What's included", "المتفق عليه")}</h3>
           {item ? <>
             <div className="row row--between"><span>{item.title}</span><span className="faint small">{item.quantity}{item.period === "month" ? L("/month", "/شهر") : ""}</span></div>
             <div className="stack" style={{ gap: 6 }}>
@@ -138,8 +141,8 @@ export function DeliverableDetail() {
               <div className={"bar" + (over ? " bar--over" : "")}><i style={{ width: Math.min(100, item.revisions_included ? (d.revision_count / item.revisions_included) * 100 : d.revision_count ? 100 : 0) + "%" }} /></div>
             </div>
           </> : <>
-            <p className="muted small">{L("Not linked to a scope item, so revisions aren't counted against the contract.", "غير مربوطة ببند نطاق، فالتعديلات مش بتتحسب على العقد.")}</p>
-            {scope.length > 0 && <select className="sel" value="" onChange={e => e.target.value && run(() => api.update("deliverables", d.id, { scope_item_id: e.target.value }), L("Linked to scope", "اتربطت بالنطاق"))}><option value="">{L("Link to scope item…", "اربط ببند نطاق…")}</option>{scope.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select>}
+            <p className="muted small">{L("Not linked to the agreement, so revisions aren't counted.", "مش مربوطة بالاتفاق، فالتعديلات مش بتتعد.")}</p>
+            {scope.length > 0 && <select className="sel" value="" onChange={e => e.target.value && run(() => api.update("deliverables", d.id, { scope_item_id: e.target.value }), L("Linked to the agreement", "اتربطت بالاتفاق"))}><option value="">{L("Link to the agreement…", "اربطها بالاتفاق…")}</option>{scope.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select>}
           </>}
         </div>
 
@@ -161,8 +164,8 @@ export function DeliverableDetail() {
 
     {upload && <UploadVersion d={d} onClose={() => setUpload(false)} />}
     {coFrom && project && <ChangeOrderForm onClose={() => setCoFrom(null)} preset={{ project_id: project.id, deliverable_id: d.id, feedback_id: coFrom === "manual" ? null : coFrom.id,
-      title: coFrom === "manual" ? (over ? L(`Extra revision: ${d.title}`, `تعديل إضافي: ${d.title}`) : "") : coFrom.comment.slice(0, 80),
-      description: coFrom === "manual" ? "" : L(`Requested by ${coFrom.author_name} on ${d.title}: “${coFrom.comment}”`, `طلب ${coFrom.author_name} على ${d.title}: «${coFrom.comment}»`),
+      title: coFrom === "manual" ? (over ? L(`Extra revision: ${d.title}`, `تعديل إضافي: ${d.title}`) : "") : fbText(coFrom).slice(0, 80),
+      description: coFrom === "manual" ? "" : L(`Requested by ${coFrom.author_name} on ${d.title}: “${fbText(coFrom)}”`, `طلب ${coFrom.author_name} على ${d.title}: «${fbText(coFrom)}»`),
       amount: item?.extra_price || 0 }} />}
     {record && <RecordApproval d={d} defaultName={client?.contact_name || ""} onClose={() => setRecord(false)} />}
     {newTask && <TaskForm onClose={() => setNewTask(false)} projectId={d.project_id} deliverableId={d.id} />}
@@ -215,10 +218,10 @@ function RecordApproval({ d, defaultName, onClose }: { d: Deliverable; defaultNa
   const [note, setNote] = useState("");
   return <Modal title={L("Record an approval", "تسجيل موافقة")} onClose={onClose} footer={<>
     <button className="btn" onClick={onClose}>{L("Cancel", "إلغاء")}</button>
-    <button className="btn btn--primary" disabled={busy || !who.trim()} onClick={() => run(async () => { await recordApproval(ws, me, d, who.trim(), note.trim()); onClose(); }, L("Approval recorded in the ledger", "اتسجلت الموافقة في السجل"))}>{L("Record approval", "تسجيل الموافقة")}</button>
+    <button className="btn btn--primary" disabled={busy || !who.trim()} onClick={() => run(async () => { await recordApproval(ws, me, d, who.trim(), note.trim()); onClose(); }, L("Approval recorded in the history", "اتسجلت الموافقة في السجل"))}>{L("Record approval", "تسجيل الموافقة")}</button>
   </>}>
     <div className="form">
-      <p className="muted small">{L("For approvals given on a call, in a meeting or by email. It is logged in the ledger with your name.", "للموافقات اللي اتاخدت في مكالمة أو اجتماع أو إيميل. هتتسجل في السجل باسمك.")}</p>
+      <p className="muted small">{L("For approvals given on a call, in a meeting or by email. It is logged in the history with your name.", "للموافقات اللي اتاخدت في مكالمة أو اجتماع أو إيميل. هتتسجل في السجل باسمك.")}</p>
       <Field label={L("Approved by", "وافق عليها")}><input className="inp" value={who} onChange={e => setWho(e.target.value)} autoFocus /></Field>
       <Field label={L("How / note", "إزاي / ملاحظة")}><input className="inp" value={note} onChange={e => setNote(e.target.value)} placeholder={L("e.g. Approved on a call, 3 pm", "مثال: وافق في مكالمة الساعة 3")} /></Field>
     </div>

@@ -31,7 +31,7 @@ export function Onboarding({ inline }: { inline?: boolean }) {
     </div>
     <Field label={L("Agency name", "اسم الوكالة")}><input className="inp" value={name} onChange={e => setName(e.target.value)} required maxLength={120} autoFocus /></Field>
     <Field label={L("Your name", "اسمك")}><input className="inp" value={owner} onChange={e => setOwner(e.target.value)} required /></Field>
-    <Field label={L("Billing currency for change orders", "عملة أوامر التغيير")}>
+    <Field label={L("Currency for extra work", "عملة الشغل الإضافي")}>
       <select className="sel" value={currency} onChange={e => setCurrency(e.target.value)}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select>
     </Field>
     <button className="btn btn--primary btn--lg" disabled={busy}>{L("Create workspace", "إنشاء مساحة العمل")}</button>

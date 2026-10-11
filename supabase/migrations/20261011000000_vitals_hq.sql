@@ -1,5 +1,5 @@
 -- =============================================================================
--- Vitals HQ · database schema
+-- Vitals Approve · database schema
 -- Run once in Supabase → SQL Editor (or `supabase db push`).
 -- Multi-tenant: every row belongs to a workspace; row-level security lets
 -- users see only workspaces they are a member of. Clients never log in: the

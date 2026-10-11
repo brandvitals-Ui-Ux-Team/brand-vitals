@@ -76,5 +76,27 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/live.html",
+      "destination": "/events.html",
+      "permanent": true
+    },
+    {
+      "source": "/hq.html",
+      "destination": "/approve.html",
+      "permanent": true
+    },
+    {
+      "source": "/ar/live.html",
+      "destination": "/ar/events.html",
+      "permanent": true
+    },
+    {
+      "source": "/ar/hq.html",
+      "destination": "/ar/approve.html",
+      "permanent": true
+    }
   ]
 }

@@ -6,7 +6,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Backend, CODecision, Filter, ReviewResponse, Row } from "./backend";
 import { uid } from "./backend";
 import { emitChange } from "./bus";
-import type { ChangeOrderPayload, ID, ReviewPayload, SessionUser, TableName, Workspace } from "./types";
+import type { ChangeOrderPayload, ID, PortalPayload, ReviewPayload, SessionUser, TableName, Workspace } from "./types";
 
 const toUser = (u: { id: string; email?: string; user_metadata?: Record<string, unknown> } | null | undefined): SessionUser | null =>
   u ? { id: u.id, email: u.email || "", name: String((u.user_metadata && u.user_metadata.name) || (u.email || "").split("@")[0]) } : null;
@@ -87,7 +87,11 @@ export class SupabaseBackend implements Backend {
     return (data as ReviewPayload) || null;
   }
   async reviewRespond(token: string, r: ReviewResponse) {
-    const { error } = await this.sb.rpc("hq_review_respond", { p_token: token, p_action: r.action, p_name: r.name, p_comment: r.comment }); fail(error);
+    const { error } = await this.sb.rpc("hq_review_respond", { p_token: token, p_action: r.action, p_name: r.name, p_comment: r.comment, p_pins: r.pins || [] }); fail(error);
+  }
+  async portalGet(token: string) {
+    const { data, error } = await this.sb.rpc("hq_portal_get", { p_token: token }); fail(error);
+    return (data as PortalPayload) || null;
   }
   async changeOrderGet(token: string) {
     const { data, error } = await this.sb.rpc("hq_co_get", { p_token: token }); fail(error);

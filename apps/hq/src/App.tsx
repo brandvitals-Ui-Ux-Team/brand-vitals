@@ -4,6 +4,8 @@ import { Spinner, ToastProvider } from "./components/ui";
 import { I18nProvider } from "./lib/i18n";
 import { useWs, WorkspaceProvider } from "./lib/ws";
 import { Approvals } from "./pages/Approvals";
+import { Calendar } from "./pages/Calendar";
+import { Portal } from "./pages/Portal";
 import { Auth } from "./pages/Auth";
 import { ChangeOrders } from "./pages/ChangeOrders";
 import { ChangeOrderReview } from "./pages/ChangeOrderReview";
@@ -35,8 +37,11 @@ function Private() {
       <Route path="/clients" element={<Clients />} />
       <Route path="/clients/:id" element={<ClientDetail />} />
       <Route path="/tasks" element={<Tasks />} />
-      <Route path="/change-orders" element={<ChangeOrders />} />
-      <Route path="/ledger" element={<Ledger />} />
+      <Route path="/calendar" element={<Calendar />} />
+      <Route path="/extra-work" element={<ChangeOrders />} />
+      <Route path="/history" element={<Ledger />} />
+      <Route path="/change-orders" element={<Navigate to="/extra-work" replace />} />
+      <Route path="/ledger" element={<Navigate to="/history" replace />} />
       <Route path="/team" element={<Team />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/new-workspace" element={<Onboarding inline />} />
@@ -52,6 +57,7 @@ export function App() {
         {/* Public pages for clients: no login, opened from WhatsApp links */}
         <Route path="/r/:token" element={<Review />} />
         <Route path="/co/:token" element={<ChangeOrderReview />} />
+        <Route path="/c/:token" element={<Portal />} />
         <Route path="/*" element={<I18nProvider><WorkspaceProvider><Routes>
           <Route path="/join/:token" element={<Join />} />
           <Route path="/*" element={<Private />} />

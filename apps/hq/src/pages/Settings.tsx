@@ -15,6 +15,7 @@ export function Settings() {
   const [currency, setCurrency] = useState(ws.currency);
   const [tEn, setTEn] = useState(ws.wa_template_en);
   const [tAr, setTAr] = useState(ws.wa_template_ar);
+  const [remind, setRemind] = useState(ws.remind_after_days || 2);
   const cfg = supabaseConfig();
   const [url, setUrl] = useState(cfg?.url || "");
   const [key, setKey] = useState(cfg?.source === "local" ? cfg.key : "");
@@ -31,6 +32,7 @@ export function Settings() {
           <Field label={L("Agency name", "اسم الوكالة")}><input className="inp" value={name} onChange={e => setName(e.target.value)} disabled={!isAdmin} /></Field>
           <Field label={L("Currency", "العملة")}><select className="sel" value={currency} onChange={e => setCurrency(e.target.value)} disabled={!isAdmin}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select></Field>
         </div>
+        <Field label={L("Suggest a reminder when a client hasn't replied after", "اقترح تذكير لو العميل ما ردّش بعد")}><select className="sel" style={{ maxWidth: 200 }} value={remind} onChange={e => setRemind(Number(e.target.value))} disabled={!isAdmin}>{[1, 2, 3, 4, 5, 7].map(n => <option key={n} value={n}>{L(`${n} day${n > 1 ? "s" : ""}`, `${n} يوم`)}</option>)}</select></Field>
         <Field label={L("Interface language", "لغة الواجهة")}><div className="seg" style={{ justifySelf: "start" }}><button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>English</button><button className={lang === "ar" ? "on" : ""} onClick={() => setLang("ar")}>العربية</button></div></Field>
       </div>
     </div>
@@ -44,7 +46,7 @@ export function Settings() {
         <Field label="العربية"><textarea className="txt" value={tAr} onChange={e => setTAr(e.target.value)} dir="rtl" disabled={!isAdmin} /></Field>
         <div className="quote small" dir="rtl">{fillTemplate(tAr, { ...sample, client: "عمر", item: "بوست عرض رمضان" })}</div>
         {!tEn.includes("{link}") || !tAr.includes("{link}") ? <p className="small" style={{ color: "var(--bad)" }}>{L("Keep {link} in both messages, or clients won't get the review link.", "خلّي {link} في الرسالتين، وإلا العميل مش هيوصله اللينك.")}</p> : null}
-        {isAdmin && <button className="btn btn--primary" style={{ justifySelf: "start" }} disabled={busy || !name.trim()} onClick={() => run(() => api.update("workspaces", ws.id, { name: name.trim(), currency, wa_template_en: tEn, wa_template_ar: tAr }), L("Settings saved", "تم حفظ الإعدادات"))}>{L("Save changes", "حفظ التغييرات")}</button>}
+        {isAdmin && <button className="btn btn--primary" style={{ justifySelf: "start" }} disabled={busy || !name.trim()} onClick={() => run(() => api.update("workspaces", ws.id, { name: name.trim(), currency, wa_template_en: tEn, wa_template_ar: tAr, remind_after_days: remind }), L("Settings saved", "تم حفظ الإعدادات"))}>{L("Save changes", "حفظ التغييرات")}</button>}
       </div>
     </div>
 
@@ -52,7 +54,7 @@ export function Settings() {
       <div className="card__h"><h2 className="row"><Database size={18} />{L("Backend", "قاعدة البيانات")}</h2>{isDemo ? <span className="pill pill--warn">{L("Demo mode", "وضع تجريبي")}</span> : <span className="pill pill--ok">Supabase{cfg?.source === "local" ? " · " + L("this browser", "هذا المتصفح") : ""}</span>}</div>
       <div className="card__b form">
         {isDemo ? <>
-          <p className="muted small">{L("Right now everything is saved in this browser only, so it's perfect for trying HQ but not for a team. To go live:", "حاليًا كل حاجة محفوظة في المتصفح ده بس: ممتاز للتجربة لكن مش للفريق. عشان تشغّله فعليًا:")}</p>
+          <p className="muted small">{L("Right now everything is saved in this browser only, so it's perfect for trying Approve but not for a team. To go live:", "حاليًا كل حاجة محفوظة في المتصفح ده بس: ممتاز للتجربة لكن مش للفريق. عشان تشغّله فعليًا:")}</p>
           <ol className="stack small" style={{ listStyle: "decimal", paddingInlineStart: 20, gap: 6 }}>
             <li>{L("Create a free project at supabase.com.", "أنشئ مشروع مجاني على supabase.com.")}</li>
             <li>{L("Open SQL Editor and run supabase/migrations/…_vitals_hq.sql from the repo.", "افتح SQL Editor وشغّل ملف supabase/migrations/…_vitals_hq.sql من الريبو.")}</li>

@@ -27,7 +27,7 @@ export function Projects() {
   const list = projects.filter(p => status === "all" || p.status === status).sort((a, b) => b.created_at.localeCompare(a.created_at));
   return <div className="page">
     <div className="page-head">
-      <div className="page-head__t"><h1>{L("Projects", "المشاريع")}</h1><p className="muted">{L("Each project has a scope: what you deliver, how many, and the revision rounds included.", "لكل مشروع نطاق: بتسلّم إيه، وكام، وكام جولة تعديل متضمنة.")}</p></div>
+      <div className="page-head__t"><h1>{L("Projects", "المشاريع")}</h1><p className="muted">{L("Each project has an agreement: what you deliver, how many, and how many revision rounds are included.", "كل مشروع ليه اتفاق: بتسلّم إيه، وكام، وكام جولة تعديل متضمنة.")}</p></div>
       <button className="btn btn--primary" onClick={() => setSp({ new: "1" })}><Plus />{L("New project", "مشروع جديد")}</button>
     </div>
     <div className="seg" style={{ justifySelf: "start" }}>{(["active", "paused", "done", "all"] as const).map(k => <button key={k} className={status === k ? "on" : ""} onClick={() => setStatus(k)}>{({ active: L("Active", "نشطة"), paused: L("Paused", "متوقفة"), done: L("Done", "منتهية"), all: L("All", "الكل") })[k]}</button>)}</div>
@@ -83,7 +83,7 @@ export function ProjectDetail() {
   const client = clients.find(c => c.id === p.client_id);
   const latest = (did: string) => versions.filter(v => v.deliverable_id === did).sort((a, b) => b.number - a.number)[0];
   const rec = cos.filter(c => c.status === "approved").reduce((s, c) => s + Number(c.amount), 0);
-  const TABS: [Tab, string, string, number][] = [["deliverables", "Deliverables", "التسليمات", deliverables.length], ["board", "Tasks", "المهام", tasks.filter(t => t.status !== "done").length], ["scope", "Scope", "النطاق", scope.length], ["co", "Change orders", "أوامر التغيير", cos.length], ["activity", "Activity", "النشاط", 0]];
+  const TABS: [Tab, string, string, number][] = [["deliverables", "Deliverables", "التسليمات", deliverables.length], ["board", "Tasks", "المهام", tasks.filter(t => t.status !== "done").length], ["scope", "What's included", "المتفق عليه", scope.length], ["co", "Extra work", "الشغل الإضافي", cos.length], ["activity", "Activity", "النشاط", 0]];
 
   return <div className="page">
     <div className="page-head">
@@ -96,7 +96,7 @@ export function ProjectDetail() {
         <button className="btn btn--primary" onClick={() => setNewD(true)}><Plus />{L("Deliverable", "تسليمة")}</button>
         <Popover trigger={open => <button className="icon-btn" onClick={open} aria-label={L("More", "المزيد")}><MoreHorizontal /></button>}>{close => <>
           <button onClick={() => { close(); setEdit(true); }}><Pencil />{L("Edit project", "تعديل المشروع")}</button>
-          <button onClick={() => { close(); setNewCO(true); }}><FileSignature />{L("New change order", "أمر تغيير جديد")}</button>
+          <button onClick={() => { close(); setNewCO(true); }}><FileSignature />{L("Add extra work", "إضافة شغل إضافي")}</button>
           <hr /><button style={{ color: "var(--bad)" }} onClick={() => { close(); setDel(true); }}><Trash2 />{L("Delete project", "حذف المشروع")}</button>
         </>}</Popover>
       </div>
@@ -106,7 +106,7 @@ export function ProjectDetail() {
     {tab === "deliverables" && <div className="card">{deliverables.length === 0 ? <Empty icon={<Inbox />} title={L("No deliverables yet", "لا توجد تسليمات بعد")} action={<button className="btn btn--primary" onClick={() => setNewD(true)}><Plus />{L("New deliverable", "تسليمة جديدة")}</button>} /> :
       <div className="list">{[...deliverables].sort((a, b) => b.created_at.localeCompare(a.created_at)).map(d => <Link key={d.id} to={"/deliverables/" + d.id} className="li">
         <Thumb v={latest(d.id)} kind={d.kind} />
-        <span className="li__main"><span className="li__t">{d.title}</span><span className="li__s">{L(...KIND_LABEL[d.kind])} · v{d.current_version} · {scope.find(s => s.id === d.scope_item_id)?.title || L("Not in scope", "خارج النطاق")}</span></span>
+        <span className="li__main"><span className="li__t">{d.title}</span><span className="li__s">{L(...KIND_LABEL[d.kind])} · v{d.current_version} · {scope.find(s => s.id === d.scope_item_id)?.title || L("Not in the agreement", "مش في الاتفاق")}</span></span>
         {d.out_of_scope && <span className="pill pill--violet pill--plain hide-sm">{L("Over limit", "فوق الحد")}</span>}
         <StatusPill s={d.status} />
       </Link>)}</div>}</div>}
@@ -114,10 +114,10 @@ export function ProjectDetail() {
     {tab === "board" && <Board tasks={tasks} projects={projects} projectId={p.id} openId={openTask} onOpen={setOpenTask} />}
 
     {tab === "scope" && <div className="stack">
-      <div className="callout callout--info"><ShieldCheck /><div><b>{L("Scope guard", "حارس النطاق")}</b><p className="small muted">{L("Deliverables linked to these items are counted. When a client goes over the quantity or the included revision rounds, HQ flags it so you can bill it.", "التسليمات المربوطة بالبنود دي بتتعد. لما العميل يتخطى الكمية أو جولات التعديل، HQ بينبّهك عشان تحاسب عليها.")}</p></div></div>
+      <div className="callout callout--info"><ShieldCheck /><div><b>{L("How tracking works", "إزاي بنتابع")}</b><p className="small muted">{L("Deliverables linked to these items are counted. When a client goes over the quantity or the included revision rounds, Approve flags it so you can bill it.", "التسليمات المربوطة بالبنود دي بتتعد. لما العميل يتخطى الكمية أو جولات التعديل، Approve بينبّهك عشان تحاسب عليها.")}</p></div></div>
       <div className="card">
-        <div className="card__h"><h2>{L("Scope items", "بنود النطاق")}</h2><button className="btn btn--sm" onClick={() => setScopeEdit("new")}><Plus />{L("Add item", "إضافة بند")}</button></div>
-        {scope.length === 0 ? <Empty icon={<ShieldCheck />} title={L("No scope yet", "لا يوجد نطاق بعد")} text={L("Add what the contract includes, e.g. 12 posts per month with 2 revision rounds.", "أضف محتوى العقد، مثلًا 12 بوست شهريًا مع جولتين تعديل.")} action={<button className="btn btn--primary" onClick={() => setScopeEdit("new")}><Plus />{L("Add scope item", "إضافة بند نطاق")}</button>} /> :
+        <div className="card__h"><h2>{L("What's included", "المتفق عليه")}</h2><button className="btn btn--sm" onClick={() => setScopeEdit("new")}><Plus />{L("Add item", "إضافة بند")}</button></div>
+        {scope.length === 0 ? <Empty icon={<ShieldCheck />} title={L("Nothing agreed yet", "لسه مفيش اتفاق")} text={L("Add what the contract includes, e.g. 12 posts per month with 2 revision rounds.", "أضف محتوى العقد، مثلًا 12 بوست شهريًا مع جولتين تعديل.")} action={<button className="btn btn--primary" onClick={() => setScopeEdit("new")}><Plus />{L("Add to agreement", "إضافة للاتفاق")}</button>} /> :
           <div className="table-wrap"><table className="table">
             <thead><tr><th>{L("Item", "البند")}</th><th>{L("Used", "المستخدم")}</th><th className="hide-sm">{L("Revisions incl.", "التعديلات المتضمنة")}</th><th className="hide-sm">{L("Extra revisions", "تعديلات إضافية")}</th><th className="hide-sm">{L("Extra price", "سعر الإضافي")}</th><th /></tr></thead>
             <tbody>{scope.map(s => { const u = scopeUsage(s, deliverables); return <tr key={s.id}>
@@ -133,8 +133,8 @@ export function ProjectDetail() {
     </div>}
 
     {tab === "co" && <div className="card">
-      <div className="card__h"><h2>{L("Change orders", "أوامر التغيير")}</h2><button className="btn btn--sm" onClick={() => setNewCO(true)}><Plus />{L("New", "جديد")}</button></div>
-      {cos.length === 0 ? <Empty icon={<FileSignature />} title={L("No change orders on this project", "لا توجد أوامر تغيير لهذا المشروع")} /> :
+      <div className="card__h"><h2>{L("Extra work", "الشغل الإضافي")}</h2><button className="btn btn--sm" onClick={() => setNewCO(true)}><Plus />{L("New", "جديد")}</button></div>
+      {cos.length === 0 ? <Empty icon={<FileSignature />} title={L("No extra work on this project", "مفيش شغل إضافي في المشروع ده")} /> :
         <div className="list">{cos.map(c => <div key={c.id} className="li"><span className="li__main"><span className="li__t">{c.title}</span><span className="li__s">{date(c.created_at, lang)}{c.decided_by ? " · " + c.decided_by : ""}</span></span><b>{money(c.amount, c.currency, lang)}</b><COPill s={c.status} /></div>)}</div>}
     </div>}
 
@@ -145,6 +145,6 @@ export function ProjectDetail() {
     {newD && <DeliverableForm projectId={p.id} onClose={() => setNewD(false)} />}
     {scopeEdit && <ScopeForm projectId={p.id} item={scopeEdit === "new" ? undefined : scopeEdit} onClose={() => setScopeEdit(null)} />}
     {newCO && <ChangeOrderForm preset={{ project_id: p.id }} onClose={() => setNewCO(false)} />}
-    {del && <Confirm danger title={L("Delete this project?", "حذف هذا المشروع؟")} text={L("All its deliverables, versions, scope, tasks and change orders will be deleted.", "هتتحذف كل التسليمات والنسخ والنطاق والمهام وأوامر التغيير الخاصة به.")} yes={L("Delete project", "حذف المشروع")} onClose={() => setDel(false)} onYes={() => run(async () => { await api.remove("projects", p.id); nav("/projects"); }, L("Project deleted", "تم حذف المشروع"))} />}
+    {del && <Confirm danger title={L("Delete this project?", "حذف هذا المشروع؟")} text={L("All its deliverables, versions, agreement, tasks and extra work will be deleted.", "هتتحذف كل التسليمات والنسخ والاتفاق والمهام والشغل الإضافي الخاص به.")} yes={L("Delete project", "حذف المشروع")} onClose={() => setDel(false)} onYes={() => run(async () => { await api.remove("projects", p.id); nav("/projects"); }, L("Project deleted", "تم حذف المشروع"))} />}
   </div>;
 }

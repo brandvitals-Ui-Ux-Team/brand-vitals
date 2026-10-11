@@ -43,3 +43,6 @@ export function scopeUsage(item: ScopeItem, deliverables: Deliverable[]) {
 
 export const daysBetween = (a: string | Date, b: string | Date = new Date()) =>
   Math.max(0, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000));
+
+// What the client asked for, from the comment or, if they only left pins, the pin notes.
+export const fbText = (f: { comment: string; pins?: { text: string }[] }) => f.comment || (f.pins || []).map(p => p.text).join(" · ");

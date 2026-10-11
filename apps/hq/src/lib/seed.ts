@@ -16,7 +16,7 @@ export function seed(u: SessionUser): DB {
   const W = uid();
   const ws: Workspace = { id: W, name: "Brand Vitals (demo)", currency: "EGP", owner_id: u.id, created_at: ago(60),
     wa_template_en: "Hi {client}, {item} is ready for your review: {link}",
-    wa_template_ar: "أهلًا {client}، {item} جاهز للمراجعة: {link}" };
+    wa_template_ar: "أهلًا {client}، {item} جاهز للمراجعة: {link}", remind_after_days: 2 };
 
   const me: Member = { id: uid(), workspace_id: W, user_id: u.id, role: "owner", name: u.name, email: u.email, created_at: ago(60) };
   const team: Member[] = [
@@ -28,9 +28,9 @@ export function seed(u: SessionUser): DB {
   const [, mona, karim, salma] = team;
 
   const clients: Client[] = [
-    { id: uid(), workspace_id: W, name: "Nile Roastery", contact_name: "Omar Hassan", phone: "201000000001", email: "omar@nileroastery.example", lang: "ar", notes: "Specialty coffee, 4 branches in Cairo.", created_at: ago(58) },
-    { id: uid(), workspace_id: W, name: "Atlas Residences", contact_name: "Faisal Al-Otaibi", phone: "966500000002", email: "faisal@atlas.example", lang: "ar", notes: "Riyadh luxury development launch.", created_at: ago(45) },
-    { id: uid(), workspace_id: W, name: "Glow Lab Skincare", contact_name: "Nour Samir", phone: "201000000003", email: "nour@glowlab.example", lang: "en", notes: "D2C skincare, Shopify store.", created_at: ago(30) }
+    { id: uid(), workspace_id: W, name: "Nile Roastery", contact_name: "Omar Hassan", phone: "201000000001", email: "omar@nileroastery.example", lang: "ar", notes: "Specialty coffee, 4 branches in Cairo.", portal_token: token(), created_at: ago(58) },
+    { id: uid(), workspace_id: W, name: "Atlas Residences", contact_name: "Faisal Al-Otaibi", phone: "966500000002", email: "faisal@atlas.example", lang: "ar", notes: "Riyadh luxury development launch.", portal_token: token(), created_at: ago(45) },
+    { id: uid(), workspace_id: W, name: "Glow Lab Skincare", contact_name: "Nour Samir", phone: "201000000003", email: "nour@glowlab.example", lang: "en", notes: "D2C skincare, Shopify store.", portal_token: token(), created_at: ago(30) }
   ];
   const [nile, atlas, glow] = clients;
 
@@ -55,21 +55,25 @@ export function seed(u: SessionUser): DB {
     id: uid(), workspace_id: W, project_id: p.id, scope_item_id: s.id, title, kind: s.kind, status, due_date: ahead(3 + Math.round(Math.random() * 10)),
     assignee_id: [mona.id, karim.id, salma.id][Math.floor(Math.random() * 3)], review_token: token(), current_version: v, revision_count: rev,
     out_of_scope: rev > s.revisions_included, sent_at: sentDaysAgo == null ? null : ago(sentDaysAgo, 3), approved_at: status === "approved" ? ago(Math.max(0, (sentDaysAgo ?? 1) - 1)) : null,
-    created_at: ago((sentDaysAgo ?? 1) + 3), ...extra
+    publish_date: null, reminded_at: null, created_at: ago((sentDaysAgo ?? 1) + 3), ...extra
   });
 
   const deliverables: Deliverable[] = [
-    D(pNile, sPosts, "New seasonal menu post", "in_review", 1, 0, 2),
-    D(pNile, sPosts, "Cold brew launch carousel", "changes", 2, 1, 4),
-    D(pNile, sPosts, "Barista story post", "approved", 1, 0, 6),
-    D(pNile, sReels, "Latte art reel", "in_review", 3, 2, 1),
-    D(pNile, sPosts, "Weekend offer story", "changes", 3, 3, 3),
+    D(pNile, sPosts, "New seasonal menu post", "in_review", 1, 0, 2, { publish_date: ahead(2) }),
+    D(pNile, sPosts, "Cold brew launch carousel", "changes", 2, 1, 4, { publish_date: ahead(4) }),
+    D(pNile, sPosts, "Barista story post", "approved", 1, 0, 6, { publish_date: ahead(-2) }),
+    D(pNile, sReels, "Latte art reel", "in_review", 3, 2, 1, { publish_date: ahead(6) }),
+    D(pNile, sPosts, "Weekend offer story", "changes", 3, 3, 3, { publish_date: ahead(3) }),
     D(pAtlas, sKV, "Key visual · Sunset terrace", "approved", 2, 1, 12),
     D(pAtlas, sKV, "Key visual · Family courtyard", "in_review", 2, 1, 5),
     D(pAtlas, sFilm, "Launch film · rough cut", "changes", 1, 1, 2),
     D(pGlow, sAds, "Vitamin C serum ad · UGC", "approved", 1, 0, 8),
     D(pGlow, sAds, "Ramadan bundle static", "in_review", 1, 0, 0),
-    D(pGlow, sLanding, "Ramadan landing page", "draft", 0, 0, null)
+    D(pGlow, sLanding, "Ramadan landing page", "draft", 0, 0, null),
+    D(pNile, sPosts, "Customer of the week", "draft", 0, 0, null, { publish_date: ahead(9) }),
+    D(pNile, sPosts, "Behind the roast", "draft", 0, 0, null, { publish_date: ahead(12) }),
+    D(pNile, sReels, "Pour-over tutorial reel", "draft", 0, 0, null, { publish_date: ahead(15) }),
+    D(pGlow, sAds, "Eid gift set static", "draft", 0, 0, null, { publish_date: ahead(8) })
   ];
 
   const hues = [160, 230, 30, 200, 300, 20, 140, 260, 340, 45, 190];
@@ -80,8 +84,8 @@ export function seed(u: SessionUser): DB {
         file_name: d.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + `-v${n}.svg`, file_type: "image/svg+xml", link_url: "", note: n === 1 ? "First version" : "Updated per feedback", created_by: [mona.name, karim.name, salma.name][i % 3], created_at: ago(Math.max(0, 6 - n)) });
   });
 
-  const fb = (d: Deliverable, v: number, kind: Feedback["kind"], author: string, comment: string, cls: Feedback["classification"], days: number, resolved = false): Feedback =>
-    ({ id: uid(), workspace_id: W, deliverable_id: d.id, version_number: v, kind, author_name: author, comment, classification: cls, resolved, created_at: ago(days) });
+  const fb = (d: Deliverable, v: number, kind: Feedback["kind"], author: string, comment: string, cls: Feedback["classification"], days: number, resolved = false, pins: Feedback["pins"] = []): Feedback =>
+    ({ id: uid(), workspace_id: W, deliverable_id: d.id, version_number: v, kind, author_name: author, comment, classification: cls, resolved, pins, created_at: ago(days) });
   const feedback: Feedback[] = [
     fb(deliverables[1], 1, "changes", "Omar Hassan", "كبّر اللوجو شوية وخلّي اللون أغمق", "revision", 3, true),
     fb(deliverables[1], 2, "changes", "Omar Hassan", "Can you also make a version for stories? And one more for the new branch.", "new_request", 1),
@@ -92,6 +96,7 @@ export function seed(u: SessionUser): DB {
     fb(deliverables[5], 1, "changes", "Faisal Al-Otaibi", "Warmer light please", "revision", 14, true),
     fb(deliverables[5], 2, "approved", "Faisal Al-Otaibi", "Approved. Beautiful.", null, 11, true),
     fb(deliverables[7], 1, "changes", "Faisal Al-Otaibi", "Shorten the intro and replace the music", "revision", 1),
+    fb(deliverables[6], 1, "changes", "Faisal Al-Otaibi", "", "revision", 6, true, [{ x: 68, y: 30, text: "Warmer sky here" }, { x: 22, y: 74, text: "Make the family smaller, more space" }]),
     fb(deliverables[8], 1, "approved", "Nour Samir", "", null, 7, true)
   ];
 

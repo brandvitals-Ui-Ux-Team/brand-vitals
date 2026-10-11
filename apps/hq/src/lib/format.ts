@@ -42,3 +42,4 @@ export function waLink(phone: string, text: string) {
 export function fillTemplate(tpl: string, vars: Record<string, string>) {
   return tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
 }
+export const portalUrl = (token: string) => `${location.origin}/app/c/${token}`;

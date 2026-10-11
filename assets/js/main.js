@@ -753,7 +753,7 @@
   const Ecosystem = {
     init() {
       const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-      const subPage = /^(studio|web|live|hq)(\.html)?$/.test(here);
+      const subPage = /^(studio|web|events|approve)(\.html)?$/.test(here);
       document.querySelectorAll(".eco-item").forEach(a => {
         const href = (a.getAttribute("href") || "").toLowerCase();
         if (href === here || href === here + ".html") a.setAttribute("aria-current", "page");

@@ -40,7 +40,7 @@ function Body({ data, token, setLang, reload }: { data: ChangeOrderPayload | nul
     </div>
     <div className="public__body" style={{ maxWidth: 640 }}>
       <div className="card card--pad stack" style={{ gap: 16 }}>
-        <div className="row"><span className="tl__ico tl__ico--violet"><FileSignature /></span><span className="faint small">{L("Change order", "أمر تغيير")} · {date(co.created_at, lang, { day: "numeric", month: "long", year: "numeric" })}</span></div>
+        <div className="row"><span className="tl__ico tl__ico--violet"><FileSignature /></span><span className="faint small">{L("Extra work", "شغل إضافي")} · {date(co.created_at, lang, { day: "numeric", month: "long", year: "numeric" })}</span></div>
         <h1>{co.title}</h1>
         {co.description && <p className="muted" style={{ whiteSpace: "pre-wrap" }}>{co.description}</p>}
         <div className="row row--between" style={{ padding: "14px 16px", borderRadius: 12, background: "var(--sunken)" }}><span className="muted">{L("Price", "السعر")}</span><b style={{ fontSize: 22 }}>{money(co.amount, co.currency, lang)}</b></div>
@@ -50,7 +50,7 @@ function Body({ data, token, setLang, reload }: { data: ChangeOrderPayload | nul
           <div className="grid2"><button className="btn btn--primary btn--lg" disabled={busy} onClick={() => decide("approved")}><CheckCircle2 />{L("Approve", "موافق")}</button><button className="btn btn--lg" disabled={busy} onClick={() => decide("declined")}><XCircle />{L("Decline", "رفض")}</button></div>
         </> : <div className={"callout " + (co.status === "approved" ? "callout--ok" : "callout--warn")}>{co.status === "approved" ? <CheckCircle2 /> : <XCircle />}<span>{co.status === "approved" ? L(`Approved by ${co.decided_by}`, `وافق عليه ${co.decided_by}`) : L(`Declined by ${co.decided_by}`, `رفضه ${co.decided_by}`)}{co.decided_at ? " · " + date(co.decided_at, lang, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}</span></div>}
       </div>
-      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Change orders by Vitals HQ", "أوامر التغيير عبر Vitals HQ")}</div>
+      <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Extra work approvals by Vitals Approve", "موافقات الشغل الإضافي عبر Vitals Approve")}</div>
     </div>
   </div>;
 }

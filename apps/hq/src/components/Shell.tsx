@@ -1,4 +1,4 @@
-import { Bell, CheckSquare, ChevronsUpDown, FileSignature, FolderKanban, Inbox, LayoutDashboard, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
+import { Bell, CalendarDays, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { api, isDemo } from "../lib/api";
@@ -8,6 +8,7 @@ import { useI18n } from "../lib/i18n";
 import { useWorkspace } from "../lib/ws";
 import { Avatar, Popover } from "./ui";
 import { CommandPalette } from "./CommandPalette";
+import { SendFlow } from "./SendFlow";
 
 export function useTheme() {
   const [theme, setTheme] = useLocalState<"light" | "dark">("hq-theme", "light");
@@ -21,6 +22,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useTheme();
   const [side, setSide] = useState(false);
   const [palette, setPalette] = useState(false);
+  const [send, setSend] = useState(false);
   const nav = useNavigate();
   const loc = useLocation();
   useEffect(() => setSide(false), [loc.pathname]);
@@ -43,7 +45,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return <div className="shell">
     <aside className={"side" + (side ? " open" : "")} aria-label={L("Main navigation", "التنقل الرئيسي")}>
-      <div className="side__brand"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals HQ" /></div>
+      <div className="side__brand"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Approve" /></div>
       <Popover align="start" trigger={open => <button className="ws-switch" onClick={open}>
         <span className="ws-switch__logo">{ws.name.slice(0, 1).toUpperCase()}</span>
         <span style={{ minWidth: 0, flex: 1 }}><span className="ws-switch__name ellipsis" style={{ display: "block" }}>{ws.name}</span><span className="faint small">{me ? L(me.role === "owner" ? "Owner" : me.role === "admin" ? "Admin" : "Member", me.role === "owner" ? "مالك" : me.role === "admin" ? "مسؤول" : "عضو") : ""}</span></span>
@@ -54,21 +56,21 @@ export function Shell({ children }: { children: ReactNode }) {
         <button onClick={() => { close(); nav("/new-workspace"); }}><Plus />{L("New workspace", "مساحة عمل جديدة")}</button>
       </>}</Popover>
 
-      <A to="/" end icon={<LayoutDashboard />} label={L("Dashboard", "الرئيسية")} />
+      <button className="big-send" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button>
+      <A to="/" end icon={<Home />} label={L("Home", "الرئيسية")} />
       <A to="/approvals" icon={<Inbox />} label={L("Approvals", "الموافقات")} count={waiting + changes} />
-      <A to="/tasks" icon={<CheckSquare />} label={L("My tasks", "مهامي")} count={myOpen} />
-      <div className="nav-sec">{L("Work", "العمل")}</div>
-      <A to="/projects" icon={<FolderKanban />} label={L("Projects", "المشاريع")} />
+      <A to="/calendar" icon={<CalendarDays />} label={L("Calendar", "التقويم")} />
       <A to="/clients" icon={<UsersRound />} label={L("Clients", "العملاء")} />
-      <A to="/change-orders" icon={<FileSignature />} label={L("Change orders", "أوامر التغيير")} count={coOpen} warn />
-      <A to="/ledger" icon={<ScrollText />} label={L("Approval ledger", "سجل الموافقات")} />
-      <div className="nav-sec">{L("Workspace", "مساحة العمل")}</div>
+      <A to="/tasks" icon={<CheckSquare />} label={L("Tasks", "المهام")} count={myOpen} />
+      <div className="nav-sec">{L("More", "المزيد")}</div>
+      <A to="/extra-work" icon={<FileSignature />} label={L("Extra work", "الشغل الإضافي")} count={coOpen} warn />
+      <A to="/history" icon={<ScrollText />} label={L("History", "السجل")} />
       <A to="/team" icon={<Users />} label={L("Team", "الفريق")} />
       <A to="/settings" icon={<Settings />} label={L("Settings", "الإعدادات")} />
 
       <div className="side__foot">
         {isDemo && <div className="demo-pill"><ShieldAlert /><span>{L("Demo mode: data stays in this browser. Connect Supabase in Settings to go live.", "وضع تجريبي: البيانات في هذا المتصفح فقط. اربط Supabase من الإعدادات للتشغيل الفعلي.")}</span></div>}
-        <a className="nav-a" href="/hq.html"><span style={{ width: 17 }} />{L("About Vitals HQ", "عن Vitals HQ")}</a>
+        <a className="nav-a" href="/approve.html"><span style={{ width: 17 }} />{L("About Vitals Approve", "عن Vitals Approve")}</a>
       </div>
     </aside>
     {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)" }} onClick={() => setSide(false)} />}
@@ -93,6 +95,7 @@ export function Shell({ children }: { children: ReactNode }) {
       {children}
     </div>
     {palette && <CommandPalette onClose={() => setPalette(false)} />}
+    {send && <SendFlow onClose={() => setSend(false)} />}
   </div>;
 }
 
@@ -107,7 +110,7 @@ function Notifications() {
   const unread = items.filter(a => a.created_at > seen).length;
   const go = (a: typeof items[number]) => {
     if (a.type.startsWith("approval") || a.type.startsWith("review") || a.type.startsWith("version") || a.type.startsWith("deliverable")) nav("/deliverables/" + a.entity_id);
-    else if (a.type.startsWith("change_order")) nav("/change-orders");
+    else if (a.type.startsWith("change_order")) nav("/extra-work");
     else if (a.project_id) nav("/projects/" + a.project_id);
   };
   return <Popover className="bell" trigger={(open, isOpen) => <button className="icon-btn" onClick={() => { open(); if (!isOpen && items[0]) setSeen(items[0].created_at); }} aria-label={L("Notifications", "الإشعارات")}><Bell />{unread > 0 && <span className="dot" />}</button>}>{close => <>
