@@ -1,10 +1,12 @@
 // Home: one question answered — "what needs me today?"
-import { BellRing, CalendarDays, CheckCircle2, Clock3, MessageCircle, PencilRuler, Plus, Send, Sparkles, Wallet } from "lucide-react";
+import { BellRing, CalendarDays, CheckCircle2, Clock3, PencilRuler, Plus, Send, Sparkles, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { SendFlow } from "../components/SendFlow";
-import { Empty, Prio, StatusPill, Thumb, useAction } from "../components/ui";
-import { markReminded, portalWhatsApp } from "../lib/actions";
+import { Empty, Prio, StatusPill, Thumb } from "../components/ui";
+import { markReminded } from "../lib/actions";
+import { ChannelButton } from "../components/ChannelButton";
+import { reminderMsg } from "../lib/channels";
 import { ago, date, isOverdue, money } from "../lib/format";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
@@ -16,7 +18,7 @@ import { STATUS_COLOR } from "./Calendar";
 export function Dashboard() {
   const { L, lang } = useI18n();
   const { ws, me } = useWorkspace();
-  const { run } = useAction();
+
   const [send, setSend] = useState(false);
   const f = { workspace_id: ws.id };
   const { rows: deliverables } = useRows("deliverables", f);
@@ -66,11 +68,6 @@ export function Dashboard() {
   if (notApproved) summary.push(L(`${notApproved} post(s) going live this week not approved yet`, `${notApproved} بوست هينزل الأسبوع ده ولسه ما اتوافقش عليه`));
   if (extraSpotted.length) summary.push(L(`${extraSpotted.length} request(s) that look like extra work`, `${extraSpotted.length} طلب شكله شغل إضافي`));
 
-  const remind = (g: typeof groups[number]) => {
-    if (!g.client.phone) return;
-    window.open(portalWhatsApp(ws, g.client, g.items.length), "_blank", "noopener");
-    run(() => markReminded(g.items), L("Reminder sent", "اتبعت التذكير"));
-  };
 
   return <div className="page">
     <div className="page-head">
@@ -95,7 +92,7 @@ export function Dashboard() {
             groups.map(g => <div key={g.client.id} className="client-group">
               <div className="client-group__h">
                 <div className="li__main"><Link to={"/clients/" + g.client.id} className="li__t">{g.client.name}</Link><span className="li__s">{L(`${g.items.length} waiting · oldest ${g.oldest}d`, `${g.items.length} مستنية · أقدم واحدة ${g.oldest} يوم`)}{g.lastReminded ? " · " + L("reminded ", "اتفكّر ") + ago(g.lastReminded, lang) : ""}</span></div>
-                {g.client.phone && <button className={"btn btn--sm " + (g.due ? "btn--wa" : "")} onClick={() => remind(g)}><MessageCircle />{g.due ? L("Remind now", "فكّره دلوقتي") : L("Remind", "فكّره")}</button>}
+                <ChannelButton small primary={g.due} client={g.client} before={() => markReminded(g.items)} build={() => reminderMsg(ws, g.client, g.items.length)} label={() => (g.due ? L("Remind now", "فكّره دلوقتي") : L("Remind", "فكّره"))} />
               </div>
               <div className="client-group__items">{g.items.map(d => <Link key={d.id} to={"/deliverables/" + d.id} className="mini"><Thumb v={latest(d.id)} kind={d.kind} /><b>{d.title}</b><span className="faint">{L(`${daysBetween(d.sent_at || d.created_at)}d`, `${daysBetween(d.sent_at || d.created_at)} يوم`)}</span></Link>)}</div>
             </div>)}

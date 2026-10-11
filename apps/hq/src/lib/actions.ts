@@ -12,7 +12,7 @@ export async function log(ws: Workspace, actor: string, type: string, summary: s
 // ---------- clients / projects / scope ----------
 export async function saveClient(ws: Workspace, me: Member, c: Partial<Client> & { id?: ID }) {
   if (c.id) return api.update("clients", c.id, c);
-  const row = await api.insert("clients", { workspace_id: ws.id, name: c.name || "", contact_name: c.contact_name || "", phone: c.phone || "", email: c.email || "", lang: c.lang || "ar", notes: c.notes || "", portal_token: token() });
+  const row = await api.insert("clients", { workspace_id: ws.id, name: c.name || "", contact_name: c.contact_name || "", phone: c.phone || "", email: c.email || "", lang: c.lang || "ar", notes: c.notes || "", portal_token: token(), preferred_channel: c.preferred_channel || (c.phone ? "whatsapp" : "email"), chat_webhook: c.chat_webhook || "" });
   await log(ws, me.name, "client.created", `added client “${row.name}”`, null, row.id);
   return row;
 }

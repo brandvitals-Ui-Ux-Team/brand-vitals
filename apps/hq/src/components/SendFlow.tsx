@@ -4,8 +4,8 @@
 import { CalendarDays, FileText, Film, Globe, Image as ImageIcon, Link2, PenLine, Send, Upload, UserPlus } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { quickSend, reviewWhatsApp, saveClient, saveProject } from "../lib/actions";
-import { reviewUrl } from "../lib/format";
+import { quickSend, saveClient, saveProject } from "../lib/actions";
+import { bestChannel, CHANNELS, deliver, reviewMsg } from "../lib/channels";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
 import type { DeliverableKind } from "../lib/types";
@@ -59,7 +59,7 @@ export function SendFlow({ onClose, clientId, publishDate, planOnly }: { onClose
     let projectId = newClient ? "" : pid;
     if (!projectId) projectId = (await saveProject(ws, me, { client_id: c.id, name: L("General", "عام") })).id;
     const d = await quickSend(ws, me, { project_id: projectId, title: title.trim(), kind, scope_item_id: newClient ? null : scopeId, publish_date: date || null, file, link, note, draftOnly: !send });
-    if (send && hasWork) { if (c.phone) window.open(reviewWhatsApp(ws, c, d), "_blank", "noopener"); else await navigator.clipboard?.writeText(reviewUrl(d.review_token)).catch(() => {}); }
+    if (send && hasWork) await deliver(ws, c, reviewMsg(ws, c, d));
     onClose();
     if (!planOnly) nav("/deliverables/" + d.id);
   }, send && hasWork ? L("Sent for approval", "اتبعتت للموافقة") : L("Saved", "اتحفظت"));
@@ -68,7 +68,7 @@ export function SendFlow({ onClose, clientId, publishDate, planOnly }: { onClose
   return <Modal wide title={planOnly ? L("Plan a post", "خطّط لبوست") : L("Send for approval", "ابعت للموافقة")} onClose={onClose} footer={<>
     <button className="btn" onClick={onClose}>{L("Cancel", "إلغاء")}</button>
     <button className="btn" disabled={busy || !ready} onClick={() => submit(false)}>{hasWork ? L("Save, send later", "احفظ وابعت بعدين") : L("Save to calendar", "احفظ في التقويم")}</button>
-    {hasWork && <button className="btn btn--wa" disabled={busy || !ready} onClick={() => submit(true)}><Send />{client && !client.phone && !newClient ? L("Send (copy link)", "ابعت (نسخ اللينك)") : L("Send on WhatsApp", "ابعت على واتساب")}</button>}
+    {hasWork && <button className="btn btn--primary" disabled={busy || !ready} onClick={() => submit(true)}><Send />{(() => { const ch = client && !newClient ? bestChannel(client) : (cPhone ? "whatsapp" : "link"); return ch === "link" ? L("Send (copy link)", "ابعت (نسخ اللينك)") : L(`Send by ${CHANNELS[ch].en}`, `ابعت على ${CHANNELS[ch].ar}`); })()}</button>}
   </>}>
     <div className="form" style={{ gap: 18 }}>
       <div className="stack" style={{ gap: 8 }}>

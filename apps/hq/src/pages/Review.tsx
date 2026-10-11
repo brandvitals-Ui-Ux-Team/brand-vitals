@@ -2,6 +2,7 @@ import { Check, CheckCircle2, Clock3, Info, LayoutGrid, MousePointerClick, Penci
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { isImage, PinImage } from "../components/Pins";
+import { SharedThread } from "../components/Thread";
 import { Preview, Spinner, useToast } from "../components/ui";
 import { api } from "../lib/api";
 import { onChange } from "../lib/bus";
@@ -101,6 +102,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
         </>}
       </div>}
       {d.status === "approved" && <div className="callout callout--ok"><CheckCircle2 /><span>{L("This version is approved. Thank you!", "النسخة دي متوافق عليها. شكرًا!")}</span></div>}
+      <SharedThread load={() => api.reviewMessages(token)} post={(n, b) => api.reviewMessage(token, n, b)} />
       {data.client.portal_token && <Link className="btn btn--ghost" style={{ justifySelf: "center" }} to={"/c/" + data.client.portal_token}><LayoutGrid />{L("See everything waiting for you", "شوف كل اللي مستني موافقتك")}</Link>}
       <div className="powered"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" />{L("Approvals by Vitals Approve", "الموافقات عبر Vitals Approve")}</div>
     </div>

@@ -1,11 +1,13 @@
 // Content calendar: what goes live when, for every client. Drag to reschedule,
 // "+" to plan a post, and send a whole month to a client in one message.
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Send } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SendFlow } from "../components/SendFlow";
 import { useAction } from "../components/ui";
-import { portalWhatsApp, sendBatch } from "../lib/actions";
+import { sendBatch } from "../lib/actions";
+import { ChannelButton } from "../components/ChannelButton";
+import { reminderMsg } from "../lib/channels";
 import { api } from "../lib/api";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
@@ -19,7 +21,7 @@ export function Calendar() {
   const { L, lang } = useI18n();
   const { ws, me } = useWorkspace();
   const nav = useNavigate();
-  const { run, busy } = useAction();
+  const { run } = useAction();
   const [month, setMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
   const [client, setClient] = useState("");
   const [plan, setPlan] = useState<string | null>(null);
@@ -46,12 +48,7 @@ export function Calendar() {
   const todayKey = iso(new Date());
   const dow = Array.from({ length: 7 }, (_, i) => new Date(2026, 0, 3 + i).toLocaleDateString(lang === "ar" ? "ar-EG" : "en-GB", { weekday: "short" }));
 
-  const sendMonth = () => run(async () => {
-    const n = await sendBatch(ws, me, ready);
-    const waiting = deliverables.filter(d => proj(d.project_id)?.client_id === client && (d.status === "in_review" || ready.some(r => r.id === d.id))).length;
-    if (c?.phone) window.open(portalWhatsApp(ws, c, waiting), "_blank", "noopener");
-    return n;
-  }, L("Sent. The client sees everything in their portal.", "اتبعت. العميل هيشوف كل حاجة في البوابة بتاعته."));
+  const waitingAfter = deliverables.filter(d => proj(d.project_id)?.client_id === client && (d.status === "in_review" || ready.some(r => r.id === d.id))).length;
 
   return <div className="page">
     <div className="page-head">
@@ -71,7 +68,7 @@ export function Calendar() {
     {client && <div className="callout callout--info"><CalendarDays /><div style={{ flex: 1 }}>
       <b>{c?.name}: {L(`${inMonth.length} items this month`, `${inMonth.length} حاجة الشهر ده`)}</b>
       <p className="small muted">{L(`${ready.length} ready to send · ${planned} still need the file`, `${ready.length} جاهزين للإرسال · ${planned} لسه محتاجين الملف`)}</p>
-    </div>{ready.length > 0 && <button className="btn btn--wa" disabled={busy} onClick={sendMonth}><Send />{L(`Send ${ready.length} for approval`, `ابعت ${ready.length} للموافقة`)}</button>}</div>}
+    </div>{ready.length > 0 && c && <ChannelButton client={c} before={() => sendBatch(ws, me, ready)} build={() => reminderMsg(ws, c, waitingAfter)} label={() => L(`Send ${ready.length} for approval`, `ابعت ${ready.length} للموافقة`)} />}</div>}
 
     <div className="legend">
       <span><i style={{ background: STATUS_COLOR.draft }} />{L("Planned / draft", "متخطط / مسودة")}</span>

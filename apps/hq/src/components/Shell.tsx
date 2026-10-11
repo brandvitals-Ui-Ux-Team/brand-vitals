@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
+import { Bell, Blocks, CalendarDays, MessagesSquare, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { api, isDemo } from "../lib/api";
@@ -9,6 +9,7 @@ import { useWorkspace } from "../lib/ws";
 import { Avatar, Popover } from "./ui";
 import { CommandPalette } from "./CommandPalette";
 import { SendFlow } from "./SendFlow";
+import { useThreads } from "../pages/Inbox";
 
 export function useTheme() {
   const [theme, setTheme] = useLocalState<"light" | "dark">("hq-theme", "light");
@@ -39,6 +40,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const changes = deliverables.filter(d => d.status === "changes").length;
   const myOpen = tasks.filter(t => t.assignee_id === me?.id && t.status !== "done").length;
   const coOpen = cos.filter(c => c.status === "sent").length;
+  const unreadThreads = useThreads().filter(t => t.unread).length;
 
   const A = ({ to, icon, label, count, warn, end }: { to: string; icon: ReactNode; label: string; count?: number; warn?: boolean; end?: boolean }) =>
     <NavLink to={to} end={end} className={({ isActive }) => "nav-a" + (isActive ? " active" : "")}>{icon}<span>{label}</span>{!!count && <span className={"count" + (warn ? " count--warn" : "")}>{count}</span>}</NavLink>;
@@ -58,6 +60,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
       <button className="big-send" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button>
       <A to="/" end icon={<Home />} label={L("Home", "الرئيسية")} />
+      <A to="/inbox" icon={<MessagesSquare />} label={L("Inbox", "المحادثات")} count={unreadThreads} />
       <A to="/approvals" icon={<Inbox />} label={L("Approvals", "الموافقات")} count={waiting + changes} />
       <A to="/calendar" icon={<CalendarDays />} label={L("Calendar", "التقويم")} />
       <A to="/clients" icon={<UsersRound />} label={L("Clients", "العملاء")} />
@@ -65,6 +68,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <div className="nav-sec">{L("More", "المزيد")}</div>
       <A to="/extra-work" icon={<FileSignature />} label={L("Extra work", "الشغل الإضافي")} count={coOpen} warn />
       <A to="/history" icon={<ScrollText />} label={L("History", "السجل")} />
+      <A to="/integrations" icon={<Blocks />} label={L("Integrations", "الربط")} />
       <A to="/team" icon={<Users />} label={L("Team", "الفريق")} />
       <A to="/settings" icon={<Settings />} label={L("Settings", "الإعدادات")} />
 

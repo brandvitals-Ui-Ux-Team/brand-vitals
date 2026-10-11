@@ -1,8 +1,10 @@
-import { Copy, ExternalLink, FileSignature, MessageCircle, MoreHorizontal, Plus, Send, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, FileSignature, MoreHorizontal, Plus, Send, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Confirm, COPill, Empty, Field, Modal, Popover, useAction, useToast } from "../components/ui";
-import { changeOrderWhatsApp, createChangeOrder, sendChangeOrder } from "../lib/actions";
+import { createChangeOrder, sendChangeOrder } from "../lib/actions";
+import { ChannelButton } from "../components/ChannelButton";
+import { deliver, extraWorkMsg } from "../lib/channels";
 import { api } from "../lib/api";
 import { coUrl, date, money } from "../lib/format";
 import { useRows } from "../lib/hooks";
@@ -23,7 +25,7 @@ export function ChangeOrderForm({ onClose, preset }: { onClose: () => void; pres
       const sent = await sendChangeOrder(ws, me, co);
       const p = projects.find(x => x.id === co.project_id);
       const c = clients.find(x => x.id === p?.client_id);
-      if (c?.phone) window.open(changeOrderWhatsApp(c, sent, money(co.amount, co.currency, c.lang)), "_blank", "noopener");
+      if (c) await deliver(ws, c, extraWorkMsg(ws, c, sent, money(co.amount, co.currency, c.lang)));
     }
     onClose();
   }, andSend ? L("Sent to the client", "اتبعتت للعميل") : L("Saved as draft", "اتحفظت كمسودة"));
@@ -31,7 +33,7 @@ export function ChangeOrderForm({ onClose, preset }: { onClose: () => void; pres
   return <Modal title={L("Add extra work", "إضافة شغل إضافي")} onClose={onClose} footer={<>
     <button className="btn" onClick={onClose}>{L("Cancel", "إلغاء")}</button>
     <button className="btn" disabled={busy || !valid} onClick={() => save(false)}>{L("Save draft", "حفظ كمسودة")}</button>
-    <button className="btn btn--wa" disabled={busy || !valid} onClick={() => save(true)}><Send />{L("Send on WhatsApp", "ابعت على واتساب")}</button>
+    <button className="btn btn--primary" disabled={busy || !valid} onClick={() => save(true)}><Send />{L("Send to client", "ابعت للعميل")}</button>
   </>}>
     <div className="form">
       <p className="muted small">{L("The client gets a link to approve or decline. Approved extra work counts as earned revenue.", "العميل بيوصله لينك يوافق أو يرفض. الشغل الإضافي الموافق عليه بيتحسب إيراد.")}</p>
@@ -61,11 +63,6 @@ export function ChangeOrders() {
   const sum = (s: COStatus) => cos.filter(c => c.status === s).reduce((a, c) => a + Number(c.amount), 0);
   const rows = cos.filter(c => tab === "all" || c.status === tab).sort((a, b) => b.created_at.localeCompare(a.created_at));
 
-  const send = (c: ChangeOrder) => run(async () => {
-    const s = await sendChangeOrder(ws, me, c);
-    const cl = clientOf(c.project_id);
-    if (cl?.phone) window.open(changeOrderWhatsApp(cl, s, money(c.amount, c.currency, cl.lang)), "_blank", "noopener");
-  }, L("Marked as sent", "اتعلّم كمُرسل"));
 
   return <div className="page">
     <div className="page-head">
@@ -88,8 +85,8 @@ export function ChangeOrders() {
           <td><COPill s={c.status} />{c.decided_by && <div className="faint small">{c.decided_by}</div>}</td>
           <td className="hide-sm faint small">{date(c.decided_at || c.created_at, lang)}</td>
           <td><div className="row" style={{ justifyContent: "flex-end", flexWrap: "nowrap" }}>
-            {c.status === "draft" && <button className="btn btn--sm btn--wa" onClick={() => send(c)}><Send />{L("Send", "إرسال")}</button>}
-            {c.status === "sent" && cl?.phone && <a className="btn btn--sm btn--wa" href={changeOrderWhatsApp(cl, c, money(c.amount, c.currency, cl.lang))} target="_blank" rel="noopener"><MessageCircle />{L("Resend", "إعادة إرسال")}</a>}
+            {c.status === "draft" && cl && <ChannelButton small client={cl} before={() => sendChangeOrder(ws, me, c)} build={() => extraWorkMsg(ws, cl, c, money(c.amount, c.currency, cl.lang))} label={() => L("Send", "إرسال")} />}
+            {c.status === "sent" && cl && <ChannelButton small primary={false} client={cl} build={() => extraWorkMsg(ws, cl, c, money(c.amount, c.currency, cl.lang))} label={() => L("Resend", "إعادة إرسال")} />}
             <Popover trigger={open => <button className="icon-btn" onClick={open} aria-label={L("More", "المزيد")}><MoreHorizontal /></button>}>{close => <>
               <button onClick={() => { close(); navigator.clipboard?.writeText(coUrl(c.token)).then(() => toast(L("Link copied", "تم نسخ الرابط"))); }}><Copy />{L("Copy client link", "نسخ لينك العميل")}</button>
               {c.status !== "draft" && <a href={coUrl(c.token)} target="_blank" rel="noopener" onClick={close}><ExternalLink />{L("Open client view", "افتح صفحة العميل")}</a>}

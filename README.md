@@ -5,7 +5,7 @@ Two products in one repo, deployed together on Vercel:
 | Path | What it is | Tech |
 |---|---|---|
 | `/` and `/ar/` | **brandvitals.io**: the agency website and its four sub-brands (Studio, Web, Live, HQ), in English and Arabic | Static HTML/CSS/JS, edited from `/dashboard.html` |
-| `/app/` | **Vitals Approve**: SaaS for agencies. Client approvals on WhatsApp with pin comments, a client portal, content calendar, extra-work billing, reminders, tasks, history | React + TypeScript (Vite), Supabase |
+| `/app/` | **Vitals Approve**: client operations platform for agencies. Approvals with pin comments, client portal, team + client chat, content calendar, extra-work billing, reminders, integrations (email, WhatsApp, Slack, Teams, SMS, webhooks, Figma/Drive/video previews) | React + TypeScript (Vite), Supabase |
 | `/api/*` | Serverless functions for the free **Vitals Score** tool | Node (Vercel Functions) |
 
 ## Quick start (local)
@@ -47,6 +47,7 @@ Every page is written once with `data-en` / `data-ar` attributes. The build crea
 | Variable | What it enables |
 |---|---|
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | Vitals Approve runs on a real database with accounts (without them HQ runs in demo mode inside the browser) |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Vitals Approve sends branded emails to clients (resend.com, free tier). Without it, email opens the sender's mail app |
 | `PSI_API_KEY` | Speed and SEO scores in the Vitals Score tool (free key from Google Cloud: enable "PageSpeed Insights API") |
 
 3. Redeploy after adding variables. Every push to `main` deploys automatically.
@@ -55,7 +56,7 @@ Every page is written once with `data-en` / `data-ar` attributes. The build crea
 ## Vitals Approve: going live with Supabase
 
 1. Create a free project at supabase.com.
-2. SQL Editor → run the files in `supabase/migrations/` in order (`20261011…_vitals_hq.sql`, then `20261012…_approve_v2.sql`). Both are safe to re-run.
+2. SQL Editor → run the files in `supabase/migrations/` in order (`20261011…_vitals_hq.sql`, `20261012…_approve_v2.sql`, `20261013…_channels_chat_integrations.sql`). All are safe to re-run. On Supabase the last one also turns on live chat updates and database-delivered webhooks (pg_net).
 3. Authentication → URL Configuration → set Site URL to `https://brandvitals.io/app/`.
 4. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (Project Settings → API) to Vercel and redeploy.
 

@@ -30,7 +30,7 @@ const eco = [
   ["studio.html", "assets/img/brands/studio-mark.svg", "Vitals Studio", "Production studio", "ستوديو إنتاج"],
   ["web.html", "assets/img/brands/web-mark.svg", "Vitals Web", "Websites, launched fast", "مواقع تنطلق بسرعة"],
   ["events.html", "assets/img/brands/events-mark.svg", "Vitals Events", "Launches, activations and events", "إطلاقات وفعاليات وتفعيلات"],
-  ["approve.html", "assets/img/brands/approve-mark.svg", "Vitals Approve", "Client approvals on WhatsApp", "موافقات العملاء على واتساب"]
+  ["approve.html", "assets/img/brands/approve-mark.svg", "Vitals Approve", "Client approvals & team chat", "موافقات العملاء وتواصل الفريق"]
 ];
 const ecoItems = () => eco.map(([href, img, name, en, ar]) =>
   `<a class="eco-item" href="${href}"><img src="${img}" alt="" width="38" height="38"><span class="eco-item__txt"><span class="eco-item__name">${name}${href === "approve.html" ? ' <em class="eco-badge" data-en="New" data-ar="جديد">New</em>' : ""}</span>${bi("span", en, ar, 'class="eco-item__d"')}</span></a>`

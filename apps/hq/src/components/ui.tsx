@@ -1,6 +1,7 @@
 import { AlertCircle, CheckCircle2, FileText, Film, Globe, Image as ImageIcon, Link2, PenLine, X } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { embedUrl } from "../lib/embed";
 import { useFileUrl } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
 import { initials } from "../lib/format";
@@ -137,6 +138,11 @@ export function Preview({ v, kind }: { v: Version; kind: DeliverableKind }) {
   const { L } = useI18n();
   const url = useFileUrl(v.file_url);
   const t = v.file_type || "";
+  const emb = !url && v.link_url ? embedUrl(v.link_url) : null;
+  if (emb) return <div className="stack" style={{ gap: 6 }}>
+    <iframe className="embed" src={emb.url} title={emb.provider} allow="fullscreen; autoplay; clipboard-write" allowFullScreen loading="lazy" />
+    <a className="small faint row" style={{ gap: 4 }} href={v.link_url} target="_blank" rel="noopener noreferrer"><Link2 size={13} />{L(`Open in ${emb.provider}`, `افتح في ${emb.provider}`)}</a>
+  </div>;
   return <div className="preview">
     {url && t.startsWith("image/") ? <img src={url} alt={v.file_name} /> :
       url && t.startsWith("video/") ? <video src={url} controls playsInline /> :

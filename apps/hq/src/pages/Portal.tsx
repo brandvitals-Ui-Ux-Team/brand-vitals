@@ -3,6 +3,7 @@
 import { CalendarDays, Check, CheckCircle2, FileSignature, Info } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { SharedThread } from "../components/Thread";
 import { Spinner, Thumb, useToast } from "../components/ui";
 import { api } from "../lib/api";
 import { onChange } from "../lib/bus";
@@ -17,12 +18,12 @@ export function Portal() {
   const [lang, setLang] = useState<Lang | undefined>();
   const load = useCallback(() => api.portalGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); }).catch(() => setData(null)), [token]);
   useEffect(() => { load(); return onChange(load); }, [load]);
-  return <I18nProvider force={lang}><Body data={data} setLang={setLang} reload={load} /></I18nProvider>;
+  return <I18nProvider force={lang}><Body data={data} setLang={setLang} reload={load} token={token} /></I18nProvider>;
 }
 
 const asVersion = (i: PortalItem) => (i.thumb ? ({ ...i.thumb, file_name: i.title } as unknown as Version) : null);
 
-function Body({ data, setLang, reload }: { data: PortalPayload | null | undefined; setLang: (l: Lang) => void; reload: () => void }) {
+function Body({ data, setLang, reload, token }: { data: PortalPayload | null | undefined; setLang: (l: Lang) => void; reload: () => void; token: string }) {
   const { L, lang } = useI18n();
   const toast = useToast();
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -96,6 +97,8 @@ function Body({ data, setLang, reload }: { data: PortalPayload | null | undefine
           {i.publish_date && <span className="faint small row" style={{ gap: 4 }}><CalendarDays size={14} />{date(i.publish_date, lang)}</span>}
         </Link>)}</div></div>
       </section>}
+
+      <SharedThread load={() => api.portalMessages(token)} post={(n, b) => api.portalMessage(token, n, b)} />
 
       {picked.size > 0 && <div className="sel-bar">
         <span>{L(`${picked.size} selected`, `${picked.size} متختارين`)}</span>

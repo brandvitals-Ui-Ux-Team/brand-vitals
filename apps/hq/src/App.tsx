@@ -5,6 +5,8 @@ import { I18nProvider } from "./lib/i18n";
 import { useWs, WorkspaceProvider } from "./lib/ws";
 import { Approvals } from "./pages/Approvals";
 import { Calendar } from "./pages/Calendar";
+import { Inbox } from "./pages/Inbox";
+import { Integrations } from "./pages/Integrations";
 import { Portal } from "./pages/Portal";
 import { Auth } from "./pages/Auth";
 import { ChangeOrders } from "./pages/ChangeOrders";
@@ -38,6 +40,8 @@ function Private() {
       <Route path="/clients/:id" element={<ClientDetail />} />
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/calendar" element={<Calendar />} />
+      <Route path="/inbox" element={<Inbox />} />
+      <Route path="/integrations" element={<Integrations />} />
       <Route path="/extra-work" element={<ChangeOrders />} />
       <Route path="/history" element={<Ledger />} />
       <Route path="/change-orders" element={<Navigate to="/extra-work" replace />} />

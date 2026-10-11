@@ -1,10 +1,13 @@
-import { ArrowLeft, Check, CheckCircle2, Copy, ExternalLink, FileSignature, Link2, MessageCircle, MoreHorizontal, PencilRuler, Plus, Send, ShieldAlert, Sparkles, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, Copy, ExternalLink, FileSignature, Link2, MoreHorizontal, PencilRuler, Plus, ShieldAlert, Sparkles, Trash2, Upload } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TaskForm } from "../components/Forms";
+import { Thread } from "../components/Thread";
 import { isImage, PinImage } from "../components/Pins";
-import { Avatar, Confirm, Empty, Field, KIND_LABEL, MemberChip, Modal, Popover, Preview, Prio, StatusPill, useAction, useToast } from "../components/ui";
-import { addVersion, log, recordApproval, reminderWhatsApp, reviewWhatsApp, sendForReview, setFeedbackClass } from "../lib/actions";
+import { Confirm, Empty, Field, KIND_LABEL, MemberChip, Modal, Popover, Preview, Prio, StatusPill, useAction, useToast } from "../components/ui";
+import { addVersion, log, recordApproval, sendForReview, setFeedbackClass } from "../lib/actions";
+import { ChannelButton } from "../components/ChannelButton";
+import { reviewMsg } from "../lib/channels";
 import { api } from "../lib/api";
 import { ago, date, reviewUrl } from "../lib/format";
 import { useRows } from "../lib/hooks";
@@ -20,12 +23,11 @@ export function DeliverableDetail() {
   const { ws, me, members } = useWorkspace();
   const nav = useNavigate();
   const toast = useToast();
-  const { run, busy } = useAction();
+  const { run } = useAction();
   const { rows: ds, loading } = useRows("deliverables", { id } as Partial<Deliverable>);
   const d = ds[0];
   const { rows: versions } = useRows("versions", { deliverable_id: id });
   const { rows: feedback } = useRows("feedback", { deliverable_id: id });
-  const { rows: comments } = useRows("comments", { entity_id: id });
   const { rows: tasks } = useRows("tasks", { deliverable_id: id });
   const { rows: projects } = useRows("projects", { workspace_id: ws.id });
   const { rows: clients } = useRows("clients", { workspace_id: ws.id });
@@ -36,7 +38,6 @@ export function DeliverableDetail() {
   const [record, setRecord] = useState(false);
   const [del, setDel] = useState(false);
   const [newTask, setNewTask] = useState(false);
-  const [note, setNote] = useState("");
 
   const sorted = useMemo(() => [...versions].sort((a, b) => b.number - a.number), [versions]);
   if (loading) return <div className="page"><div className="spinner" /></div>;
@@ -51,13 +52,7 @@ export function DeliverableDetail() {
   const over = overRevisionLimit(d, item);
   const link = reviewUrl(d.review_token);
 
-  const send = () => run(async () => {
-    const upd = await sendForReview(ws, me, d);
-    if (client?.phone) window.open(reviewWhatsApp(ws, client, upd), "_blank", "noopener");
-    else { await navigator.clipboard?.writeText(link).catch(() => {}); toast(L("Review link copied. Add the client's WhatsApp number to send it in one tap.", "تم نسخ لينك المراجعة. أضف رقم واتساب العميل للإرسال بضغطة.")); }
-  }, L("Marked as sent for review", "اتعلّمت إنها اتبعتت للمراجعة"));
   const copy = () => navigator.clipboard?.writeText(link).then(() => toast(L("Review link copied", "تم نسخ لينك المراجعة")));
-  const addComment = (e: React.FormEvent) => { e.preventDefault(); if (!note.trim()) return; run(async () => { await api.insert("comments", { workspace_id: ws.id, entity_type: "deliverable", entity_id: d.id, author_name: me.name, body: note.trim() }); setNote(""); }); };
 
   return <div className="page">
     <div className="page-head">
@@ -68,8 +63,8 @@ export function DeliverableDetail() {
       </div>
       <div className="row">
         <button className="btn" onClick={() => setUpload(true)}><Upload />{L("Upload new version", "رفع نسخة جديدة")}</button>
-        {(d.status === "draft" || d.status === "changes") && <button className="btn btn--wa" onClick={send} disabled={busy || d.current_version < 1}><Send />{L("Send to client on WhatsApp", "ابعت للعميل على واتساب")}</button>}
-        {d.status === "in_review" && client?.phone && <a className="btn btn--wa" href={reminderWhatsApp(ws, client, d)} target="_blank" rel="noopener"><MessageCircle />{L("Send reminder", "ابعت تذكير")}</a>}
+        {(d.status === "draft" || d.status === "changes") && client && d.current_version > 0 && <ChannelButton client={client} before={() => sendForReview(ws, me, d)} build={() => reviewMsg(ws, client, d)} label={() => L("Send to client", "ابعت للعميل")} />}
+        {d.status === "in_review" && client && <ChannelButton client={client} primary={false} build={() => { const m = reviewMsg(ws, client, d); return { ...m, text: L("Reminder: ", "تذكير: ") + m.text }; }} label={() => L("Send reminder", "ابعت تذكير")} />}
         <Popover trigger={open => <button className="icon-btn" onClick={open} aria-label={L("More", "المزيد")}><MoreHorizontal /></button>}>{close => <>
           <button onClick={() => { close(); copy(); }}><Copy />{L("Copy review link", "نسخ لينك المراجعة")}</button>
           <a href={link} target="_blank" rel="noopener" onClick={close}><ExternalLink />{L("Open client view", "افتح صفحة العميل")}</a>
@@ -153,11 +148,8 @@ export function DeliverableDetail() {
         </div>
 
         <div className="card">
-          <div className="card__h"><h3>{L("Internal notes", "ملاحظات داخلية")}</h3><span className="faint small">{L("team only", "للفريق فقط")}</span></div>
-          <div className="card__b stack">
-            {comments.sort((a, b) => a.created_at.localeCompare(b.created_at)).map(c => <div key={c.id} className="row" style={{ alignItems: "flex-start", flexWrap: "nowrap" }}><Avatar name={c.author_name} size="sm" /><div><b className="small">{c.author_name}</b> <span className="faint small">{ago(c.created_at, lang)}</span><p style={{ whiteSpace: "pre-wrap" }}>{c.body}</p></div></div>)}
-            <form onSubmit={addComment} className="row" style={{ flexWrap: "nowrap" }}><input className="inp" value={note} onChange={e => setNote(e.target.value)} placeholder={L("Write a note for the team…", "اكتب ملاحظة للفريق…")} /><button className="btn" disabled={!note.trim()}>{L("Post", "نشر")}</button></form>
-          </div>
+          <div className="card__h"><h3>{L("Conversation", "المحادثة")}</h3><span className="faint small">{L("internal or with the client", "داخلي أو مع العميل")}</span></div>
+          <Thread type="deliverable" threadId={d.id} client={client || null} projectId={d.project_id} deliverable={d} height={360} />
         </div>
       </div>
     </div>

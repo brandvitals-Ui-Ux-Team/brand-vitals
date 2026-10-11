@@ -1,6 +1,6 @@
 // Demo workspace with fictional sample data, so every screen has something real to show.
 import { token, uid } from "./backend";
-import type { Activity, ChangeOrder, Client, Deliverable, Feedback, Member, Project, ScopeItem, SessionUser, Task, Tables, TableName, Version, Workspace } from "./types";
+import type { Activity, ChangeOrder, Client, Deliverable, Feedback, Member, Message, Project, ScopeItem, SessionUser, Task, Tables, TableName, Version, Workspace } from "./types";
 
 type DB = { [K in TableName]: Tables[K][] };
 const ago = (days: number, hours = 0) => new Date(Date.now() - days * 86400000 - hours * 3600000).toISOString();
@@ -28,9 +28,9 @@ export function seed(u: SessionUser): DB {
   const [, mona, karim, salma] = team;
 
   const clients: Client[] = [
-    { id: uid(), workspace_id: W, name: "Nile Roastery", contact_name: "Omar Hassan", phone: "201000000001", email: "omar@nileroastery.example", lang: "ar", notes: "Specialty coffee, 4 branches in Cairo.", portal_token: token(), created_at: ago(58) },
-    { id: uid(), workspace_id: W, name: "Atlas Residences", contact_name: "Faisal Al-Otaibi", phone: "966500000002", email: "faisal@atlas.example", lang: "ar", notes: "Riyadh luxury development launch.", portal_token: token(), created_at: ago(45) },
-    { id: uid(), workspace_id: W, name: "Glow Lab Skincare", contact_name: "Nour Samir", phone: "201000000003", email: "nour@glowlab.example", lang: "en", notes: "D2C skincare, Shopify store.", portal_token: token(), created_at: ago(30) }
+    { id: uid(), workspace_id: W, name: "Nile Roastery", contact_name: "Omar Hassan", phone: "201000000001", email: "omar@nileroastery.example", lang: "ar", notes: "Specialty coffee, 4 branches in Cairo.", portal_token: token(), preferred_channel: "whatsapp", chat_webhook: "", created_at: ago(58) },
+    { id: uid(), workspace_id: W, name: "Atlas Residences", contact_name: "Faisal Al-Otaibi", phone: "966500000002", email: "faisal@atlas.example", lang: "ar", notes: "Riyadh luxury development launch.", portal_token: token(), preferred_channel: "email", chat_webhook: "", created_at: ago(45) },
+    { id: uid(), workspace_id: W, name: "Glow Lab Skincare", contact_name: "Nour Samir", phone: "201000000003", email: "nour@glowlab.example", lang: "en", notes: "D2C skincare, Shopify store.", portal_token: token(), preferred_channel: "slack", chat_webhook: "", created_at: ago(30) }
   ];
   const [nile, atlas, glow] = clients;
 
@@ -134,5 +134,16 @@ export function seed(u: SessionUser): DB {
     A("review.sent", pGlow, deliverables[9].id, salma.name, "sent “Ramadan bundle static” v1 for review", 0)
   ];
 
-  return { workspaces: [ws], members: team, invites: [], clients, projects, scope_items: scope, deliverables, versions, feedback, change_orders: changeOrders, tasks, comments: [], activity };
+  const M = (thread_type: Message["thread_type"], thread_id: string, client: Client, visibility: Message["visibility"], who: Member | null, body: string, hours: number, classification: Message["classification"] = null): Message =>
+    ({ id: uid(), workspace_id: W, thread_type, thread_id, client_id: client.id, visibility, author_type: who ? "member" : "client", author_member_id: who ? who.id : null,
+      author_name: who ? who.name : client.contact_name, body, attachments: [], mentions: [], classification, created_at: ago(0, hours) });
+  const messages: Message[] = [
+    M("client", nile.id, nile, "client", mona, "صباح الخير يا عمر 👋 بوستات الأسبوع ده كلها في البوابة.", 30),
+    M("client", nile.id, nile, "client", null, "تمام، هبص عليهم النهارده. ممكن كمان نعمل بوست للفرع الجديد في التجمع؟", 26, "new_request"),
+    M("client", nile.id, nile, "internal", karim, "@Mona ده طلب جديد، مش في الـ 12 بوست. هعمله extra work.", 25),
+    M("deliverable", deliverables[7].id, atlas, "internal", karim, "Faisal wants a shorter intro. I'll cut the drone shot to 4s.", 20),
+    M("deliverable", deliverables[7].id, atlas, "client", karim, "Hi Faisal, v2 with the shorter intro and new music will be ready tomorrow.", 19),
+    M("project", pGlow.id, glow, "internal", salma, "Landing page copy is waiting on Nour's product list. Reminded her on Slack.", 8)
+  ];
+  return { workspaces: [ws], members: team, invites: [], clients, projects, scope_items: scope, deliverables, versions, feedback, change_orders: changeOrders, tasks, comments: [], activity, messages, webhooks: [] };
 }

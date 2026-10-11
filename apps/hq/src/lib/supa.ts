@@ -6,7 +6,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Backend, CODecision, Filter, ReviewResponse, Row } from "./backend";
 import { uid } from "./backend";
 import { emitChange } from "./bus";
-import type { ChangeOrderPayload, ID, PortalPayload, ReviewPayload, SessionUser, TableName, Workspace } from "./types";
+import type { ChangeOrderPayload, ID, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Workspace } from "./types";
 
 const toUser = (u: { id: string; email?: string; user_metadata?: Record<string, unknown> } | null | undefined): SessionUser | null =>
   u ? { id: u.id, email: u.email || "", name: String((u.user_metadata && u.user_metadata.name) || (u.email || "").split("@")[0]) } : null;
@@ -18,6 +18,17 @@ export class SupabaseBackend implements Backend {
   sb: SupabaseClient;
   constructor(url: string, key: string) {
     this.sb = createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    // Live updates: new messages, activity and status changes refresh every open screen (RLS applies).
+    this.sb.auth.onAuthStateChange((_e, s) => { if (s) this.live(); });
+  }
+  private channel: ReturnType<SupabaseClient["channel"]> | null = null;
+  private live() {
+    if (this.channel) return;
+    this.channel = this.sb.channel("hq-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => emitChange())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "activity" }, () => emitChange())
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "deliverables" }, () => emitChange())
+      .subscribe();
   }
   async session() { const { data } = await this.sb.auth.getSession(); return toUser(data.session?.user); }
   async signIn(email: string, password: string) {
@@ -88,6 +99,20 @@ export class SupabaseBackend implements Backend {
   }
   async reviewRespond(token: string, r: ReviewResponse) {
     const { error } = await this.sb.rpc("hq_review_respond", { p_token: token, p_action: r.action, p_name: r.name, p_comment: r.comment, p_pins: r.pins || [] }); fail(error);
+  }
+  async reviewMessages(token: string) {
+    const { data, error } = await this.sb.rpc("hq_review_messages", { p_token: token }); fail(error);
+    return (data as SharedMessage[]) || [];
+  }
+  async reviewMessage(token: string, name: string, body: string) {
+    const { error } = await this.sb.rpc("hq_review_message", { p_token: token, p_name: name, p_body: body }); fail(error);
+  }
+  async portalMessages(token: string) {
+    const { data, error } = await this.sb.rpc("hq_portal_messages", { p_token: token }); fail(error);
+    return (data as SharedMessage[]) || [];
+  }
+  async portalMessage(token: string, name: string, body: string) {
+    const { error } = await this.sb.rpc("hq_portal_message", { p_token: token, p_name: name, p_body: body }); fail(error);
   }
   async portalGet(token: string) {
     const { data, error } = await this.sb.rpc("hq_portal_get", { p_token: token }); fail(error);

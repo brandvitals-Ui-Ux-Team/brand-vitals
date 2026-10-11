@@ -2,6 +2,7 @@ import { ArrowLeft, FileSignature, FolderKanban, Inbox, MoreHorizontal, Pencil, 
 import { useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Board } from "../components/Board";
+import { Thread } from "../components/Thread";
 import { DeliverableForm, ProjectForm, ScopeForm } from "../components/Forms";
 import { Avatar, Confirm, COPill, Empty, KIND_LABEL, Popover, StatusPill, Thumb, useAction } from "../components/ui";
 import { summary } from "../lib/activity";
@@ -51,7 +52,7 @@ export function Projects() {
   </div>;
 }
 
-type Tab = "deliverables" | "board" | "scope" | "co" | "activity";
+type Tab = "deliverables" | "chat" | "board" | "scope" | "co" | "activity";
 
 export function ProjectDetail() {
   const { id = "" } = useParams();
@@ -83,7 +84,7 @@ export function ProjectDetail() {
   const client = clients.find(c => c.id === p.client_id);
   const latest = (did: string) => versions.filter(v => v.deliverable_id === did).sort((a, b) => b.number - a.number)[0];
   const rec = cos.filter(c => c.status === "approved").reduce((s, c) => s + Number(c.amount), 0);
-  const TABS: [Tab, string, string, number][] = [["deliverables", "Deliverables", "التسليمات", deliverables.length], ["board", "Tasks", "المهام", tasks.filter(t => t.status !== "done").length], ["scope", "What's included", "المتفق عليه", scope.length], ["co", "Extra work", "الشغل الإضافي", cos.length], ["activity", "Activity", "النشاط", 0]];
+  const TABS: [Tab, string, string, number][] = [["deliverables", "Deliverables", "التسليمات", deliverables.length], ["chat", "Chat", "المحادثة", 0], ["board", "Tasks", "المهام", tasks.filter(t => t.status !== "done").length], ["scope", "What's included", "المتفق عليه", scope.length], ["co", "Extra work", "الشغل الإضافي", cos.length], ["activity", "Activity", "النشاط", 0]];
 
   return <div className="page">
     <div className="page-head">
@@ -110,6 +111,8 @@ export function ProjectDetail() {
         {d.out_of_scope && <span className="pill pill--violet pill--plain hide-sm">{L("Over limit", "فوق الحد")}</span>}
         <StatusPill s={d.status} />
       </Link>)}</div>}</div>}
+
+    {tab === "chat" && <div className="card"><Thread type="project" threadId={p.id} client={client || null} projectId={p.id} height={480} /></div>}
 
     {tab === "board" && <Board tasks={tasks} projects={projects} projectId={p.id} openId={openTask} onOpen={setOpenTask} />}
 

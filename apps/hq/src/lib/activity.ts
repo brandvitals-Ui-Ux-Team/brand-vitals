@@ -16,7 +16,10 @@ const AR: [RegExp, string][] = [
   [/^created task/, "أنشأ المهمة"],
   [/^added client/, "أضاف العميل"],
   [/^completed/, "أنجز"],
-  [/^invited/, "دعا"]
+  [/^invited/, "دعا"],
+  [/^wrote:/, "كتب:"],
+  [/^mentioned (.+?):/, "أشار لـ $1:"],
+  [/^deleted/, "حذف"]
 ];
 export function summary(text: string, lang: Lang) {
   if (lang !== "ar") return text;

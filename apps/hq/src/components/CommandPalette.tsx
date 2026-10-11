@@ -35,6 +35,8 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
       { group: G.nav, label: L("Approvals", "الموافقات"), icon: <Inbox />, go: go("/approvals") },
       { group: G.nav, label: L("My tasks", "مهامي"), icon: <CheckSquare />, go: go("/tasks") },
       { group: G.nav, label: L("Calendar", "التقويم"), icon: <CalendarDays />, go: go("/calendar") },
+      { group: G.nav, label: L("Inbox", "المحادثات"), icon: <Inbox />, go: go("/inbox") },
+      { group: G.nav, label: L("Integrations", "الربط"), icon: <Settings />, go: go("/integrations") },
       { group: G.nav, label: L("Extra work", "الشغل الإضافي"), icon: <FileSignature />, go: go("/extra-work") },
       { group: G.nav, label: L("History", "السجل"), icon: <ScrollText />, go: go("/history") },
       { group: G.nav, label: L("Team", "الفريق"), icon: <Users />, go: go("/team") },

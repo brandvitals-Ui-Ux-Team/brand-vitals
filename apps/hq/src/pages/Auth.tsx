@@ -1,4 +1,4 @@
-import { CheckCircle2, MessageCircle, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, MessageCircle, MessagesSquare, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { api, isDemo } from "../lib/api";
 import { useI18n } from "../lib/i18n";
@@ -30,9 +30,10 @@ export function Auth() {
     <div className="auth__side">
       <img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals Approve" style={{ height: 30, width: "auto" }} />
       <div style={{ display: "grid", gap: 26 }}>
-        <h2>{L("Stop free revisions. Get approvals on WhatsApp.", "وقّف التعديلات المجانية. خُد الموافقات على واتساب.")}</h2>
+        <h2>{L("Every client conversation, approved and billed.", "كل كلام مع العميل، متوافق عليه ومتحاسب.")}</h2>
         <ul>
-          <li><MessageCircle />{L("Clients review and approve from a WhatsApp link. No login, no app to install.", "العميل يراجع ويوافق من لينك على واتساب. من غير تسجيل ولا تطبيق.")}</li>
+          <li><MessageCircle />{L("Clients review, comment on the exact spot and approve from one link: by email, WhatsApp, Slack, Teams or SMS. No login.", "العميل يراجع ويعلّق على النقطة بالظبط ويوافق من لينك واحد: إيميل أو واتساب أو Slack أو Teams أو SMS. من غير تسجيل.")}</li>
+          <li><MessagesSquare />{L("Team and client chat next to the work, with internal notes the client never sees.", "شات الفريق والعميل جنب الشغل، وملاحظات داخلية العميل عمره ما يشوفها.")}</li>
           <li><ShieldCheck />{L("Every request is checked against the contract: revisions counted, extra work flagged.", "كل طلب يتقارن بالعقد: التعديلات بتتعد، والشغل الإضافي بيتعلّم عليه.")}</li>
           <li><Sparkles />{L("Requests outside the agreement become priced extra work the client approves in one tap.", "الطلبات اللي برا الاتفاق بتتحوّل لشغل إضافي بسعر، والعميل يوافق بضغطة.")}</li>
           <li><ScrollText />{L("A history of who approved what, and when. No more “I never said that”.", "سجل بمين وافق على إيه وإمتى. خلاص مفيش «أنا ما قلتش كده».")}</li>

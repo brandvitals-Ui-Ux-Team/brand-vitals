@@ -11,7 +11,8 @@ export interface Member { id: ID; workspace_id: ID; user_id: ID; role: Role; nam
 export interface Invite { id: ID; workspace_id: ID; email: string; role: Role; token: string; accepted_at: string | null; created_at: string }
 
 export interface Client {
-  id: ID; workspace_id: ID; name: string; contact_name: string; phone: string; email: string; lang: Lang; notes: string; portal_token: string; created_at: string;
+  id: ID; workspace_id: ID; name: string; contact_name: string; phone: string; email: string; lang: Lang; notes: string; portal_token: string;
+  preferred_channel: Channel; chat_webhook: string; created_at: string;
 }
 
 export type ProjectStatus = "active" | "paused" | "done";
@@ -67,9 +68,26 @@ export interface Activity {
   id: ID; workspace_id: ID; type: string; project_id: ID | null; entity_id: ID | null; actor: string; summary: string; data: Record<string, unknown>; created_at: string;
 }
 
+export type Channel = "email" | "whatsapp" | "sms" | "slack" | "teams" | "link";
+
+// Conversations: a thread lives on a client, a project or a deliverable.
+// "internal" messages are team-only; "client" messages are shared with the client.
+export type ThreadType = "client" | "project" | "deliverable";
+export interface Attachment { url: string; name: string; type: string }
+export interface Message {
+  id: ID; workspace_id: ID; thread_type: ThreadType; thread_id: ID; client_id: ID | null;
+  visibility: "internal" | "client"; author_type: "member" | "client"; author_member_id: ID | null; author_name: string;
+  body: string; attachments: Attachment[]; mentions: ID[]; classification: Classification | null; created_at: string;
+}
+export interface SharedMessage { author_name: string; author_type: "member" | "client"; body: string; attachments: Attachment[]; created_at: string }
+
+export type WebhookKind = "generic" | "slack" | "teams";
+export interface Webhook { id: ID; workspace_id: ID; name: string; kind: WebhookKind; url: string; events: string[]; secret: string; active: boolean; created_at: string }
+
 export interface Tables {
   workspaces: Workspace; members: Member; invites: Invite; clients: Client; projects: Project; scope_items: ScopeItem;
   deliverables: Deliverable; versions: Version; feedback: Feedback; change_orders: ChangeOrder; tasks: Task; comments: Comment; activity: Activity;
+  messages: Message; webhooks: Webhook;
 }
 export type TableName = keyof Tables;
 

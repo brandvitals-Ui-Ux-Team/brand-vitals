@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { createDeliverable, saveClient, saveProject, saveScopeItem, saveTask } from "../lib/actions";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
-import type { Client, DeliverableKind, Period, Priority, Project, ScopeItem, Task, TaskStatus } from "../lib/types";
+import type { Channel, Client, DeliverableKind, Period, Priority, Project, ScopeItem, Task, TaskStatus } from "../lib/types";
 import { useWorkspace } from "../lib/ws";
 import { Field, KIND_LABEL, Modal, useAction } from "./ui";
+import { ChannelIcon } from "./ChannelButton";
+import { CHANNELS } from "../lib/channels";
 
 const KINDS = Object.keys(KIND_LABEL) as DeliverableKind[];
 export const PROJECT_COLORS = ["#2EE6A6", "#7C8CFF", "#FFB547", "#FF6B78", "#00CFFF", "#B49BFF", "#5BD16E", "#F28C38"];
@@ -66,7 +68,7 @@ export function ClientForm({ onClose, client }: { onClose: () => void; client?: 
   const { L } = useI18n();
   const { ws, me } = useWorkspace();
   const nav = useNavigate();
-  const [v, setV] = useState<Partial<Client>>(client || { lang: "ar" });
+  const [v, setV] = useState<Partial<Client>>(client || { lang: "ar", preferred_channel: "whatsapp" });
   const { busy, run } = useAction();
   const set = (k: keyof Client) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setV({ ...v, [k]: e.target.value });
   const submit = (e: React.FormEvent) => {
@@ -87,6 +89,12 @@ export function ClientForm({ onClose, client }: { onClose: () => void; client?: 
         <Field label={L("Email", "البريد")}><input className="inp" type="email" value={v.email || ""} onChange={set("email")} dir="ltr" /></Field>
         <Field label={L("Client's language", "لغة العميل")}><select className="sel" value={v.lang} onChange={set("lang")}><option value="ar">العربية</option><option value="en">English</option></select></Field>
       </div>
+      <Field label={L("How should work reach them?", "الشغل يوصلهم إزاي؟")} hint={L("Every review, reminder and extra-work request uses this channel. You can still pick another one each time.", "كل مراجعة وتذكير وطلب شغل إضافي هيتبعت على القناة دي. وتقدر تختار غيرها في أي مرة.")}>
+        <div className="chips">{(Object.keys(CHANNELS) as Channel[]).map(ch => <button type="button" key={ch} className={"chip-btn" + ((v.preferred_channel || "whatsapp") === ch ? " on" : "")} onClick={() => setV({ ...v, preferred_channel: ch })}><ChannelIcon ch={ch} />{L(CHANNELS[ch].en, CHANNELS[ch].ar)}</button>)}</div>
+      </Field>
+      {(v.preferred_channel === "slack" || v.preferred_channel === "teams") && <Field label={L("Incoming webhook URL for their shared channel", "لينك الـ webhook لقناتهم المشتركة")} hint={v.preferred_channel === "slack" ? L("Slack → Apps → Incoming Webhooks → pick the shared channel (Slack Connect).", "Slack ← Apps ← Incoming Webhooks ← اختار القناة المشتركة.") : L("Teams channel → Connectors / Workflows → Incoming webhook.", "قناة Teams ← Connectors أو Workflows ← Incoming webhook.")}>
+        <input className="inp mono" value={v.chat_webhook || ""} onChange={set("chat_webhook")} dir="ltr" placeholder={v.preferred_channel === "slack" ? "https://hooks.slack.com/services/…" : "https://….webhook.office.com/…"} />
+      </Field>}
       <Field label={L("Notes", "ملاحظات")}><textarea className="txt" value={v.notes || ""} onChange={set("notes")} /></Field>
     </form>
   </Modal>;

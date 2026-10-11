@@ -3,8 +3,10 @@ import { useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ClientForm, ProjectForm } from "../components/Forms";
 import { SendFlow } from "../components/SendFlow";
+import { Thread } from "../components/Thread";
 import { Avatar, Confirm, COPill, Empty, Popover, StatusPill, useAction, useToast } from "../components/ui";
-import { portalWhatsApp } from "../lib/actions";
+import { ChannelButton } from "../components/ChannelButton";
+import { reminderMsg } from "../lib/channels";
 import { api } from "../lib/api";
 import { date, money, portalUrl, waLink } from "../lib/format";
 import { useRows } from "../lib/hooks";
@@ -98,6 +100,10 @@ export function ClientDetail() {
       <div className="card kpi"><span className="kpi__l">{L("Waiting on them", "منتظر ردهم")}</span><span className="kpi__v">{ds.filter(d => d.status === "in_review").length}</span></div>
       <div className="card kpi kpi--accent"><span className="kpi__l">{L("Recovered", "المُسترد")}</span><span className="kpi__v">{money(myCos.filter(x => x.status === "approved").reduce((s, x) => s + Number(x.amount), 0), ws.currency, lang)}</span></div>
     </div>
+    <div className="card">
+      <div className="card__h"><h2>{L("Conversation", "المحادثة")}</h2><span className="faint small">{L("internal notes and messages with", "ملاحظات داخلية ورسايل مع")} {c.name}</span></div>
+      <Thread type="client" threadId={c.id} client={c} height={380} />
+    </div>
     <div className="split">
       <div className="card">
         <div className="card__h"><h2>{L("Deliverables", "التسليمات")}</h2></div>
@@ -110,7 +116,7 @@ export function ClientDetail() {
           <p className="muted small">{L("One permanent link for this client: everything waiting for their approval, extra work to confirm, and recent approvals. Pin it in your WhatsApp chat with them.", "لينك واحد ثابت للعميل ده: كل اللي مستني موافقته، والشغل الإضافي، وآخر الموافقات. ثبّته في شات الواتساب معاه.")}</p>
           <div className="row" style={{ flexWrap: "nowrap" }}><input className="inp mono" readOnly dir="ltr" value={portalUrl(c.portal_token)} onFocus={e => e.target.select()} /><button className="icon-btn" onClick={() => navigator.clipboard?.writeText(portalUrl(c.portal_token)).then(() => toast(L("Portal link copied", "اتنسخ لينك البوابة")))} aria-label={L("Copy", "نسخ")}><Copy /></button></div>
           <div className="row">
-            {c.phone && <a className="btn btn--sm btn--wa" href={portalWhatsApp(ws, c, ds.filter(d => d.status === "in_review").length)} target="_blank" rel="noopener"><MessageCircle />{L("Send on WhatsApp", "ابعت على واتساب")}</a>}
+            <ChannelButton small client={c} build={() => reminderMsg(ws, c, ds.filter(d => d.status === "in_review").length)} label={() => L("Send portal link", "ابعت لينك البوابة")} />
             <a className="btn btn--sm" href={portalUrl(c.portal_token)} target="_blank" rel="noopener"><ExternalLink />{L("Preview", "معاينة")}</a>
             <Link className="btn btn--sm btn--ghost" to="/calendar"><CalendarDays />{L("Calendar", "التقويم")}</Link>
           </div>

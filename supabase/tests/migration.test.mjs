@@ -5,7 +5,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import fs from "node:fs";
 
-const migrations = ["20261011000000_vitals_hq.sql", "20261012000000_approve_v2.sql"].map(f => fs.readFileSync(new URL("../migrations/" + f, import.meta.url), "utf8"));
+const migrations = ["20261011000000_vitals_hq.sql", "20261012000000_approve_v2.sql", "20261013000000_channels_chat_integrations.sql"].map(f => fs.readFileSync(new URL("../migrations/" + f, import.meta.url), "utf8"));
 const db = new PGlite({ extensions: { pgcrypto } });
 const ok = (c, m) => { if (!c) { console.error("FAIL:", m); process.exitCode = 1; } else console.log("ok  ", m); };
 
@@ -130,8 +130,42 @@ ok((await as(null, "anon", "select public.hq_portal_get('nope') r")).rows[0].r =
 let anonList = (await as(null, "anon", "select count(*)::int n from public.clients")).rows[0].n;
 ok(anonList === 0, "anon still cannot list clients (portal tokens stay private)");
 
+// v3: chat + channels + webhooks
+const proj2 = (await as(A, "authenticated", "insert into public.projects (workspace_id, client_id, name) values ($1, $2, 'Chat project') returning *", [w.id, c.id])).rows[0];
+const d2 = (await as(A, "authenticated", "insert into public.deliverables (workspace_id, project_id, title, review_token, status, current_version) values ($1, $2, 'Chat item', 'tok999', 'in_review', 1) returning *", [w.id, proj2.id])).rows[0];
+await as(A, "authenticated", "insert into public.messages (workspace_id, thread_type, thread_id, client_id, visibility, author_type, author_name, body) values ($1, 'deliverable', $2, $3, 'internal', 'member', 'Ali', 'internal only: client is picky')", [w.id, d2.id, c.id]);
+await as(A, "authenticated", "insert into public.messages (workspace_id, thread_type, thread_id, client_id, visibility, author_type, author_name, body) values ($1, 'deliverable', $2, $3, 'client', 'member', 'Ali', 'Here is v1 for you')", [w.id, d2.id, c.id]);
+let shared = (await as(null, "anon", "select public.hq_review_messages('tok999') r")).rows[0].r;
+ok(shared.length === 1 && shared[0].body === "Here is v1 for you", "client sees only shared messages, never internal ones");
+await as(null, "anon", "select public.hq_review_message('tok999', 'Omar', 'Looks good, can you also make a version for TikTok?')");
+const flagged = (await as(A, "authenticated", "select classification, author_type, visibility from public.messages where thread_id = $1 and author_type = 'client'", [d2.id])).rows[0];
+ok(flagged.author_type === "client" && flagged.visibility === "client" && flagged.classification === "new_request", "client chat message saved and flagged as extra work");
+const actMsg = (await as(A, "authenticated", "select count(*)::int n from public.activity where type = 'message.client' and workspace_id = $1", [w.id])).rows[0].n;
+ok(actMsg === 1, "client message lands in the activity feed (and webhooks)");
+await as(null, "anon", "select public.hq_portal_message($1, 'Omar', 'When is the next shoot?')", [ptok]);
+const pm = (await as(null, "anon", "select public.hq_portal_messages($1) r", [ptok])).rows[0].r;
+ok(pm.length === 1 && pm[0].author_type === "client", "portal conversation works by token");
+let fake = false;
+try { await as(A, "authenticated", "insert into public.messages (workspace_id, thread_type, thread_id, visibility, author_type, author_name, body) values ($1, 'client', $2, 'client', 'client', 'Omar', 'fake')", [w.id, c.id]); } catch { fake = true; }
+ok(fake, "team members cannot post messages pretending to be the client");
+const seenB = (await as(B, "authenticated", "select count(*)::int n from public.messages where workspace_id = $1", [wb.id])).rows[0].n;
+ok(seenB === 0, "RLS: other agencies don't see the conversation");
+let directFn = false;
+try { await as(null, "anon", "select public.hq_client_message_insert(null::public.clients, 'client', gen_random_uuid(), 'x', 'y', null)"); } catch { directFn = true; }
+ok(directFn, "internal message helper is not callable from outside");
+let memberHook = false;
+try { await as(B, "authenticated", "insert into public.webhooks (workspace_id, url) values ($1, 'https://hooks.example.com/x')", [w.id]); } catch { memberHook = true; }
+ok(memberHook, "only admins of a workspace can add webhooks");
+let httpHook = false;
+try { await as(A, "authenticated", "insert into public.webhooks (workspace_id, url) values ($1, 'http://insecure.example.com')", [w.id]); } catch { httpHook = true; }
+ok(httpHook, "webhooks must use https");
+await as(A, "authenticated", "update public.clients set preferred_channel = 'email' where id = $1", [c.id]);
+let badCh = false;
+try { await as(A, "authenticated", "update public.clients set preferred_channel = 'fax' where id = $1", [c.id]); } catch { badCh = true; }
+ok(badCh, "client channel limited to supported channels");
+
 // cascade
 await as(A, "authenticated", `delete from public.projects where id = $1`, [p.id]);
-const left = (await as(A, "authenticated", `select (select count(*) from public.deliverables)::int d, (select count(*) from public.versions)::int v, (select count(*) from public.feedback)::int f`)).rows[0];
+const left = (await as(A, "authenticated", `select (select count(*) from public.deliverables where id = $1)::int d, (select count(*) from public.versions where deliverable_id = $1)::int v, (select count(*) from public.feedback where deliverable_id = $1)::int f`, [d.id])).rows[0];
 ok(left.d === 0 && left.v === 0 && left.f === 0, "deleting a project cascades to deliverables, versions, feedback");
 console.log(process.exitCode ? "\nSOME CHECKS FAILED" : "\nALL CHECKS PASSED");

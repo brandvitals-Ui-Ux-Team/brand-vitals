@@ -7,20 +7,20 @@ import { nowIso, token, uid } from "./backend";
 import { emitChange } from "./bus";
 import { classify } from "./logic";
 import { seed } from "./seed";
-import type { ChangeOrderPayload, ID, Pin, PortalPayload, ReviewPayload, SessionUser, TableName, Tables, Workspace } from "./types";
+import type { ChangeOrderPayload, Client, ID, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, ThreadType, Workspace } from "./types";
 
 const KEY = "hq-demo-db-v1";
 const USER_KEY = "hq-demo-user";
 type DB = { [K in TableName]: Tables[K][] };
 
-const empty = (): DB => ({ workspaces: [], members: [], invites: [], clients: [], projects: [], scope_items: [], deliverables: [], versions: [], feedback: [], change_orders: [], tasks: [], comments: [], activity: [] });
+const empty = (): DB => ({ workspaces: [], members: [], invites: [], clients: [], projects: [], scope_items: [], deliverables: [], versions: [], feedback: [], change_orders: [], tasks: [], comments: [], activity: [], messages: [], webhooks: [] });
 
 function load(): DB {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const db: DB = Object.assign(empty(), JSON.parse(raw));
-      db.clients.forEach(c => { if (!c.portal_token) c.portal_token = token(); });
+      db.clients.forEach(c => { if (!c.portal_token) c.portal_token = token(); if (!c.preferred_channel) c.preferred_channel = c.phone ? "whatsapp" : "email"; if (c.chat_webhook == null) c.chat_webhook = ""; });
       db.deliverables.forEach(d => { if (d.publish_date === undefined) d.publish_date = null; if (d.reminded_at === undefined) d.reminded_at = null; });
       db.feedback.forEach(f => { if (!Array.isArray(f.pins)) f.pins = []; });
       db.workspaces.forEach(w => { if (!w.remind_after_days) w.remind_after_days = 2; });
@@ -132,6 +132,7 @@ export class LocalBackend implements Backend {
   async insert<T extends TableName>(table: T, row: Partial<Row<T>>) {
     const full = { id: uid(), created_at: nowIso(), ...row } as Row<T>;
     (this.db[table] as Row<T>[]).push(full);
+    if (table === "activity") this.fire(full as unknown as Parameters<LocalBackend["fire"]>[0]);
     this.save();
     return { ...full };
   }
@@ -148,9 +149,9 @@ export class LocalBackend implements Backend {
     const i = rows.findIndex(x => x.id === id);
     if (i >= 0) rows.splice(i, 1);
     const kids: [TableName, string][] = ({
-      clients: [["projects", "client_id"]],
-      projects: [["scope_items", "project_id"], ["deliverables", "project_id"], ["change_orders", "project_id"], ["tasks", "project_id"]],
-      deliverables: [["versions", "deliverable_id"], ["feedback", "deliverable_id"], ["comments", "entity_id"]],
+      clients: [["projects", "client_id"], ["messages", "client_id"]],
+      projects: [["scope_items", "project_id"], ["deliverables", "project_id"], ["change_orders", "project_id"], ["tasks", "project_id"], ["messages", "thread_id"]],
+      deliverables: [["versions", "deliverable_id"], ["feedback", "deliverable_id"], ["comments", "entity_id"], ["messages", "thread_id"]],
       tasks: [["comments", "entity_id"]]
     } as Partial<Record<TableName, [TableName, string][]>>)[table] || [];
     for (const [child, col] of kids)
@@ -170,8 +171,18 @@ export class LocalBackend implements Backend {
   }
 
   // ---- public client endpoints ----
+  // Demo mode: deliver activity to the workspace's webhooks from the browser
+  // (production does this in the database with pg_net).
+  private fire(a: { workspace_id: ID; type: string; actor: string; summary: string; project_id: ID | null; entity_id: ID | null; data: Record<string, unknown>; created_at: string }) {
+    for (const h of this.db.webhooks.filter(w => w.workspace_id === a.workspace_id && w.active && w.events.includes(a.type))) {
+      if (h.kind === "generic") fetch(h.url, { method: "POST", mode: "no-cors", body: JSON.stringify({ event: a.type, ...a, secret: h.secret }) }).catch(() => {});
+      else fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ channel: h.kind, webhook: h.url, text: `${a.actor} ${a.summary}` }) }).catch(() => {});
+    }
+  }
   private activity(workspace_id: ID, type: string, project_id: ID | null, entity_id: ID | null, actor: string, summary: string, data: Record<string, unknown> = {}) {
-    this.db.activity.push({ id: uid(), workspace_id, type, project_id, entity_id, actor, summary, data, created_at: nowIso() });
+    const a = { id: uid(), workspace_id, type, project_id, entity_id, actor, summary, data, created_at: nowIso() };
+    this.db.activity.push(a);
+    this.fire(a);
   }
   async reviewGet(tok: string): Promise<ReviewPayload | null> {
     const d = this.db.deliverables.find(x => x.review_token === tok);
@@ -227,6 +238,33 @@ export class LocalBackend implements Backend {
     co.status = dcs.action; co.decided_by = (dcs.name || "").trim().slice(0, 120) || "Client"; co.decided_at = nowIso();
     this.activity(co.workspace_id, "change_order." + dcs.action, co.project_id, co.id, co.decided_by, `${dcs.action} change order “${co.title}”`, { amount: co.amount, currency: co.currency });
     this.save();
+  }
+  // ---- conversations (client side) ----
+  private shared(threadId: ID, type: ThreadType): SharedMessage[] {
+    return this.db.messages.filter(m => m.thread_id === threadId && m.thread_type === type && m.visibility === "client")
+      .sort((a, b) => a.created_at.localeCompare(b.created_at))
+      .map(m => ({ author_name: m.author_name, author_type: m.author_type, body: m.body, attachments: m.attachments || [], created_at: m.created_at }));
+  }
+  private clientSays(c: Client, type: ThreadType, threadId: ID, name: string, body: string, projectId: ID | null) {
+    const b = (body || "").trim().slice(0, 4000);
+    if (!b) throw new Error("Message is empty");
+    const nm = (name || "").trim().slice(0, 120) || c.name;
+    const cls = classify(b).kind;
+    this.db.messages.push({ id: uid(), workspace_id: c.workspace_id, thread_type: type, thread_id: threadId, client_id: c.id, visibility: "client", author_type: "client",
+      author_member_id: null, author_name: nm, body: b, attachments: [], mentions: [], classification: cls === "new_request" ? cls : null, created_at: nowIso() });
+    this.activity(c.workspace_id, "message.client", projectId, threadId, nm, `wrote: “${b.slice(0, 140)}”`, { classification: cls, thread_type: type });
+    this.save();
+  }
+  async reviewMessages(tok: string) { const d = this.db.deliverables.find(x => x.review_token === tok); return d ? this.shared(d.id, "deliverable") : []; }
+  async reviewMessage(tok: string, name: string, body: string) {
+    const d = this.db.deliverables.find(x => x.review_token === tok); if (!d) throw new Error("Link not found");
+    const p = this.db.projects.find(x => x.id === d.project_id)!; const c = this.db.clients.find(x => x.id === p.client_id)!;
+    this.clientSays(c, "deliverable", d.id, name, body, d.project_id);
+  }
+  async portalMessages(tok: string) { const c = this.db.clients.find(x => x.portal_token === tok); return c ? this.shared(c.id, "client") : []; }
+  async portalMessage(tok: string, name: string, body: string) {
+    const c = this.db.clients.find(x => x.portal_token === tok); if (!c) throw new Error("Link not found");
+    this.clientSays(c, "client", c.id, name, body, null);
   }
   async portalGet(tok: string): Promise<PortalPayload | null> {
     const c = this.db.clients.find(x => x.portal_token === tok);
