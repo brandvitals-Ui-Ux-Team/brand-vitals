@@ -20,7 +20,8 @@
     "gen:pages": "node scripts/gen-pages.mjs",
     "test:api": "node --test api/tests/api.test.mjs",
     "build:crew": "npm run build --workspace apps/crew",
-    "dev:crew": "npm run dev --workspace apps/crew"
+    "dev:crew": "npm run dev --workspace apps/crew",
+    "deploy:pages": "npm run build && node scripts/deploy-pages.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

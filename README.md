@@ -129,3 +129,7 @@ Today it runs in demo mode: one shared store in the browser (`apps/crew/src/lib/
 ```bash
 npm run dev:crew   # Vite dev server for the Crew app on :5174
 ```
+
+## Preview on GitHub Pages
+
+The source repo stays private. `npm run deploy:pages` builds the site and pushes only the build output to the public repo `brandvitals-ui-ux-team.github.io`, live at https://brandvitals-ui-ux-team.github.io/. GitHub Pages is static, so server functions (`/api/*`) are not available there and both apps run in demo mode; use Vercel for production.
