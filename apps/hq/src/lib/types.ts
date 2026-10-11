@@ -19,6 +19,7 @@ export type ProjectStatus = "active" | "paused" | "done";
 export interface Project {
   id: ID; workspace_id: ID; client_id: ID; name: string; status: ProjectStatus; color: string;
   start_date: string | null; due_date: string | null; budget: number | null; created_at: string;
+  sync_targets: { clickup?: { list_id: string; name?: string }; asana?: { project_gid: string; name?: string } };
 }
 
 export type Period = "project" | "month";
@@ -34,6 +35,7 @@ export interface Deliverable {
   status: DeliverableStatus; due_date: string | null; assignee_id: ID | null; review_token: string;
   current_version: number; revision_count: number; out_of_scope: boolean; sent_at: string | null; approved_at: string | null;
   publish_date: string | null; reminded_at: string | null; created_at: string;
+  ad_ref: string; caption: string; auto_publish: boolean; publish_targets: PublishTarget[]; published_at: string | null; publish_error: string;
 }
 export interface Version {
   id: ID; workspace_id: ID; deliverable_id: ID; number: number; file_url: string; file_name: string; file_type: string;
@@ -84,10 +86,26 @@ export interface SharedMessage { author_name: string; author_type: "member" | "c
 export type WebhookKind = "generic" | "slack" | "teams";
 export interface Webhook { id: ID; workspace_id: ID; name: string; kind: WebhookKind; url: string; events: string[]; secret: string; active: boolean; created_at: string }
 
+export interface PublishTarget { network: "facebook" | "instagram"; id: string; name?: string }
+export type Provider = "clickup" | "asana" | "meta" | "google_ads" | "stripe" | "paymob" | "tap";
+export interface Connection { id: ID; workspace_id: ID; provider: Provider; account_label: string; settings: Record<string, unknown>; status: "active" | "error" | "revoked"; last_error: string; created_at: string }
+export interface ExternalLink { id: ID; workspace_id: ID; provider: string; entity_type: "deliverable" | "change_order" | "invoice"; entity_id: ID; external_id: string; url: string; created_at: string }
+export interface InvoiceLine { description: string; qty: number; unit_price: number }
+export type InvoiceStatus = "draft" | "sent" | "paid" | "void";
+export interface Invoice {
+  id: ID; workspace_id: ID; client_id: ID; project_id: ID | null; change_order_id: ID | null; number: string; title: string; lines: InvoiceLine[];
+  amount: number; currency: string; status: InvoiceStatus; provider: "" | "stripe" | "paymob" | "tap" | "manual"; payment_url: string; provider_ref: string;
+  token: string; due_date: string | null; sent_at: string | null; paid_at: string | null; created_at: string;
+}
+export interface InvoicePayload {
+  workspace: { name: string }; client: { name: string; lang: Lang };
+  invoice: Pick<Invoice, "number" | "title" | "lines" | "amount" | "currency" | "status" | "payment_url" | "due_date" | "sent_at" | "paid_at" | "created_at">;
+}
+
 export interface Tables {
   workspaces: Workspace; members: Member; invites: Invite; clients: Client; projects: Project; scope_items: ScopeItem;
   deliverables: Deliverable; versions: Version; feedback: Feedback; change_orders: ChangeOrder; tasks: Task; comments: Comment; activity: Activity;
-  messages: Message; webhooks: Webhook;
+  messages: Message; webhooks: Webhook; connections: Connection; external_links: ExternalLink; invoices: Invoice;
 }
 export type TableName = keyof Tables;
 

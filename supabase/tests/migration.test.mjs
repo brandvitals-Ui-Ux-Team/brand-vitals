@@ -5,7 +5,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import fs from "node:fs";
 
-const migrations = ["20261011000000_vitals_hq.sql", "20261012000000_approve_v2.sql", "20261013000000_channels_chat_integrations.sql"].map(f => fs.readFileSync(new URL("../migrations/" + f, import.meta.url), "utf8"));
+const migrations = ["20261011000000_vitals_hq.sql", "20261012000000_approve_v2.sql", "20261013000000_channels_chat_integrations.sql", "20261014000000_integrations_billing.sql"].map(f => fs.readFileSync(new URL("../migrations/" + f, import.meta.url), "utf8"));
 const db = new PGlite({ extensions: { pgcrypto } });
 const ok = (c, m) => { if (!c) { console.error("FAIL:", m); process.exitCode = 1; } else console.log("ok  ", m); };
 
@@ -163,6 +163,43 @@ await as(A, "authenticated", "update public.clients set preferred_channel = 'ema
 let badCh = false;
 try { await as(A, "authenticated", "update public.clients set preferred_channel = 'fax' where id = $1", [c.id]); } catch { badCh = true; }
 ok(badCh, "client channel limited to supported channels");
+
+// v4: integrations + billing
+await db.exec("reset role;");
+const conn = (await db.query("insert into public.connections (workspace_id, provider, account_label) values ($1, 'clickup', 'Agency A ClickUp') returning *", [w.id])).rows[0];
+await db.query("insert into public.connection_secrets (connection_id, data) values ($1, 'ciphertext')", [conn.id]);
+const seeConn = (await as(A, "authenticated", "select count(*)::int n from public.connections where workspace_id = $1", [w.id])).rows[0].n;
+ok(seeConn === 1, "members see their workspace's connections");
+const seeConnB = (await as(B, "authenticated", "select count(*)::int n from public.connections where workspace_id = $1", [wb.id])).rows[0].n;
+ok(seeConnB === 0, "other agencies don't see them");
+let secretRead = false;
+try { const r = await as(A, "authenticated", "select data from public.connection_secrets"); secretRead = r.rows.length > 0; } catch { secretRead = false; }
+ok(!secretRead, "connection secrets are not readable by app users (even admins)");
+let anonSecret = false;
+try { const r = await as(null, "anon", "select data from public.connection_secrets"); anonSecret = r.rows.length > 0; } catch { anonSecret = false; }
+ok(!anonSecret, "connection secrets are not readable anonymously");
+let connInsert = false;
+try { await as(A, "authenticated", "insert into public.connections (workspace_id, provider) values ($1, 'asana')", [w.id]); connInsert = true; } catch { connInsert = false; }
+ok(!connInsert, "connections can only be created by the server");
+await db.exec("reset role; insert into public.app_config values ('sync_secret', 's3cret') on conflict (key) do nothing;");
+let cfgRead = false;
+try { const r = await as(A, "authenticated", "select * from public.app_config"); cfgRead = r.rows.length > 0; } catch { cfgRead = false; }
+ok(!cfgRead, "app config (sync secret) is not readable by users");
+
+const invoice1 = (await as(A, "authenticated", "insert into public.invoices (workspace_id, client_id, number, title, amount, currency, lines) values ($1, $2, 'INV-0001', 'Extra post', 1500, 'EGP', '[{\"description\":\"Extra post\",\"qty\":1,\"unit_price\":1500}]') returning *", [w.id, c.id])).rows[0];
+ok((await as(null, "anon", "select public.hq_invoice_get($1) r", [invoice1.token])).rows[0].r === null, "draft invoices are not public");
+await as(A, "authenticated", "update public.invoices set status = 'sent', sent_at = now() where id = $1", [invoice1.id]);
+const pub = (await as(null, "anon", "select public.hq_invoice_get($1) r", [invoice1.token])).rows[0].r;
+ok(pub && pub.invoice.number === "INV-0001" && Number(pub.invoice.amount) === 1500, "sent invoice is visible to the client by token");
+let dupNum = false;
+try { await as(A, "authenticated", "insert into public.invoices (workspace_id, client_id, number) values ($1, $2, 'INV-0001')", [w.id, c.id]); } catch { dupNum = true; }
+ok(dupNum, "invoice numbers are unique per workspace");
+let negative = false;
+try { await as(A, "authenticated", "insert into public.invoices (workspace_id, client_id, number, amount) values ($1, $2, 'INV-0002', -5)", [w.id, c.id]); } catch { negative = true; }
+ok(negative, "invoice amounts can't be negative");
+await as(A, "authenticated", "update public.deliverables set ad_ref = 'meta:1234', caption = 'New menu!', auto_publish = true where id = $1", [d2.id]);
+const dd2 = (await as(A, "authenticated", "select ad_ref, auto_publish from public.deliverables where id = $1", [d2.id])).rows[0];
+ok(dd2.ad_ref === "meta:1234" && dd2.auto_publish === true, "deliverables carry ad and publishing settings");
 
 // cascade
 await as(A, "authenticated", `delete from public.projects where id = $1`, [p.id]);

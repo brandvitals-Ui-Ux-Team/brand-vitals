@@ -86,6 +86,7 @@ export function ChangeOrders() {
           <td className="hide-sm faint small">{date(c.decided_at || c.created_at, lang)}</td>
           <td><div className="row" style={{ justifyContent: "flex-end", flexWrap: "nowrap" }}>
             {c.status === "draft" && cl && <ChannelButton small client={cl} before={() => sendChangeOrder(ws, me, c)} build={() => extraWorkMsg(ws, cl, c, money(c.amount, c.currency, cl.lang))} label={() => L("Send", "إرسال")} />}
+            {c.status === "approved" && <Link className="btn btn--sm" to={"/invoices?new=1&from=" + c.id}>{L("Invoice", "فاتورة")}</Link>}
             {c.status === "sent" && cl && <ChannelButton small primary={false} client={cl} build={() => extraWorkMsg(ws, cl, c, money(c.amount, c.currency, cl.lang))} label={() => L("Resend", "إعادة إرسال")} />}
             <Popover trigger={open => <button className="icon-btn" onClick={open} aria-label={L("More", "المزيد")}><MoreHorizontal /></button>}>{close => <>
               <button onClick={() => { close(); navigator.clipboard?.writeText(coUrl(c.token)).then(() => toast(L("Link copied", "تم نسخ الرابط"))); }}><Copy />{L("Copy client link", "نسخ لينك العميل")}</button>

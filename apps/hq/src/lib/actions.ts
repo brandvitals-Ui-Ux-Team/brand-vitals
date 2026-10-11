@@ -18,7 +18,7 @@ export async function saveClient(ws: Workspace, me: Member, c: Partial<Client> &
 }
 export async function saveProject(ws: Workspace, me: Member, p: Partial<Project> & { id?: ID }) {
   if (p.id) return api.update("projects", p.id, p);
-  const row = await api.insert("projects", { workspace_id: ws.id, client_id: p.client_id!, name: p.name || "", status: "active", color: p.color || "#2EE6A6", start_date: p.start_date || null, due_date: p.due_date || null, budget: p.budget ?? null });
+  const row = await api.insert("projects", { workspace_id: ws.id, client_id: p.client_id!, name: p.name || "", status: "active", color: p.color || "#2EE6A6", start_date: p.start_date || null, due_date: p.due_date || null, budget: p.budget ?? null, sync_targets: {} });
   await log(ws, me.name, "project.created", `created project “${row.name}”`, row.id, row.id);
   return row;
 }
@@ -32,7 +32,8 @@ export async function createDeliverable(ws: Workspace, me: Member, d: Partial<De
   const row = await api.insert("deliverables", {
     workspace_id: ws.id, project_id: d.project_id!, scope_item_id: d.scope_item_id || null, title: d.title || "", kind: d.kind || "design",
     status: "draft", due_date: d.due_date || null, assignee_id: d.assignee_id || null, review_token: token(), current_version: 0, revision_count: 0,
-    out_of_scope: false, sent_at: null, approved_at: null, publish_date: d.publish_date || null, reminded_at: null
+    out_of_scope: false, sent_at: null, approved_at: null, publish_date: d.publish_date || null, reminded_at: null,
+    ad_ref: "", caption: "", auto_publish: false, publish_targets: [], published_at: null, publish_error: ""
   });
   await log(ws, me.name, "deliverable.created", `created deliverable “${row.title}”`, row.project_id, row.id);
   return row;
@@ -153,4 +154,16 @@ export const portalWhatsApp = (ws: Workspace, client: Client, count: number) => 
 export async function markReminded(items: Deliverable[]) {
   const at = nowIso();
   await Promise.all(items.map(d => api.update("deliverables", d.id, { reminded_at: at })));
+}
+
+// ---------- invoices ----------
+export async function createInvoice(ws: Workspace, me: Member, inv: { client_id: ID; project_id?: ID | null; change_order_id?: ID | null; title: string; lines: { description: string; qty: number; unit_price: number }[]; currency: string; due_date?: string | null }) {
+  const existing = await api.list("invoices", { workspace_id: ws.id });
+  const next = existing.reduce((m, i) => Math.max(m, Number((i.number.match(/(\d+)$/) || [])[1] || 0)), 0) + 1;
+  const amount = inv.lines.reduce((s, l) => s + Number(l.qty || 0) * Number(l.unit_price || 0), 0);
+  const row = await api.insert("invoices", { workspace_id: ws.id, client_id: inv.client_id, project_id: inv.project_id || null, change_order_id: inv.change_order_id || null,
+    number: "INV-" + String(next).padStart(4, "0"), title: inv.title, lines: inv.lines, amount, currency: inv.currency, status: "draft", provider: "", payment_url: "", provider_ref: "",
+    token: token(), due_date: inv.due_date || null, sent_at: null, paid_at: null });
+  await log(ws, me.name, "invoice.created", `created invoice ${row.number}`, row.project_id, row.id, { amount, currency: inv.currency });
+  return row;
 }

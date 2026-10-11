@@ -1,12 +1,14 @@
 // A conversation attached to a client, project or deliverable.
 // Every message is either Internal (team only) or Shared (the client sees it in
 // their portal / review page). Client messages are checked by the scope guard.
-import { Eye, EyeOff, FileSignature, Mic, Paperclip, Send, Sparkles, Square, X } from "lucide-react";
+import { Eye, EyeOff, FileSignature, Mic, Paperclip, PenLine, Send, Sparkles, Square, Wand2, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { log } from "../lib/actions";
 import { api } from "../lib/api";
 import { bestChannel, CHANNELS, deliver, replyMsg } from "../lib/channels";
 import { ago, portalUrl, reviewUrl } from "../lib/format";
+import { isDemo } from "../lib/api";
+import { capabilities, server } from "../lib/server";
 import { useFileUrl, useLocalState, useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
 import type { Attachment, Client, Deliverable, Message, ThreadType } from "../lib/types";
@@ -16,10 +18,10 @@ import { Avatar, useAction, useToast } from "./ui";
 
 export const readKey = (threadId: string) => "hq-read-" + threadId;
 
-function AttachmentView({ a }: { a: Attachment }) {
+function AttachmentView({ a, onTranscribe }: { a: Attachment; onTranscribe?: (blobUrl: string) => void }) {
   const url = useFileUrl(a.url);
   if (!url) return null;
-  if (a.type.startsWith("audio/")) return <audio controls src={url} style={{ maxWidth: 260, height: 36 }} />;
+  if (a.type.startsWith("audio/")) return <span className="row" style={{ gap: 6 }}><audio controls src={url} style={{ maxWidth: 260, height: 36 }} />{onTranscribe && <button className="btn btn--sm btn--ghost" onClick={() => onTranscribe(url)}><PenLine />Aa</button>}</span>;
   if (a.type.startsWith("image/")) return <a href={url} target="_blank" rel="noopener"><img src={url} alt={a.name} style={{ maxWidth: 220, maxHeight: 160, borderRadius: 8, border: "1px solid var(--line)" }} /></a>;
   return <a className="tag" href={url} target="_blank" rel="noopener" download={a.name}><Paperclip size={12} />{a.name}</a>;
 }
@@ -44,6 +46,19 @@ export function Thread({ type, threadId, client, projectId, deliverable, height 
   const list = useRef<HTMLDivElement>(null);
   const fileIn = useRef<HTMLInputElement>(null);
   const canShare = !!client;
+  const [ai, setAi] = useState<{ ai: boolean; transcribe: boolean }>({ ai: false, transcribe: false });
+  const [summary, setSummary] = useState<{ summary: string; open_items: string[]; extra_work: string[] } | null>(null);
+  useEffect(() => { if (!isDemo) capabilities().then(c => setAi({ ai: c.ai, transcribe: c.transcribe })); }, []);
+  const convo = () => msgs.map(m => ({ author: m.author_name, body: m.body, visibility: m.visibility }));
+  const summarize = () => run(async () => setSummary(await server("/api/ai", { action: "summarize", workspace_id: ws.id, lang, messages: convo() })));
+  const draft = () => run(async () => { const r = await server<{ reply: string }>("/api/ai", { action: "draft", workspace_id: ws.id, lang: client?.lang || lang, messages: convo() }); setVis("client"); setBody(r.reply); });
+  const transcribe = (m: Message) => async (blobUrl: string) => run(async () => {
+    const blob = await (await fetch(blobUrl)).blob();
+    if (blob.size > 4_000_000) throw new Error(L("Voice note is too long to transcribe (max ~4 MB)", "الفويس طويل جدًا (الحد حوالي 4 ميجا)"));
+    const b64 = await new Promise<string>((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1] || ""); r.onerror = () => no(r.error); r.readAsDataURL(blob); });
+    const t = await server<{ text: string }>("/api/ai", { action: "transcribe", workspace_id: ws.id, audio_base64: b64, mime: blob.type });
+    await api.update("messages", m.id, { body: (m.body ? m.body + "\n\n" : "") + "🎙 " + t.text });
+  }, L("Transcribed", "اتحوّل لكلام مكتوب"));
   const visibility = canShare ? vis : "internal";
 
   useEffect(() => { list.current?.scrollTo({ top: list.current.scrollHeight }); if (msgs.length) try { localStorage.setItem(readKey(threadId), msgs[msgs.length - 1].created_at); } catch { /* ignore */ } }, [msgs, threadId]);
@@ -93,6 +108,16 @@ export function Thread({ type, threadId, client, projectId, deliverable, height 
   });
 
   return <div className="thread">
+    {ai.ai && msgs.length > 0 && <div className="row" style={{ padding: "8px 12px", borderBottom: "1px solid var(--line)", gap: 6 }}>
+      <button className="btn btn--sm btn--ghost" disabled={busy} onClick={summarize}><Sparkles />{L("Summarize", "لخّص")}</button>
+      {client && <button className="btn btn--sm btn--ghost" disabled={busy} onClick={draft}><Wand2 />{L("Draft a reply", "اكتب رد")}</button>}
+    </div>}
+    {summary && <div className="callout callout--violet" style={{ margin: 12 }}><Sparkles /><div style={{ flex: 1 }} className="stack">
+      <p>{summary.summary}</p>
+      {summary.open_items.length > 0 && <div><b className="small">{L("Waiting on", "مستني")}</b><ul style={{ listStyle: "disc", paddingInlineStart: 18 }}>{summary.open_items.map((x, i) => <li key={i} className="small">{x}</li>)}</ul></div>}
+      {summary.extra_work.length > 0 && <div><b className="small">{L("Possible extra work", "شغل إضافي محتمل")}</b><ul style={{ listStyle: "disc", paddingInlineStart: 18 }}>{summary.extra_work.map((x, i) => <li key={i} className="small">{x}</li>)}</ul></div>}
+      <button className="btn btn--sm btn--ghost" style={{ justifySelf: "start" }} onClick={() => setSummary(null)}>{L("Close", "إغلاق")}</button>
+    </div></div>}
     <div className="thread__list" ref={list} style={{ maxHeight: height }}>
       {msgs.length === 0 && <p className="muted small" style={{ padding: 12, textAlign: "center" }}>{L("No messages yet. Start the conversation: internal notes stay with your team, shared messages reach the client.", "لسه مفيش رسايل. ابدأ الكلام: الملاحظات الداخلية بتفضل للفريق، والرسايل المشتركة بتوصل للعميل.")}</p>}
       {msgs.map(m => {
@@ -105,7 +130,7 @@ export function Thread({ type, threadId, client, projectId, deliverable, height 
               {m.author_type === "member" && <span className={"msg__vis"} title={m.visibility === "internal" ? L("Team only", "للفريق بس") : L("Client can see this", "العميل بيشوفها")}>{m.visibility === "internal" ? <EyeOff size={12} /> : <Eye size={12} />}</span>}
             </div>
             {m.body && <p className="msg__t">{m.body.split(/(@[\p{L}\w]+)/u).map((part, i) => part.startsWith("@") ? <b key={i} className="mention">{part}</b> : part)}</p>}
-            {m.attachments?.length > 0 && <div className="row">{m.attachments.map((a, i) => <AttachmentView key={i} a={a} />)}</div>}
+            {m.attachments?.length > 0 && <div className="row">{m.attachments.map((a, i) => <AttachmentView key={i} a={a} onTranscribe={ai.transcribe && a.type.startsWith("audio/") ? transcribe(m) : undefined} />)}</div>}
             {m.classification === "new_request" && <div className="msg__flag"><Sparkles size={14} />{L("Looks like extra work", "شكله شغل إضافي")}<button className="btn btn--sm" onClick={() => setBillFrom(m)}><FileSignature />{L("Bill it", "احسبها")}</button></div>}
           </div>
         </div>;

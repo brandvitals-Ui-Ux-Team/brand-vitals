@@ -6,7 +6,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Backend, CODecision, Filter, ReviewResponse, Row } from "./backend";
 import { uid } from "./backend";
 import { emitChange } from "./bus";
-import type { ChangeOrderPayload, ID, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Workspace } from "./types";
+import type { ChangeOrderPayload, ID, InvoicePayload, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Workspace } from "./types";
 
 const toUser = (u: { id: string; email?: string; user_metadata?: Record<string, unknown> } | null | undefined): SessionUser | null =>
   u ? { id: u.id, email: u.email || "", name: String((u.user_metadata && u.user_metadata.name) || (u.email || "").split("@")[0]) } : null;
@@ -99,6 +99,10 @@ export class SupabaseBackend implements Backend {
   }
   async reviewRespond(token: string, r: ReviewResponse) {
     const { error } = await this.sb.rpc("hq_review_respond", { p_token: token, p_action: r.action, p_name: r.name, p_comment: r.comment, p_pins: r.pins || [] }); fail(error);
+  }
+  async invoiceGet(token: string) {
+    const { data, error } = await this.sb.rpc("hq_invoice_get", { p_token: token }); fail(error);
+    return (data as InvoicePayload) || null;
   }
   async reviewMessages(token: string) {
     const { data, error } = await this.sb.rpc("hq_review_messages", { p_token: token }); fail(error);

@@ -1,8 +1,9 @@
-import { ArrowLeft, FileSignature, FolderKanban, Inbox, MoreHorizontal, Pencil, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { ArrowLeft, FileSignature, Share2, FolderKanban, Inbox, MoreHorizontal, Pencil, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Board } from "../components/Board";
 import { Thread } from "../components/Thread";
+import { ProjectSyncForm } from "../components/DeliverableExtras";
 import { DeliverableForm, ProjectForm, ScopeForm } from "../components/Forms";
 import { Avatar, Confirm, COPill, Empty, KIND_LABEL, Popover, StatusPill, Thumb, useAction } from "../components/ui";
 import { summary } from "../lib/activity";
@@ -78,6 +79,7 @@ export function ProjectDetail() {
   const [scopeEdit, setScopeEdit] = useState<ScopeItem | "new" | null>(null);
   const [newCO, setNewCO] = useState(false);
   const [del, setDel] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
   const [openTask, setOpenTask] = useState<string | null>(null);
   if (loading) return <div className="page"><div className="spinner" /></div>;
   if (!p) return <div className="page"><Empty icon={<FolderKanban />} title={L("Project not found", "المشروع غير موجود")} action={<Link className="btn" to="/projects">{L("All projects", "كل المشاريع")}</Link>} /></div>;
@@ -97,6 +99,7 @@ export function ProjectDetail() {
         <button className="btn btn--primary" onClick={() => setNewD(true)}><Plus />{L("Deliverable", "تسليمة")}</button>
         <Popover trigger={open => <button className="icon-btn" onClick={open} aria-label={L("More", "المزيد")}><MoreHorizontal /></button>}>{close => <>
           <button onClick={() => { close(); setEdit(true); }}><Pencil />{L("Edit project", "تعديل المشروع")}</button>
+          <button onClick={() => { close(); setSyncOpen(true); }}><Share2 />{L("Sync to ClickUp / Asana", "زامن مع ClickUp / Asana")}</button>
           <button onClick={() => { close(); setNewCO(true); }}><FileSignature />{L("Add extra work", "إضافة شغل إضافي")}</button>
           <hr /><button style={{ color: "var(--bad)" }} onClick={() => { close(); setDel(true); }}><Trash2 />{L("Delete project", "حذف المشروع")}</button>
         </>}</Popover>
@@ -145,6 +148,7 @@ export function ProjectDetail() {
       {activity.length === 0 && <p className="muted small" style={{ padding: 16 }}>{L("No activity yet.", "لا يوجد نشاط بعد.")}</p>}</div></div>}
 
     {edit && <ProjectForm project={p} onClose={() => setEdit(false)} />}
+    {syncOpen && <ProjectSyncForm project={p} onClose={() => setSyncOpen(false)} />}
     {newD && <DeliverableForm projectId={p.id} onClose={() => setNewD(false)} />}
     {scopeEdit && <ScopeForm projectId={p.id} item={scopeEdit === "new" ? undefined : scopeEdit} onClose={() => setScopeEdit(null)} />}
     {newCO && <ChangeOrderForm preset={{ project_id: p.id }} onClose={() => setNewCO(false)} />}

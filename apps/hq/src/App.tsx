@@ -6,6 +6,8 @@ import { useWs, WorkspaceProvider } from "./lib/ws";
 import { Approvals } from "./pages/Approvals";
 import { Calendar } from "./pages/Calendar";
 import { Inbox } from "./pages/Inbox";
+import { Invoices } from "./pages/Invoices";
+import { InvoiceView } from "./pages/InvoiceView";
 import { Integrations } from "./pages/Integrations";
 import { Portal } from "./pages/Portal";
 import { Auth } from "./pages/Auth";
@@ -41,6 +43,7 @@ function Private() {
       <Route path="/tasks" element={<Tasks />} />
       <Route path="/calendar" element={<Calendar />} />
       <Route path="/inbox" element={<Inbox />} />
+      <Route path="/invoices" element={<Invoices />} />
       <Route path="/integrations" element={<Integrations />} />
       <Route path="/extra-work" element={<ChangeOrders />} />
       <Route path="/history" element={<Ledger />} />
@@ -62,6 +65,7 @@ export function App() {
         <Route path="/r/:token" element={<Review />} />
         <Route path="/co/:token" element={<ChangeOrderReview />} />
         <Route path="/c/:token" element={<Portal />} />
+        <Route path="/i/:token" element={<InvoiceView />} />
         <Route path="/*" element={<I18nProvider><WorkspaceProvider><Routes>
           <Route path="/join/:token" element={<Join />} />
           <Route path="/*" element={<Private />} />

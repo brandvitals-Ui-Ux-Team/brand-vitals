@@ -21,6 +21,24 @@
     },
     "api/psi.js": {
       "maxDuration": 60
+    },
+    "api/connect.js": {
+      "maxDuration": 30
+    },
+    "api/sync.js": {
+      "maxDuration": 30
+    },
+    "api/ads.js": {
+      "maxDuration": 20
+    },
+    "api/pay.js": {
+      "maxDuration": 20
+    },
+    "api/ai.js": {
+      "maxDuration": 60
+    },
+    "api/cron.js": {
+      "maxDuration": 60
     }
   },
   "headers": [
@@ -97,6 +115,12 @@
       "source": "/ar/hq.html",
       "destination": "/ar/approve.html",
       "permanent": true
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 6 * * *"
     }
   ]
 }

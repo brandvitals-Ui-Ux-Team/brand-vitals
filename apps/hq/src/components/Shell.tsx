@@ -1,4 +1,4 @@
-import { Bell, Blocks, CalendarDays, MessagesSquare, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
+import { Bell, Blocks, Receipt, CalendarDays, MessagesSquare, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { api, isDemo } from "../lib/api";
@@ -41,6 +41,8 @@ export function Shell({ children }: { children: ReactNode }) {
   const myOpen = tasks.filter(t => t.assignee_id === me?.id && t.status !== "done").length;
   const coOpen = cos.filter(c => c.status === "sent").length;
   const unreadThreads = useThreads().filter(t => t.unread).length;
+  const { rows: invoices } = useRows("invoices", { workspace_id: ws.id });
+  const sentInvoices = invoices.filter(i => i.status === "sent").length;
 
   const A = ({ to, icon, label, count, warn, end }: { to: string; icon: ReactNode; label: string; count?: number; warn?: boolean; end?: boolean }) =>
     <NavLink to={to} end={end} className={({ isActive }) => "nav-a" + (isActive ? " active" : "")}>{icon}<span>{label}</span>{!!count && <span className={"count" + (warn ? " count--warn" : "")}>{count}</span>}</NavLink>;
@@ -67,6 +69,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <A to="/tasks" icon={<CheckSquare />} label={L("Tasks", "المهام")} count={myOpen} />
       <div className="nav-sec">{L("More", "المزيد")}</div>
       <A to="/extra-work" icon={<FileSignature />} label={L("Extra work", "الشغل الإضافي")} count={coOpen} warn />
+      <A to="/invoices" icon={<Receipt />} label={L("Invoices", "الفواتير")} count={sentInvoices} />
       <A to="/history" icon={<ScrollText />} label={L("History", "السجل")} />
       <A to="/integrations" icon={<Blocks />} label={L("Integrations", "الربط")} />
       <A to="/team" icon={<Users />} label={L("Team", "الفريق")} />

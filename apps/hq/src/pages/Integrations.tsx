@@ -3,6 +3,7 @@
 // Slack and Microsoft Teams channels.
 import { Check, Copy, Plus, Send, Trash2, Webhook as WebhookIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Connections } from "../components/Connections";
 import { Empty, Field, Modal, useAction, useToast } from "../components/ui";
 import { api } from "../lib/api";
 import { caps } from "../lib/channels";
@@ -33,10 +34,6 @@ const CATALOG: Card[] = [
   { cat: "files", name: "Figma", color: "#A259FF", letter: "F", en: "Paste a Figma link as a version: it previews live inside the review page.", ar: "حط لينك Figma كنسخة: بيظهر مباشرة جوه صفحة المراجعة.", status: "live" },
   { cat: "files", name: "Google Drive", color: "#1FA463", letter: "G", en: "Drive files and Docs preview inside the review page.", ar: "ملفات Drive والـ Docs بتتعرض جوه صفحة المراجعة.", status: "live" },
   { cat: "files", name: "YouTube · Vimeo · Loom", color: "#FF0000", letter: "▶", en: "Video links play inside the review page.", ar: "لينكات الفيديو بتشتغل جوه صفحة المراجعة.", status: "live" },
-  { cat: "pm", name: "ClickUp · Asana · Monday · Jira", color: "#7B68EE", letter: "C", en: "Two-way status sync. Today: via Zapier/Make webhooks.", ar: "مزامنة الحالة في الاتجاهين. حاليًا: عبر webhooks مع Zapier أو Make.", status: "next" },
-  { cat: "ads", name: "Meta · Google · TikTok Ads", color: "#1877F2", letter: "M", en: "Live ad results next to the approved creative.", ar: "نتايج الإعلان جنب التصميم اللي اتوافق عليه.", status: "next" },
-  { cat: "ads", name: "Social publishing", color: "#E1306C", letter: "P", en: "Approved posts publish from the calendar.", ar: "البوستات المتوافق عليها تتنشر من التقويم.", status: "next" },
-  { cat: "money", name: "Paymob · Tap · Stripe", color: "#635BFF", letter: "$", en: "Approved extra work becomes an invoice and a payment link.", ar: "الشغل الإضافي المتوافق عليه يتحوّل لفاتورة ولينك دفع.", status: "next" },
   { cat: "money", name: "E-invoicing (ETA · ZATCA)", color: "#097A53", letter: "E", en: "Compliant invoices for Egypt and Saudi Arabia.", ar: "فواتير إلكترونية متوافقة لمصر والسعودية.", status: "next" }
 ];
 
@@ -63,6 +60,8 @@ export function Integrations() {
   return <div className="page">
     <div className="page-head"><div className="page-head__t"><h1>{L("Integrations", "الربط")}</h1><p className="muted">{L("Vitals Approve works with the tools your team and clients already use. No single app is required.", "Vitals Approve بيشتغل مع الأدوات اللي فريقك وعملاءك بيستخدموها. مفيش تطبيق واحد إجباري.")}</p></div></div>
 
+    <Connections />
+
     <div className="card">
       <div className="card__h"><h2 className="row"><WebhookIcon size={18} />{L("Webhooks & team alerts", "Webhooks وتنبيهات الفريق")}</h2>
         {isAdmin && <div className="row"><button className="btn btn--sm" onClick={() => setAdd("slack")}><Plus />Slack</button><button className="btn btn--sm" onClick={() => setAdd("teams")}><Plus />Teams</button><button className="btn btn--sm btn--primary" onClick={() => setAdd("generic")}><Plus />Webhook</button></div>}</div>
@@ -77,7 +76,7 @@ export function Integrations() {
         </div>)}</div>}
     </div>
 
-    {([["comms", "Client & team channels", "قنوات العميل والفريق"], ["auto", "Automation", "الأتمتة"], ["files", "Files & previews", "الملفات والمعاينة"], ["pm", "Project tools", "أدوات المشاريع"], ["ads", "Ads & publishing", "الإعلانات والنشر"], ["money", "Billing", "الفواتير"]] as const).map(([cat, en, ar]) =>
+    {([["comms", "Client & team channels", "قنوات العميل والفريق"], ["auto", "Automation", "الأتمتة"], ["files", "Files & previews", "الملفات والمعاينة"], ["money", "Coming next", "قريبًا"]] as const).map(([cat, en, ar]) =>
       <section key={cat} className="stack"><h2>{L(en, ar)}</h2>
         <div className="int-grid">{CATALOG.filter(c => c.cat === cat).map(c => <div key={c.name} className="card int">
           <div className="int__top"><span className="int__logo" style={{ background: c.color }}>{c.letter}</span><b style={{ flex: 1 }}>{c.name}</b>{statusPill(c)}</div>

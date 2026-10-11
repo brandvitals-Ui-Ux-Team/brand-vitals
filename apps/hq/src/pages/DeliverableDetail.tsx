@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TaskForm } from "../components/Forms";
 import { Thread } from "../components/Thread";
+import { PublishCard, ResultsCard, SyncCard } from "../components/DeliverableExtras";
 import { isImage, PinImage } from "../components/Pins";
 import { Confirm, Empty, Field, KIND_LABEL, MemberChip, Modal, Popover, Preview, Prio, StatusPill, useAction, useToast } from "../components/ui";
 import { addVersion, log, recordApproval, sendForReview, setFeedbackClass } from "../lib/actions";
@@ -140,6 +141,10 @@ export function DeliverableDetail() {
             {scope.length > 0 && <select className="sel" value="" onChange={e => e.target.value && run(() => api.update("deliverables", d.id, { scope_item_id: e.target.value }), L("Linked to the agreement", "اتربطت بالاتفاق"))}><option value="">{L("Link to the agreement…", "اربطها بالاتفاق…")}</option>{scope.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select>}
           </>}
         </div>
+
+        <SyncCard d={d} project={project} />
+        <ResultsCard d={d} />
+        <PublishCard d={d} />
 
         <div className="card">
           <div className="card__h"><h3>{L("Tasks", "المهام")}</h3><button className="btn btn--ghost btn--sm" onClick={() => setNewTask(true)}><Plus />{L("Add", "إضافة")}</button></div>

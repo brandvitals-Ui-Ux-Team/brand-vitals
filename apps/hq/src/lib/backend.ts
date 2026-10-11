@@ -1,7 +1,7 @@
 // The app talks to one Backend. Two implementations:
 //  - LocalBackend: demo mode, everything in this browser (localStorage + IndexedDB)
 //  - SupabaseBackend: real multi-user SaaS (Postgres + Auth + Storage + RLS)
-import type { ChangeOrderPayload, ID, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, Workspace } from "./types";
+import type { ChangeOrderPayload, ID, InvoicePayload, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, Workspace } from "./types";
 
 export type Row<T extends TableName> = Tables[T];
 export type Filter<T extends TableName> = Partial<Row<T>>;
@@ -35,6 +35,7 @@ export interface Backend {
   changeOrderGet(token: string): Promise<ChangeOrderPayload | null>;
   changeOrderRespond(token: string, d: CODecision): Promise<void>;
   portalGet(token: string): Promise<PortalPayload | null>;
+  invoiceGet(token: string): Promise<InvoicePayload | null>;
   // client-side conversation (shared messages only), by token
   reviewMessages(token: string): Promise<SharedMessage[]>;
   reviewMessage(token: string, name: string, body: string): Promise<void>;

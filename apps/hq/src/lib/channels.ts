@@ -1,7 +1,7 @@
 // How work reaches a client. WhatsApp is one channel among several; the client
 // picks their favourite and every message (review, reminder, extra work, reply)
 // goes out on it. Links work everywhere, so nothing depends on one app.
-import { api } from "./api";
+import { authHeader } from "./server";
 import { coUrl, fillTemplate, portalUrl, reviewUrl, waLink } from "./format";
 import type { ChangeOrder, Channel, Client, Deliverable, Lang, Workspace } from "./types";
 
@@ -53,12 +53,6 @@ export const portalMsg = reminderMsg;
 
 // ---------- delivery ----------
 export type Delivered = { how: "opened" | "sent" | "copied"; channel: Channel };
-async function authHeader(): Promise<Record<string, string>> {
-  const sb = (api as unknown as { sb?: { auth: { getSession(): Promise<{ data: { session: { access_token: string } | null } }> } } }).sb;
-  if (!sb) return {};
-  const { data } = await sb.auth.getSession();
-  return data.session ? { Authorization: "Bearer " + data.session.access_token } : {};
-}
 async function serverSend(body: Record<string, unknown>) {
   const r = await fetch("/api/notify", { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeader()) }, body: JSON.stringify(body) });
   const j = await r.json().catch(() => ({}));
@@ -85,4 +79,9 @@ export async function deliver(ws: Workspace, c: Client, msg: Outgoing, channel: 
       await navigator.clipboard?.writeText(full).catch(() => {});
       return { how: "copied", channel: "link" };
   }
+}
+export function invoiceMsg(ws: Workspace, c: Client, number: string, amount: string, link: string): Outgoing {
+  return isAr(c)
+    ? { subject: `فاتورة ${number} من ${ws.name}`, text: `أهلًا ${greet(c)}، دي فاتورة ${number} بقيمة ${amount}. تقدر تشوفها وتدفع من اللينك.\n— ${ws.name}`, link, linkLabel: "عرض الفاتورة" }
+    : { subject: `Invoice ${number} from ${ws.name}`, text: `Hi ${greet(c)}, here is invoice ${number} for ${amount}. You can view and pay it from the link.\n— ${ws.name}`, link, linkLabel: "View invoice" };
 }

@@ -457,3 +457,10 @@ a.li:hover, button.li:hover { background: var(--surface-2); }
 .int__logo { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #fff; }
 .int__top { display: flex; align-items: center; gap: 10px; }
 .embed { width: 100%; aspect-ratio: 16 / 10; border: 0; border-radius: var(--r-lg); background: var(--sunken); }
+
+/* ---------- v4: invoices print ---------- */
+@media print {
+  .no-print, .side, .top, .toasts { display: none !important; }
+  body, .public { background: #fff !important; color: #000 !important; }
+  .invoice { box-shadow: none !important; border: 0 !important; }
+}

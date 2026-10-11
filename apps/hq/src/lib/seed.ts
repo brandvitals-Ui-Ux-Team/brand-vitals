@@ -35,9 +35,9 @@ export function seed(u: SessionUser): DB {
   const [nile, atlas, glow] = clients;
 
   const projects: Project[] = [
-    { id: uid(), workspace_id: W, client_id: nile.id, name: "Monthly social retainer", status: "active", color: "#2EE6A6", start_date: ago(58).slice(0, 10), due_date: null, budget: 45000, created_at: ago(58) },
-    { id: uid(), workspace_id: W, client_id: atlas.id, name: "Launch campaign", status: "active", color: "#7C8CFF", start_date: ago(45).slice(0, 10), due_date: ahead(21), budget: 180000, created_at: ago(45) },
-    { id: uid(), workspace_id: W, client_id: glow.id, name: "Ramadan performance push", status: "active", color: "#FFB547", start_date: ago(20).slice(0, 10), due_date: ahead(10), budget: 60000, created_at: ago(20) }
+    { id: uid(), workspace_id: W, client_id: nile.id, name: "Monthly social retainer", status: "active", color: "#2EE6A6", start_date: ago(58).slice(0, 10), due_date: null, budget: 45000, sync_targets: {}, created_at: ago(58) },
+    { id: uid(), workspace_id: W, client_id: atlas.id, name: "Launch campaign", status: "active", color: "#7C8CFF", start_date: ago(45).slice(0, 10), due_date: ahead(21), budget: 180000, sync_targets: {}, created_at: ago(45) },
+    { id: uid(), workspace_id: W, client_id: glow.id, name: "Ramadan performance push", status: "active", color: "#FFB547", start_date: ago(20).slice(0, 10), due_date: ahead(10), budget: 60000, sync_targets: {}, created_at: ago(20) }
   ];
   const [pNile, pAtlas, pGlow] = projects;
 
@@ -55,7 +55,7 @@ export function seed(u: SessionUser): DB {
     id: uid(), workspace_id: W, project_id: p.id, scope_item_id: s.id, title, kind: s.kind, status, due_date: ahead(3 + Math.round(Math.random() * 10)),
     assignee_id: [mona.id, karim.id, salma.id][Math.floor(Math.random() * 3)], review_token: token(), current_version: v, revision_count: rev,
     out_of_scope: rev > s.revisions_included, sent_at: sentDaysAgo == null ? null : ago(sentDaysAgo, 3), approved_at: status === "approved" ? ago(Math.max(0, (sentDaysAgo ?? 1) - 1)) : null,
-    publish_date: null, reminded_at: null, created_at: ago((sentDaysAgo ?? 1) + 3), ...extra
+    publish_date: null, reminded_at: null, ad_ref: "", caption: "", auto_publish: false, publish_targets: [], published_at: null, publish_error: "", created_at: ago((sentDaysAgo ?? 1) + 3), ...extra
   });
 
   const deliverables: Deliverable[] = [
@@ -145,5 +145,13 @@ export function seed(u: SessionUser): DB {
     M("deliverable", deliverables[7].id, atlas, "client", karim, "Hi Faisal, v2 with the shorter intro and new music will be ready tomorrow.", 19),
     M("project", pGlow.id, glow, "internal", salma, "Landing page copy is waiting on Nour's product list. Reminded her on Slack.", 8)
   ];
-  return { workspaces: [ws], members: team, invites: [], clients, projects, scope_items: scope, deliverables, versions, feedback, change_orders: changeOrders, tasks, comments: [], activity, messages, webhooks: [] };
+  return { workspaces: [ws], members: team, invites: [], clients, projects, scope_items: scope, deliverables, versions, feedback, change_orders: changeOrders, tasks, comments: [], activity, messages, webhooks: [], connections: [], external_links: [],
+    invoices: [
+      { id: uid(), workspace_id: W, client_id: atlas.id, project_id: pAtlas.id, change_order_id: changeOrders[1].id, number: "INV-0001", title: changeOrders[1].title,
+        lines: [{ description: changeOrders[1].title, qty: 1, unit_price: 12000 }], amount: 12000, currency: "EGP", status: "paid", provider: "manual", payment_url: "", provider_ref: "",
+        token: token(), due_date: null, sent_at: ago(8), paid_at: ago(4), created_at: ago(8) },
+      { id: uid(), workspace_id: W, client_id: glow.id, project_id: pGlow.id, change_order_id: changeOrders[2].id, number: "INV-0002", title: changeOrders[2].title,
+        lines: [{ description: changeOrders[2].title, qty: 1, unit_price: 4800 }], amount: 4800, currency: "EGP", status: "sent", provider: "", payment_url: "", provider_ref: "",
+        token: token(), due_date: ahead(7), sent_at: ago(2), paid_at: null, created_at: ago(2) }
+    ] };
 }

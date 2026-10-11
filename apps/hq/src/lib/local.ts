@@ -7,13 +7,13 @@ import { nowIso, token, uid } from "./backend";
 import { emitChange } from "./bus";
 import { classify } from "./logic";
 import { seed } from "./seed";
-import type { ChangeOrderPayload, Client, ID, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, ThreadType, Workspace } from "./types";
+import type { ChangeOrderPayload, Client, ID, InvoicePayload, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, ThreadType, Workspace } from "./types";
 
 const KEY = "hq-demo-db-v1";
 const USER_KEY = "hq-demo-user";
 type DB = { [K in TableName]: Tables[K][] };
 
-const empty = (): DB => ({ workspaces: [], members: [], invites: [], clients: [], projects: [], scope_items: [], deliverables: [], versions: [], feedback: [], change_orders: [], tasks: [], comments: [], activity: [], messages: [], webhooks: [] });
+const empty = (): DB => ({ workspaces: [], members: [], invites: [], clients: [], projects: [], scope_items: [], deliverables: [], versions: [], feedback: [], change_orders: [], tasks: [], comments: [], activity: [], messages: [], webhooks: [], connections: [], external_links: [], invoices: [] });
 
 function load(): DB {
   try {
@@ -23,6 +23,8 @@ function load(): DB {
       db.clients.forEach(c => { if (!c.portal_token) c.portal_token = token(); if (!c.preferred_channel) c.preferred_channel = c.phone ? "whatsapp" : "email"; if (c.chat_webhook == null) c.chat_webhook = ""; });
       db.deliverables.forEach(d => { if (d.publish_date === undefined) d.publish_date = null; if (d.reminded_at === undefined) d.reminded_at = null; });
       db.feedback.forEach(f => { if (!Array.isArray(f.pins)) f.pins = []; });
+      db.deliverables.forEach(d => { if (d.ad_ref == null) Object.assign(d, { ad_ref: "", caption: "", auto_publish: false, publish_targets: [], published_at: null, publish_error: "" }); });
+      db.projects.forEach(p => { if (!p.sync_targets) p.sync_targets = {}; });
       db.workspaces.forEach(w => { if (!w.remind_after_days) w.remind_after_days = 2; });
       return db;
     }
@@ -149,7 +151,7 @@ export class LocalBackend implements Backend {
     const i = rows.findIndex(x => x.id === id);
     if (i >= 0) rows.splice(i, 1);
     const kids: [TableName, string][] = ({
-      clients: [["projects", "client_id"], ["messages", "client_id"]],
+      clients: [["projects", "client_id"], ["messages", "client_id"], ["invoices", "client_id"]],
       projects: [["scope_items", "project_id"], ["deliverables", "project_id"], ["change_orders", "project_id"], ["tasks", "project_id"], ["messages", "thread_id"]],
       deliverables: [["versions", "deliverable_id"], ["feedback", "deliverable_id"], ["comments", "entity_id"], ["messages", "thread_id"]],
       tasks: [["comments", "entity_id"]]
@@ -260,6 +262,14 @@ export class LocalBackend implements Backend {
     const d = this.db.deliverables.find(x => x.review_token === tok); if (!d) throw new Error("Link not found");
     const p = this.db.projects.find(x => x.id === d.project_id)!; const c = this.db.clients.find(x => x.id === p.client_id)!;
     this.clientSays(c, "deliverable", d.id, name, body, d.project_id);
+  }
+  async invoiceGet(tok: string): Promise<InvoicePayload | null> {
+    const i = this.db.invoices.find(x => x.token === tok && x.status !== "draft");
+    if (!i) return null;
+    const c = this.db.clients.find(x => x.id === i.client_id)!;
+    const w = this.db.workspaces.find(x => x.id === i.workspace_id)!;
+    return { workspace: { name: w.name }, client: { name: c.name, lang: c.lang },
+      invoice: { number: i.number, title: i.title, lines: i.lines, amount: i.amount, currency: i.currency, status: i.status, payment_url: i.payment_url, due_date: i.due_date, sent_at: i.sent_at, paid_at: i.paid_at, created_at: i.created_at } };
   }
   async portalMessages(tok: string) { const c = this.db.clients.find(x => x.portal_token === tok); return c ? this.shared(c.id, "client") : []; }
   async portalMessage(tok: string, name: string, body: string) {

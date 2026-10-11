@@ -87,3 +87,30 @@ npm test           # build + both
 - Case study narratives (`case-*.html`) are written from the one-line summaries on the Work page. Have the account team review them and add client names where permitted.
 - `150+ brands` on the home page is the agency's own claim; keep it accurate.
 - The demo workspace in HQ uses fictional sample clients.
+
+## Vitals Approve: native integrations
+
+All of these run on the server (`api/`), need the app to be live with Supabase, and are switched on by environment variables in Vercel. Tokens and API keys are encrypted (AES-256-GCM) and stored in `connection_secrets`, a table no app user can read.
+
+**Base setup (once)**
+1. Run the 4th migration: `supabase/migrations/20261014…_integrations_billing.sql`.
+2. In Vercel add `SUPABASE_SERVICE_ROLE_KEY`, `TOKEN_ENC_KEY` (long random string), `APP_URL` (your domain), `SYNC_SECRET`, `CRON_SECRET`.
+3. In the Supabase SQL editor, tell the database where to send sync events:
+   ```sql
+   insert into public.app_config values ('sync_url', 'https://brandvitals.io/api/sync'), ('sync_secret', '<same as SYNC_SECRET>')
+   on conflict (key) do update set value = excluded.value;
+   ```
+
+| Integration | What it does | Set up |
+|---|---|---|
+| ClickUp | Task per deliverable in the project's list; client decisions as comments | ClickUp → Settings → Apps → Create app. Redirect: `https://<domain>/api/connect?action=callback&provider=clickup`. Add `CLICKUP_CLIENT_ID/SECRET`. Then in a project: ⋯ → Sync to ClickUp / Asana |
+| Asana | Same for Asana; task completed on approval | developers.asana.com → My apps → Create. Same redirect with `provider=asana`. `ASANA_CLIENT_ID/SECRET` |
+| Meta | Ad results next to the approved creative; auto-publish approved posts to Pages / Instagram on their publish date | developers.facebook.com → Create app (Business). Add Facebook Login; redirect with `provider=meta`. Permissions need App Review for other businesses: `ads_read`, `pages_manage_posts`, `instagram_content_publish`, … `META_APP_ID/SECRET` |
+| Google Ads | Ad results (spend, clicks, conversions, ROAS) | Google Cloud OAuth client (web) with redirect `provider=google_ads`, plus a Google Ads API developer token. `GOOGLE_CLIENT_ID/SECRET`, `GOOGLE_ADS_DEVELOPER_TOKEN` |
+| Paymob · Tap · Stripe | Payment links for invoices; paid status from their webhooks | Each agency pastes its own keys in Integrations → Connected apps, and adds the webhook URL shown there in the provider's dashboard |
+| AI | Summarize a conversation, draft a reply (Claude `claude-opus-5-5`, with server-side fallback if a request is declined) | `ANTHROPIC_API_KEY` |
+| Voice notes → text | Transcribes Arabic and English voice notes | `ELEVENLABS_API_KEY` |
+
+Publishing runs once a day (Vercel Cron, `vercel.json`); for hourly publishing upgrade the Vercel plan and change the schedule.
+
+Tests: `npm run test:api` (server functions, no network) and `npm run test:db` (53 database checks).
