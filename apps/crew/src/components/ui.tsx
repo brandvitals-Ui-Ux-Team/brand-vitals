@@ -1,7 +1,6 @@
-import { AlertCircle, BadgeCheck, CheckCircle2, Crown, Gem, ShieldCheck, Users, X } from "lucide-react";
+import { AlertCircle, BadgeCheck, CheckCircle2, Crown, FileLock2, Gem, ShieldCheck, Users, X } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { demoDesign } from "../../../hq/src/lib/designs";
 import { initials, money as fmtMoney } from "../../../hq/src/lib/format";
 import { useI18n } from "../../../hq/src/lib/i18n";
 import type { AppStage, BriefStatus, Category, Level, ProposalStatus, QA, Scores, Talent } from "../lib/types";
@@ -60,9 +59,18 @@ export function Empty({ icon, title, text, action }: { icon: ReactNode; title: s
 }
 
 // ---------- artwork (finished-looking demo designs) ----------
+// Design work is never displayed in Vitals Crew: files are shown as protected cards with
+// their name only. Reviewers open the real files in the secure file viewer (not part of the demo).
+const TONES = ["#6C47FF", "#0891B2", "#8B5CF6", "#0E7490", "#4F2DD9", "#22A6C4"];
 export function Art({ title, className = "", alt = "" }: { title: string; className?: string; alt?: string }) {
-  const url = title.startsWith("data:") ? title : demoDesign(title, 2) || demoDesign(title, 1);
-  return <div className={"art " + className}>{url ? <img src={url} alt={alt} /> : null}</div>;
+  const { L } = useI18n();
+  const name = title.startsWith("data:") ? (alt || L("Uploaded file", "ملف مرفوع")) : title;
+  const tone = TONES[[...name].reduce((s, c) => s + c.charCodeAt(0), 0) % TONES.length];
+  return <div className={"art art--locked " + className} style={{ ["--tone" as string]: tone }} role="img" aria-label={L(`${name}: protected file`, `${name}: ملف محمي`)}>
+    <span className="art__ico"><FileLock2 /></span>
+    <span className="art__name">{name}</span>
+    <span className="art__note">{L("Protected file", "ملف محمي")}</span>
+  </div>;
 }
 
 // ---------- badges ----------

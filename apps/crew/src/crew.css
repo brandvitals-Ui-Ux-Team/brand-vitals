@@ -411,3 +411,15 @@
 .mk-foot__bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; max-width: 1100px; width: 100%; margin-inline: auto; padding-top: 14px; border-top: 1px solid var(--line); color: var(--text-3); }
 .mk-foot__bar a:hover { color: var(--accent); }
 @media (max-width: 860px) { .mk-foot__fam { grid-template-columns: 1fr 1fr; } .mk-nav__parent { display: none !important; } }
+
+/* protected file cards: design work is never displayed in Crew */
+.art--locked { position: relative; display: grid; place-content: center; justify-items: center; gap: 4px; padding: 10px; text-align: center; color: #fff; min-height: 64px;
+  background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tone) 85%, #fff) 0%, var(--tone) 55%, color-mix(in srgb, var(--tone) 70%, #0E0A24) 100%); }
+.art--locked::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .07) 0 10px, transparent 10px 20px); pointer-events: none; }
+.art__ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, .18); }
+.art__ico svg { width: 18px; height: 18px; }
+.art__name { font-weight: 700; font-size: 12.5px; line-height: 1.3; max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.art__note { font-size: 10.5px; opacity: .8; text-transform: uppercase; letter-spacing: .06em; }
+[dir="rtl"] .art__note { letter-spacing: 0; }
+.thumb.art--locked .art__name, .thumb.art--locked .art__note, .li .art--locked .art__name, .li .art--locked .art__note { display: none; }
+.thumb.art--locked .art__ico, .li .art--locked .art__ico { width: 26px; height: 26px; background: none; }
