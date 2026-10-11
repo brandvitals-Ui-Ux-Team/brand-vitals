@@ -1,7 +1,9 @@
 // Generates the content pages (services, industries, case studies, articles,
 // Vitals Score) and refreshes the shared header/drawer/footer on master pages.
-// The output is plain HTML in the repo root, editable from the dashboard.
-// Usage: node scripts/gen-pages.mjs
+// Run it once when adding pages from scripts/content/*. It is NOT part of the
+// build: after generation the HTML belongs to the dashboard (CMS), and running
+// this again overwrites dashboard edits on the generated pages.
+// Usage: npm run gen:pages
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

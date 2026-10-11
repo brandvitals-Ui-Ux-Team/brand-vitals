@@ -46,6 +46,12 @@
   }
 
   async function psi(url) {
+    // Prefer our server proxy (keeps the API key secret); fall back to calling Google directly.
+    try {
+      const r = await fetch("/api/psi?url=" + encodeURIComponent(url));
+      if (r.ok) return r.json();
+      if (r.status !== 404) throw new Error("PSI " + r.status);
+    } catch (e) { if (!PSI_KEY) throw e; }
     const p = new URLSearchParams({ url, strategy: "mobile" });
     ["performance", "seo", "accessibility", "best-practices"].forEach(c => p.append("category", c));
     if (PSI_KEY) p.set("key", PSI_KEY);

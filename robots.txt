@@ -2,27 +2,39 @@ User-agent: *
 Allow: /
 Disallow: /dashboard.html
 Disallow: /cms/
+Disallow: /app/
+Disallow: /api/
 
 # AI / answer-engine crawlers welcome (GEO)
 User-agent: GPTBot
 Allow: /
 Disallow: /dashboard.html
 Disallow: /cms/
+Disallow: /app/
+Disallow: /api/
 User-agent: ClaudeBot
 Allow: /
 Disallow: /dashboard.html
 Disallow: /cms/
+Disallow: /app/
+Disallow: /api/
 User-agent: Google-Extended
 Allow: /
 Disallow: /dashboard.html
 Disallow: /cms/
+Disallow: /app/
+Disallow: /api/
 User-agent: PerplexityBot
 Allow: /
 Disallow: /dashboard.html
 Disallow: /cms/
+Disallow: /app/
+Disallow: /api/
 User-agent: CCBot
 Allow: /
 Disallow: /dashboard.html
 Disallow: /cms/
+Disallow: /app/
+Disallow: /api/
 
 Sitemap: https://brandvitals.io/sitemap.xml

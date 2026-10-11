@@ -1,7 +1,7 @@
 /* ==========================================================================
    BRAND VITALS · Dashboard (CMS)
    Edits the real site files in the browser and publishes them to GitHub in
-   one commit. There is no backend: GitHub Pages serves whatever is published.
+   one commit. Vercel rebuilds and serves whatever is published.
    The access code only locks this screen. Publishing needs a GitHub token
    that stays in the admin's own browser.
    ========================================================================== */
@@ -37,6 +37,28 @@
     { path: "live.html", ar: "Vitals Live", en: "Vitals Live" },
     { path: "hq.html", ar: "Vitals HQ", en: "Vitals HQ" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
+    { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
+    { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
+    { path: "google-ads.html", ar: "خدمة: إعلانات جوجل", en: "Service: Google Ads" },
+    { path: "seo.html", ar: "خدمة: السيو", en: "Service: SEO" },
+    { path: "branding.html", ar: "خدمة: العلامة والإبداع", en: "Service: Brand & creative" },
+    { path: "web-cro.html", ar: "خدمة: المواقع والتحويل", en: "Service: Websites & CRO" },
+    { path: "analytics-tracking.html", ar: "خدمة: التحليلات والتتبع", en: "Service: Analytics & tracking" },
+    { path: "ecommerce-marketing.html", ar: "قطاع: التجارة الإلكترونية", en: "Industry: E-commerce" },
+    { path: "real-estate-marketing.html", ar: "قطاع: العقارات", en: "Industry: Real estate" },
+    { path: "healthcare-marketing.html", ar: "قطاع: الرعاية الصحية", en: "Industry: Healthcare" },
+    { path: "case-luxury-beauty.html", ar: "دراسة حالة: الجمال الفاخر", en: "Case: Luxury beauty" },
+    { path: "case-heritage-fashion.html", ar: "دراسة حالة: الأزياء التراثية", en: "Case: Heritage fashion" },
+    { path: "case-architectural-products.html", ar: "دراسة حالة: منتجات معمارية", en: "Case: Architectural products" },
+    { path: "case-healthcare-group.html", ar: "دراسة حالة: مجموعة طبية", en: "Case: Healthcare group" },
+    { path: "case-national-hypermarket.html", ar: "دراسة حالة: هايبرماركت", en: "Case: National hypermarket" },
+    { path: "case-luxury-real-estate.html", ar: "دراسة حالة: عقارات فاخرة", en: "Case: Luxury real estate" },
+    { path: "blog-creative-testing.html", ar: "مقال: اختبار الإبداع", en: "Article: Creative testing" },
+    { path: "blog-prospecting-vs-retargeting.html", ar: "مقال: الاستكشاف وإعادة الاستهداف", en: "Article: Prospecting vs retargeting" },
+    { path: "blog-focus-your-catalog.html", ar: "مقال: تركيز الكتالوج", en: "Article: Focus your catalog" },
+    { path: "blog-ecommerce-kpi-stack.html", ar: "مقال: مؤشرات التجارة الإلكترونية", en: "Article: E-commerce KPI stack" },
+    { path: "blog-b2b-to-b2c.html", ar: "مقال: من B2B إلى B2C", en: "Article: B2B to B2C" },
+    { path: "blog-arabic-seo-guide.html", ar: "مقال: دليل السيو العربي", en: "Article: Arabic SEO guide" },
     { path: "privacy.html", ar: "الخصوصية والشروط", en: "Privacy & terms" },
     { path: "404.html", ar: "صفحة الخطأ 404", en: "404 page" }
   ];
@@ -48,7 +70,7 @@
   const CONSULT = "@consult";
   const DEFAULT_HASH = "57d90183cd97055f3107832356966582f75077a3655c25ec04cf0ebf510fa0ec";
   const SALT = "bv-cms|";
-  const DEFAULT_REPO = { owner: "Mohamed-sr-Designer", repo: "brand-vitals-website", branch: "main" };
+  const DEFAULT_REPO = { owner: "brandvitals-Ui-Ux-Team", repo: "brand-vitals", branch: "main" };
   const LS = {
     token: "bv-cms-token", repo: "bv-cms-repo", lang: "bv-cms-lang", draft: "bv-cms-draft-v1" + (BRAND === "bv" ? "" : "-" + BRAND),
     session: "bv-cms-session", remember: "bv-cms-remember", preview: "bv-cms-preview",
@@ -183,7 +205,7 @@
     stCommit: ["بيعمل commit…", "Creating commit…"],
     stRef: ["بينشر…", "Publishing…"],
     publishedTitle: ["تم النشر بنجاح", "Published"],
-    publishedBody: ["التعديلات اترفعت. GitHub Pages بياخد من دقيقة لـ 3 دقايق وبعدها تظهر على الموقع.", "Your changes are live on GitHub. GitHub Pages needs 1 to 3 minutes to show them."],
+    publishedBody: ["التعديلات اترفعت. Vercel بيبني الموقع في دقيقة أو اتنين وبعدها تظهر.", "Your changes are live on GitHub. Vercel rebuilds the site in a minute or two to show them."],
     openSite: ["افتح الموقع", "Open site"],
     viewCommit: ["شوف الـ commit", "View commit"],
     changes: ["{n} تغيير غير منشور", "{n} unpublished"],
@@ -472,12 +494,17 @@
     justNow: ["دلوقتي", "just now"],
     loadingData: ["بيحمّل البيانات…", "Loading data…"],
     setupTitle: ["اربط قاعدة البيانات عشان تشوف الزوار والعملاء", "Connect the database to see visitors and leads"],
-    setupBody: ["الموقع على GitHub Pages ومالوش سيرفر، فالزيارات والطلبات محتاجة مكان تتسجل فيه. هنستخدم Supabase المجاني. الإعداد مرة واحدة بس وبياخد حوالي 10 دقايق.", "The site runs on GitHub Pages with no server, so visits and requests need somewhere to be stored. We use Supabase's free plan. Setup is one time and takes about 10 minutes."],
+    setupBody: ["الموقع static ومالوش سيرفر خاص، فالزيارات والطلبات محتاجة مكان تتسجل فيه. هنستخدم Supabase المجاني. الإعداد مرة واحدة بس وبياخد حوالي 10 دقايق.", "The site is static with no server of its own, so visits and requests need somewhere to be stored. We use Supabase's free plan. Setup is one time and takes about 10 minutes."],
     setupStart: ["ابدأ الإعداد", "Start setup"],
     demoShow: ["شوف الشكل ببيانات تجريبية", "Preview with sample data"],
     demoBanner: ["دي بيانات تجريبية للعرض بس، مش زوار أو عملاء حقيقيين.", "Sample data for preview only, not real visitors or leads."],
     demoStop: ["اقفل العرض التجريبي", "Exit sample mode"],
     sbTitle: ["قاعدة البيانات (الزوار والعملاء)", "Database (visitors and leads)"],
+    anTitle: ["التتبع والإعلانات (GA4 · Pixel)", "Tracking & ads (GA4 · Pixel)"],
+    anIntro: ["حط الأكواد هنا وانشر. الموقع بيحمّلها تلقائيًا مع شريط موافقة على ملفات الارتباط (Consent Mode v2)، وبيبعت أحداث العملاء (Lead) وتواصل واتساب لجوجل وميتا.", "Paste the IDs and publish. The site loads them automatically with a cookie-consent banner (Consent Mode v2) and sends Lead and WhatsApp-contact events to Google and Meta."],
+    anSaved: ["اتحفظت الأكواد. انشر عشان تشتغل على الموقع.", "IDs saved. Publish to make them live on the site."],
+    anBad: ["فيه كود شكله غلط، راجعه.", "One of the IDs doesn't look right. Please check it."],
+    anSave: ["حفظ الأكواد", "Save IDs"],
     sbSteps: [
       "افتح Supabase من الزرار اللي تحت، اعمل حساب مجاني، ودوس New project.|من زرار Connect أو من Project Settings ثم API Keys، انسخ Project URL والمفتاح العام (publishable أو anon) وحطهم تحت ودوس «حفظ الربط».|من Authentication ثم Users دوس Add user، واعمل يوزر بإيميلك وباسورد، وفعّل Auto Confirm User.|اكتب نفس الإيميل في خانة «إيميل الأدمن»، ودوس «نسخ كود الإعداد»، وافتح SQL Editor في Supabase والصق الكود ودوس Run.|سجّل دخول هنا بنفس الإيميل والباسورد، وبعدين انشر الموقع من زرار «نشر» عشان يبدأ يسجّل الزيارات والعملاء.",
       "Open Supabase with the button below, create a free account, and click New project.|From Connect or Project Settings > API Keys, copy the Project URL and the public key (publishable or anon), paste them below and press Save connection.|In Authentication > Users click Add user, create a user with your email and a password, and tick Auto Confirm User.|Type the same email in Admin email, press Copy setup SQL, open the SQL Editor in Supabase, paste and press Run.|Sign in here with that email and password, then publish the site so it starts recording visits and leads."
@@ -2196,10 +2223,37 @@
   /* ======================================================================
      SETTINGS TAB
      ====================================================================== */
+  const ANALYTICS_RE = /(\/\* @cms-analytics-start \*\/\s*const ANALYTICS = )(\{[^;\n]*\})(;)/;
+  function analyticsCard() {
+    const cur = (ANALYTICS_RE.exec(S.text[JS_PATH] || "") || [])[2];
+    const v = safeJSON(cur) || {};
+    const fields = [["ga4", "Google Analytics 4", "G-XXXXXXXXXX", /^G-[A-Z0-9]{4,}$/], ["gtm", "Google Tag Manager", "GTM-XXXXXXX", /^GTM-[A-Z0-9]{4,}$/],
+      ["metaPixel", "Meta Pixel ID", "123456789012345", /^\d{8,20}$/], ["clarity", "Microsoft Clarity", "abcd1234ef", /^[a-z0-9]{6,20}$/]];
+    const inputs = {};
+    const rows = fields.map(([k, label, ph]) => { inputs[k] = h("input", { class: "inp inp--mono", dir: "ltr", placeholder: ph }); inputs[k].value = v[k] || ""; return h("div", { class: "fld" }, h("span", { class: "fld__label" }, label), inputs[k]); });
+    const save = () => {
+      const out = {};
+      for (const [k, , , re] of fields) {
+        const val = inputs[k].value.trim();
+        if (val && !re.test(val)) { toast(t("anBad") + " (" + k + ")", "err"); return; }
+        out[k] = val;
+      }
+      const js = S.text[JS_PATH];
+      if (!js || !ANALYTICS_RE.test(js)) { toast(t("anBad"), "err"); return; }
+      snapshot([JS_PATH], "analytics");
+      S.text[JS_PATH] = js.replace(ANALYTICS_RE, (a, p1, p2, p3) => p1 + JSON.stringify(out) + p3);
+      S.lastUndo = null;
+      changed();
+      toast(t("anSaved"), { kind: "ok", ms: 6000 });
+    };
+    return card("overview", t("anTitle"), [h("p", { class: "muted small" }, t("anIntro")), h("div", { class: "grid2" }, rows), h("div", { class: "row" }, btn(t("anSave"), "check", save, "sm primary"))]);
+  }
+
   function renderSettings() {
     const P = $("#panel");
     P.append(tabHead("tabSettings", "settingsIntro"));
     P.append(backendCard());
+    if (BRAND === "bv") P.append(analyticsCard());
     const owner = h("input", { class: "inp", dir: "ltr" }); owner.value = S.repo.owner;
     const repo = h("input", { class: "inp", dir: "ltr" }); repo.value = S.repo.repo;
     const branch = h("input", { class: "inp", dir: "ltr" }); branch.value = S.repo.branch;
