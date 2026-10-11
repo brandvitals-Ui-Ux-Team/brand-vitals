@@ -389,3 +389,25 @@
   .floaty:nth-of-type(1) { left: 1.5%; top: 24%; } .floaty:nth-of-type(3) { right: 1.5%; top: 22%; }
 }
 .orbit h1 { text-shadow: 0 6px 30px rgba(14, 10, 36, .55); }
+
+/* join hero: abstract cards (no design work shown on public pages) */
+.fan__card { position: absolute; left: 50%; bottom: 0; width: 120px; height: 150px; border-radius: 22px; display: grid; place-items: center; color: #fff; transform-origin: 50% 120%; translate: -50% 0; box-shadow: 0 20px 40px -16px rgba(14, 10, 36, .45); border: 3px solid #fff; }
+.fan__card svg { width: 40px; height: 40px; }
+.fan__card--0 { rotate: -24deg; background: linear-gradient(150deg, #6C47FF, #4F2DD9); }
+.fan__card--1 { rotate: -12deg; background: linear-gradient(150deg, #8B5CF6, #6C47FF); }
+.fan__card--2 { rotate: 0deg; z-index: 2; background: linear-gradient(150deg, #22D3EE, #0891B2); }
+.fan__card--3 { rotate: 12deg; background: linear-gradient(150deg, #A58BFF, #6C47FF); }
+.fan__card--4 { rotate: 24deg; background: linear-gradient(150deg, #0E0A24, #4F2DD9); }
+/* umbrella header and family footer on public app pages */
+.mk-nav__parent { display: inline-flex; align-items: center; gap: 6px; }
+.mk-nav__parent img { border-radius: 4px; }
+.mk-foot { border-top: 1px solid var(--line); background: var(--surface); padding: 28px clamp(16px, 4vw, 40px) 20px; display: grid; gap: 20px; }
+.mk-foot__fam { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; max-width: 1100px; width: 100%; margin-inline: auto; }
+.mk-foot__fam a { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; }
+.mk-foot__fam a:hover { background: var(--sunken); }
+.mk-foot__fam img { border-radius: 8px; flex: none; }
+.mk-foot__fam a > span { display: grid; }
+.mk-foot__fam .small { color: var(--text-3); }
+.mk-foot__bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; max-width: 1100px; width: 100%; margin-inline: auto; padding-top: 14px; border-top: 1px solid var(--line); color: var(--text-3); }
+.mk-foot__bar a:hover { color: var(--accent); }
+@media (max-width: 860px) { .mk-foot__fam { grid-template-columns: 1fr 1fr; } .mk-nav__parent { display: none !important; } }

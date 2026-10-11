@@ -9,7 +9,7 @@ import { APP_STEPS, Art, CAT, LevelBadge, StagePill, Stepper, appDone, useToast 
 import { fileToDataUrl } from "../lib/image";
 import { actions, useDB } from "../lib/store";
 import type { Category, Piece, TalentKind } from "../lib/types";
-import { MkNav } from "./shared";
+import { MkFooter, MkNav } from "./shared";
 
 const MIN_PIECES = 3, MAX_PIECES = 8;
 const SAMPLES: Record<Category, string[]> = {
@@ -27,14 +27,16 @@ function Frame({ children, hero }: { children: ReactNode; hero?: ReactNode }) {
     <MkNav light />
     {hero}
     <div className="join">{children}</div>
+    <MkFooter />
   </div>;
 }
 
 // Hero 2 · "the fan": a fanned stack of real portfolio pieces above a centered headline.
-function FanHero({ pieces }: { pieces: string[] }) {
+function FanHero() {
   const { L } = useI18n();
+  const cards = [<ImagePlus key="a" />, <Sparkles key="b" />, <ShieldCheck key="c" />, <UploadCloud key="d" />, <User key="e" />];
   return <section className="fan-hero">
-    <div className="fan" aria-hidden>{pieces.slice(0, 5).map((p, i) => <Art key={i} title={p} />)}</div>
+    <div className="fan" aria-hidden>{cards.map((c, i) => <div key={i} className={"fan__card fan__card--" + i}>{c}</div>)}</div>
     <span className="mk-eyebrow"><ShieldCheck size={14} />{L("Reviewed by people, 100%", "مراجعة بشرية ١٠٠٪")}</span>
     <h1>{L("Show us your", "ورّينا")} <span className="mk-grad-text">{L("best work.", "أحسن شغلك.")}</span></h1>
     <p>{L("Joining Vitals Crew starts with your portfolio, not a signup form. A reviewer looks at every piece, then a paid test and a short interview.", "الانضمام لـ Vitals Crew بيبدأ بالبورتفوليو، مش فورم تسجيل. مراجع بيشوف كل قطعة، وبعدين اختبار عملي مدفوع ومقابلة قصيرة.")}</p>
@@ -74,9 +76,8 @@ export function Join() {
   };
   const steps = [L("You", "انت"), L("Portfolio", "البورتفوليو"), L("The rules", "القواعد")];
 
-  const fanPieces = pieces.length >= 3 ? pieces.map(p => p.src) : SAMPLES[f.category].concat(["Latte art reel", "Ramadan bundle static"]);
   if (signin) return <Frame><SignIn onBack={() => setSignin(false)} onFound={x => { setMine(x); setId(x); }} /></Frame>;
-  return <Frame hero={<FanHero pieces={fanPieces} />}>
+  return <Frame hero={<FanHero />}>
     <div style={{ textAlign: "center" }}><button className="link-btn small" onClick={() => setSignin(true)}><LogIn size={14} />{L("Already applied? Check your status", "قدّمت قبل كده؟ شوف حالتك")}</button></div>
     <ol className="wizard">{steps.map((s, i) => <li key={s} className={i < step ? "done" : i === step ? "now" : ""}><span>{i < step ? <Check size={14} /> : i + 1}</span>{s}</li>)}</ol>
 
