@@ -218,8 +218,8 @@
           el.textContent = (target * eased).toFixed(decimals);
           if (p < 1) requestAnimationFrame(step);
         };
-        if (reduceMotion) { el.textContent = target.toFixed(decimals); return; }
-        requestAnimationFrame(step);
+        // Numbers are shown as they are: no count-up (it read as a template effect).
+        el.textContent = target.toFixed(decimals); void step;
       };
       const io = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
