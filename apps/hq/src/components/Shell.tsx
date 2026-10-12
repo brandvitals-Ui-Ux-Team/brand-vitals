@@ -1,4 +1,4 @@
-import { Bell, Blocks, Receipt, CalendarDays, MessagesSquare, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound } from "lucide-react";
+import { Bell, Blocks, Receipt, CalendarDays, MessagesSquare, CheckSquare, ChevronsUpDown, FileSignature, Home, Inbox, LogOut, Menu, Moon, Plus, RotateCcw, ScrollText, Search, Send, Settings, ShieldAlert, Sun, Users, UsersRound, ChevronDown } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { api, isDemo } from "../lib/api";
@@ -44,6 +44,8 @@ export function Shell({ children }: { children: ReactNode }) {
   const { rows: invoices } = useRows("invoices", { workspace_id: ws.id });
   const sentInvoices = invoices.filter(i => i.status === "sent").length;
 
+  const [more, setMore] = useState(false);
+  const moreOpen = more || ["/invoices", "/calendar", "/tasks", "/history", "/integrations", "/team", "/settings"].some(p => loc.pathname.startsWith(p));
   const A = ({ to, icon, label, count, warn, end }: { to: string; icon: ReactNode; label: string; count?: number; warn?: boolean; end?: boolean }) =>
     <NavLink to={to} end={end} className={({ isActive }) => "nav-a" + (isActive ? " active" : "")}>{icon}<span>{label}</span>{!!count && <span className={"count" + (warn ? " count--warn" : "")}>{count}</span>}</NavLink>;
 
@@ -62,18 +64,20 @@ export function Shell({ children }: { children: ReactNode }) {
 
       <button className="big-send" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button>
       <A to="/" end icon={<Home />} label={L("Home", "الرئيسية")} />
-      <A to="/inbox" icon={<MessagesSquare />} label={L("Inbox", "المحادثات")} count={unreadThreads} />
       <A to="/approvals" icon={<Inbox />} label={L("Approvals", "الموافقات")} count={waiting + changes} />
-      <A to="/calendar" icon={<CalendarDays />} label={L("Calendar", "التقويم")} />
       <A to="/clients" icon={<UsersRound />} label={L("Clients", "العملاء")} />
-      <A to="/tasks" icon={<CheckSquare />} label={L("Tasks", "المهام")} count={myOpen} />
-      <div className="nav-sec">{L("More", "المزيد")}</div>
-      <A to="/extra-work" icon={<FileSignature />} label={L("Extra work", "الشغل الإضافي")} count={coOpen} warn />
-      <A to="/invoices" icon={<Receipt />} label={L("Invoices", "الفواتير")} count={sentInvoices} />
-      <A to="/history" icon={<ScrollText />} label={L("History", "السجل")} />
-      <A to="/integrations" icon={<Blocks />} label={L("Integrations", "الربط")} />
-      <A to="/team" icon={<Users />} label={L("Team", "الفريق")} />
-      <A to="/settings" icon={<Settings />} label={L("Settings", "الإعدادات")} />
+      <A to="/inbox" icon={<MessagesSquare />} label={L("Inbox", "المحادثات")} count={unreadThreads} />
+      <A to="/extra-work" icon={<FileSignature />} label={L("Get paid", "التحصيل")} count={coOpen + sentInvoices} warn />
+      <button type="button" className="nav-sec nav-more" aria-expanded={moreOpen} onClick={() => setMore(m => !m)}>{L("More", "المزيد")}<ChevronDown size={14} style={{ transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} /></button>
+      {moreOpen && <>
+        <A to="/invoices" icon={<Receipt />} label={L("Invoices", "الفواتير")} />
+        <A to="/calendar" icon={<CalendarDays />} label={L("Calendar", "التقويم")} />
+        <A to="/tasks" icon={<CheckSquare />} label={L("Tasks", "المهام")} count={myOpen} />
+        <A to="/history" icon={<ScrollText />} label={L("History", "السجل")} />
+        <A to="/integrations" icon={<Blocks />} label={L("Integrations", "الربط")} />
+        <A to="/team" icon={<Users />} label={L("Team", "الفريق")} />
+        <A to="/settings" icon={<Settings />} label={L("Settings", "الإعدادات")} />
+      </>}
 
       <div className="side__foot">
         {isDemo && <div className="demo-pill"><ShieldAlert /><span>{L("Demo mode: data stays in this browser. Connect Supabase in Settings to go live.", "وضع تجريبي: البيانات في هذا المتصفح فقط. اربط Supabase من الإعدادات للتشغيل الفعلي.")}</span></div>}

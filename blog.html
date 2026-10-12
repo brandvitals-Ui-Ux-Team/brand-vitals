@@ -131,9 +131,9 @@
         <p class="eyebrow" data-en="Insights" data-ar="رؤى">Insights</p>
         <h1 class="page-hero__title" style="margin-top:1rem">
           <span class="wr"><span style="transition-delay:.1s" data-en="Sharper thinking" data-ar="تفكيرٌ أعمق">Sharper thinking</span></span><br>
-          <span class="wr"><span style="transition-delay:.28s" data-en="on " data-ar="حول ">on </span></span><span class="wr"><span style="transition-delay:.34s" class="accent-text" data-en="growth." data-ar="النمو.">growth.</span></span>
+          <span class="wr"><span style="transition-delay:.28s" data-en="on" data-ar="حول">on</span></span> <span class="wr"><span style="transition-delay:.34s" class="accent-text" data-en="growth." data-ar="النمو.">growth.</span></span>
         </h1>
-        <p class="lead" data-en="What we learn running growth across Egypt and MENA, written down and made practical." data-ar="ما نتعلّمه من إدارة النمو عبر مصر والمنطقة، مكتوبٌ هنا وجاهزٌ للتطبيق.">What we learn running growth across Egypt and MENA, written down and made practical.</p>
+        <p class="lead" data-en="What we learn running growth in Egypt, Saudi Arabia and the region, written down and made practical." data-ar="ما نتعلّمه من إدارة النمو في مصر والسعودية والمنطقة، مكتوبٌ هنا وجاهزٌ للتطبيق.">What we learn running growth in Egypt, Saudi Arabia and the region, written down and made practical.</p>
       </div>
     </section>
 
@@ -141,9 +141,48 @@
     <section class="section section--flush-top">
       <div class="container">
         <!-- NOTE: article drafts, connect to a clean CMS before launch (original WP blog contained injected spam posts; see README) -->
-        <div class="grid-3">
-          <a class="card post-card" href="blog-creative-testing.html" data-reveal>
-            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Article" data-ar="مقال">Article</span></div>
+        <div class="tabs blog-tabs" data-filter-group data-filter-target=".blog-grid" role="tablist" aria-label="Filter articles by market" data-reveal>
+          <button class="tab is-active" data-cat="all" aria-selected="true" data-en="All" data-ar="الكل">All</button>
+          <button class="tab" data-cat="egypt" aria-selected="false" data-en="Egypt" data-ar="مصر">Egypt</button>
+          <button class="tab" data-cat="ksa" aria-selected="false" data-en="Saudi Arabia" data-ar="السعودية">Saudi Arabia</button>
+          <button class="tab" data-cat="global" aria-selected="false" data-en="Global" data-ar="عام">Global</button>
+        </div>
+        <div class="grid-3 blog-grid">
+          <a class="card post-card" href="blog-ksa-seasons.html" data-cat="ksa" data-reveal>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag mkt mkt--ksa" data-en="Saudi Arabia" data-ar="السعودية">Saudi Arabia</span></div>
+            <div class="post-card__body">
+              <div class="post-card__meta"><span class="cat" data-en="Seasons" data-ar="المواسم">Seasons</span><span data-en="7 min read" data-ar="قراءة ٧ دقائق">7 min read</span></div>
+              <h3 data-en="Saudi Arabia's calendar is your media plan" data-ar="تقويم السعودية هو خطة إعلاناتك">Saudi Arabia's calendar is your media plan</h3>
+              <p data-en="Ramadan, Founding Day, National Day, White Friday and payday: how to plan spend and creative around the moments Saudi customers actually buy." data-ar="رمضان ويوم التأسيس واليوم الوطني والجمعة البيضاء ويوم الراتب: كيف ترتّب ميزانيتك والكرييتيف حول اللحظات اللي العميل السعودي يشتري فيها فعلًا.">Ramadan, Founding Day, National Day, White Friday and payday: how to plan spend and creative around the moments Saudi customers actually buy.</p>
+            </div>
+          </a>
+          <a class="card post-card" href="blog-ksa-snapchat.html" data-cat="ksa" data-reveal>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag mkt mkt--ksa" data-en="Saudi Arabia" data-ar="السعودية">Saudi Arabia</span></div>
+            <div class="post-card__body">
+              <div class="post-card__meta"><span class="cat" data-en="Paid social" data-ar="الإعلانات المدفوعة">Paid social</span><span data-en="6 min read" data-ar="قراءة ٦ دقائق">6 min read</span></div>
+              <h3 data-en="Why Saudi campaigns should test Snapchat first" data-ar="ليش الحملات في السعودية لازم تجرّب سناب شات أول">Why Saudi campaigns should test Snapchat first</h3>
+              <p data-en="Snapchat reaches a large share of young Saudis every day. Here is how to plan, brief and measure it next to Meta, TikTok and Google." data-ar="سناب شات يوصل لنسبة كبيرة من الشباب السعودي كل يوم. هنا كيف تخطط له وتكتب البريف وتقيسه جنب Meta وTikTok وGoogle.">Snapchat reaches a large share of young Saudis every day. Here is how to plan, brief and measure it next to Meta, TikTok and Google.</p>
+            </div>
+          </a>
+          <a class="card post-card" href="blog-egypt-pricing.html" data-cat="egypt" data-reveal>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag mkt mkt--egypt" data-en="Egypt" data-ar="مصر">Egypt</span></div>
+            <div class="post-card__body">
+              <div class="post-card__meta"><span class="cat" data-en="Strategy" data-ar="الاستراتيجية">Strategy</span><span data-en="6 min read" data-ar="قراءة ٦ دقائق">6 min read</span></div>
+              <h3 data-en="Marketing in Egypt when prices keep moving" data-ar="التسويق في مصر والأسعار مش ثابتة">Marketing in Egypt when prices keep moving</h3>
+              <p data-en="When costs and prices change every few months, last quarter's targets stop making sense. How to keep media efficient and customers buying." data-ar="لما التكاليف والأسعار بتتغير كل كام شهر، أهداف الربع اللي فات بتبطّل تبقى منطقية. إزاي تحافظ على كفاءة الإعلانات والعميل يفضل يشتري.">When costs and prices change every few months, last quarter's targets stop making sense. How to keep media efficient and customers buying.</p>
+            </div>
+          </a>
+          <a class="card post-card" href="blog-egypt-whatsapp.html" data-cat="egypt" data-reveal>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag mkt mkt--egypt" data-en="Egypt" data-ar="مصر">Egypt</span></div>
+            <div class="post-card__body">
+              <div class="post-card__meta"><span class="cat" data-en="Conversion" data-ar="التحويل">Conversion</span><span data-en="5 min read" data-ar="قراءة ٥ دقائق">5 min read</span></div>
+              <h3 data-en="WhatsApp is your sales funnel in Egypt" data-ar="واتساب هو قمع المبيعات بتاعك في مصر">WhatsApp is your sales funnel in Egypt</h3>
+              <p data-en="Most Egyptian customers want to ask before they buy. How to turn WhatsApp from a messy inbox into a measured channel." data-ar="أغلب العملاء في مصر عايزين يسألوا قبل ما يشتروا. إزاي تحوّل واتساب من صندوق رسايل عشوائي لقناة متقاسة.">Most Egyptian customers want to ask before they buy. How to turn WhatsApp from a messy inbox into a measured channel.</p>
+            </div>
+          </a>
+
+          <a class="card post-card" href="blog-creative-testing.html" data-cat="global" data-reveal>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Global" data-ar="عام">Global</span></div>
             <div class="post-card__body">
               <div class="post-card__meta"><span class="cat" data-en="Performance" data-ar="الأداء">Performance</span><span data-en="8 min read" data-ar="8 دقائق قراءة">8 min read</span></div>
               <h3 data-en="Creative testing beats bigger budgets" data-ar="اختبار الإبداع يتفوّق على الميزانيات الأكبر">Creative testing beats bigger budgets</h3>
@@ -151,8 +190,8 @@
             </div>
           </a>
 
-          <a class="card post-card" href="blog-prospecting-vs-retargeting.html" data-reveal style="--rd:.08s">
-            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Article" data-ar="مقال">Article</span></div>
+          <a class="card post-card" href="blog-prospecting-vs-retargeting.html" data-cat="global" data-reveal style="--rd:.08s">
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Global" data-ar="عام">Global</span></div>
             <div class="post-card__body">
               <div class="post-card__meta"><span class="cat" data-en="Acquisition" data-ar="الاكتساب">Acquisition</span><span data-en="6 min read" data-ar="6 دقائق قراءة">6 min read</span></div>
               <h3 data-en="Prospecting vs retargeting: where growth really comes from" data-ar="الاكتساب مقابل إعادة الاستهداف: من أين يأتي النمو فعلاً">Prospecting vs retargeting: where growth really comes from</h3>
@@ -160,8 +199,8 @@
             </div>
           </a>
 
-          <a class="card post-card" href="blog-focus-your-catalog.html" data-reveal style="--rd:.16s">
-            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Article" data-ar="مقال">Article</span></div>
+          <a class="card post-card" href="blog-focus-your-catalog.html" data-cat="global" data-reveal style="--rd:.16s">
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Global" data-ar="عام">Global</span></div>
             <div class="post-card__body">
               <div class="post-card__meta"><span class="cat" data-en="E-commerce" data-ar="التجارة الإلكترونية">E-commerce</span><span data-en="7 min read" data-ar="7 دقائق قراءة">7 min read</span></div>
               <h3 data-en="Less is more: focus your catalog to lift ROAS" data-ar="القليل يصنع الكثير: ركّز كتالوجك لترفع العائد">Less is more: focus your catalog to lift ROAS</h3>
@@ -169,8 +208,8 @@
             </div>
           </a>
 
-          <a class="card post-card" href="blog-ecommerce-kpi-stack.html" data-reveal>
-            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Article" data-ar="مقال">Article</span></div>
+          <a class="card post-card" href="blog-ecommerce-kpi-stack.html" data-cat="global" data-reveal>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Global" data-ar="عام">Global</span></div>
             <div class="post-card__body">
               <div class="post-card__meta"><span class="cat" data-en="Analytics" data-ar="التحليلات">Analytics</span><span data-en="9 min read" data-ar="9 دقائق قراءة">9 min read</span></div>
               <h3 data-en="The KPI stack every e-commerce CEO should watch weekly" data-ar="مؤشرات الأداء التي يجب أن يراقبها كل مدير تجارة إلكترونية أسبوعياً">The KPI stack every e-commerce CEO should watch weekly</h3>
@@ -179,7 +218,7 @@
           </a>
 
           <a class="card post-card" href="blog-b2b-to-b2c.html" data-reveal style="--rd:.08s">
-            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Article" data-ar="مقال">Article</span></div>
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Global" data-ar="عام">Global</span></div>
             <div class="post-card__body">
               <div class="post-card__meta"><span class="cat" data-en="Strategy" data-ar="الاستراتيجية">Strategy</span><span data-en="5 min read" data-ar="5 دقائق قراءة">5 min read</span></div>
               <h3 data-en="From B2B to B2C: repositioning for consumers" data-ar="من B2B إلى B2C: إعادة التموضع نحو المستهلك">From B2B to B2C: repositioning for consumers</h3>
@@ -187,8 +226,8 @@
             </div>
           </a>
 
-          <a class="card post-card" href="blog-arabic-seo-guide.html" data-reveal style="--rd:.16s">
-            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Article" data-ar="مقال">Article</span></div>
+          <a class="card post-card" href="blog-arabic-seo-guide.html" data-cat="global egypt ksa" data-reveal style="--rd:.16s">
+            <div class="post-card__media post-card__media--ph"><span class="case-ph-tag" data-en="Global" data-ar="عام">Global</span></div>
             <div class="post-card__body">
               <div class="post-card__meta"><span class="cat" data-en="SEO" data-ar="السيو">SEO</span><span data-en="10 min read" data-ar="10 دقائق قراءة">10 min read</span></div>
               <h3 data-en="Arabic SEO is not translated SEO: a field guide" data-ar="السيو العربي ليس سيو مُترجَماً: دليل ميداني">Arabic SEO is not translated SEO: a field guide</h3>

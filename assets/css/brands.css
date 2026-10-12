@@ -1146,3 +1146,19 @@ body[data-brand="studio"] {
 .sth .sth-ps__layers div.on { background: color-mix(in srgb, var(--teal) 18%, transparent); }
 .sth .sth-tl__lens span { background: radial-gradient(circle at 35% 35%, #fff, var(--teal) 45%, #064E48); }
 
+
+/* GO · one promise in three steps */
+.go-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.75rem, 1.5vw, 1rem); counter-reset: s; }
+.go-step { display: grid; grid-template-rows: auto 1fr; overflow: hidden; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); }
+.go-step__shot { aspect-ratio: 4 / 3; overflow: hidden; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.go-step__shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.go-step__shot--phone { display: grid; place-items: start center; padding-top: 1rem; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, var(--surface-2)), var(--surface-2)); }
+.go-step__shot--phone img { width: 58%; height: auto; border-radius: 22px 22px 0 0; border: 6px solid #0B1612; border-bottom: 0; object-fit: contain; }
+.go-step__body { display: grid; align-content: start; gap: .45rem; padding: 1.3rem 1.4rem 1.5rem; }
+.go-step__n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .85rem; color: var(--accent-ink); background: var(--accent); }
+.go-step h3 { font-size: 1.25rem; }
+.go-step p { color: var(--text-2); font-size: .95rem; }
+.go-step--go { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.go-extras { margin-top: clamp(1.4rem, 3vw, 2rem); text-align: center; color: var(--text-2); font-size: .95rem; max-width: 70ch; margin-inline: auto; }
+.go-extras b { color: var(--text); }
+@media (max-width: 860px) { .go-steps { grid-template-columns: minmax(0, 1fr); } }

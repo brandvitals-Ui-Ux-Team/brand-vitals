@@ -79,7 +79,7 @@ export function MkFooter() {
     </div>
     <div className="mk-foot__bar small">
       <span>© {new Date().getFullYear()} Vitals Crew. <a className="mk-foot__parent" href="/index.html"><img src="/assets/img/favicon.svg" alt="" width={16} height={16} />{L("A Brand Vitals company", "إحدى شركات Brand Vitals")}</a></span>
-      <a href="/privacy.html">{L("Privacy Policy", "سياسة الخصوصية")}</a>
+      <span><a href="/blog.html">{L("Articles", "مقالات")}</a> · <a href="/privacy.html">{L("Privacy Policy", "سياسة الخصوصية")}</a></span>
     </div>
   </footer>;
 }
