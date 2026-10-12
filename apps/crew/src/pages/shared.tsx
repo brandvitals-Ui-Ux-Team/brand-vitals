@@ -59,7 +59,7 @@ export function MkFooter() {
         <p>{L("Vetted freelancers and creative teams, reviewed 100% by Brand Vitals.", "فريلانسرز وفرق إبداعية معتمدة، بمراجعة ١٠٠٪ من براند ڤايتلز.")}</p>
       </div>
       <div className="mk-foot__col">
-        <h4>Vitals Crew</h4>
+        <h2 className="mk-foot__h">Vitals Crew</h2>
         <a href="/crew.html#vetting">{L("How we vet", "إزاي بنعتمد")}</a>
         <a href="/crew.html#clients">{L("For clients", "للعملاء")}</a>
         <a href="/crew.html#talent">{L("For talent", "للمواهب")}</a>
@@ -67,11 +67,11 @@ export function MkFooter() {
         <a href="/crew/">{L("Open the platform", "افتح المنصة")}</a>
       </div>
       <div className="mk-foot__col">
-        <h4>{L("Brands", "البراندات")}</h4>
+        <h2 className="mk-foot__h">{L("Brands", "البراندات")}</h2>
         {BRANDS.map(([h, n]) => <a key={h} href={h}>{n}</a>)}
       </div>
       <div className="mk-foot__col">
-        <h4>{L("Contact", "تواصل")}</h4>
+        <h2 className="mk-foot__h">{L("Contact", "تواصل")}</h2>
         <a href="https://wa.me/201090861397" target="_blank" rel="noopener" dir="ltr">WhatsApp +20 109 086 1397</a>
         <span>{L("New Cairo, Cairo, Egypt", "القاهرة الجديدة، القاهرة، مصر")}</span>
         <span>{L("Sun to Thu, 10:00 to 18:00", "الأحد إلى الخميس، 10:00 إلى 18:00")}</span>

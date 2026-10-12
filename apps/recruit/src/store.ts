@@ -1,5 +1,5 @@
-// Demo store for Vitals Recruit: one shared database in localStorage, so switching between
-// the candidate, company and Brand Vitals screening views shows the same pipeline reacting live.
+// Demo store for Vitals Recruit: one shared database in localStorage. Every account has one role
+// (candidate, company or Brand Vitals screening); signing in as each one shows the same pipeline live.
 // Every piece of seeded content exists in English and Arabic; text people type is stored as written.
 import { useSyncExternalStore } from "react";
 
@@ -32,16 +32,24 @@ export interface Application {
   id: string; job_id: string; candidate_id: string; cover: string; applied_at: string; stage: Stage;
   fit: number | null; screen_note: string; screen_note_ar?: string; viewed: boolean; history: Event[];
 }
-export interface Note { id: string; to: Role; at: string; text: string; text_ar: string; link: string; read: boolean }
-export interface DB { companies: Company[]; jobs: Job[]; candidates: Candidate[]; applications: Application[]; saved: string[]; seen: string[]; notes: Note[] }
+/** who: the candidate or company the note is for; empty means everyone with that role (the screening team). */
+export interface Note { id: string; to: Role; who?: string; at: string; text: string; text_ar: string; link: string; read: boolean }
+/** ref: the candidate or company this account acts for (empty for Brand Vitals screeners). */
+export interface User { id: string; email: string; pass: string; role: Role; ref: string; name: string; name_ar?: string; title?: string; at: string }
+export interface DB { users: User[]; companies: Company[]; jobs: Job[]; candidates: Candidate[]; applications: Application[]; saved: Record<string, string[]>; seen: string[]; notes: Note[] }
 
-const KEY = "recruit-demo-v3";
+const KEY = "recruit-demo-v4";
+const SESSION = "recruit-session";
+const SALT = "vitals-recruit|";
 const day = 86400000;
 const ago = (d: number, h = 0) => new Date(Date.now() - d * day - h * 3600000).toISOString();
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
-// The people this demo browser plays (fictional).
-export const ME = { candidate: "c-sara", company: "co-atlas", hr: "Rana Youssef", hr_ar: "رنا يوسف", screener: "Mostafa Ali", screener_ar: "مصطفى علي" };
+// The signed-in account, kept in sync with the session (see applySession).
+export const ME = { user: "", role: null as Role | null, candidate: "", company: "", hr: "", hr_ar: "", screener: "", screener_ar: "" };
+// Demo accounts (fictional). Password demo1234, hashed the same way as new accounts.
+export const DEMO: Record<Role, { email: string }> = { candidate: { email: "sara.hassan@example.com" }, company: { email: "rana@atlas.example.com" }, screening: { email: "mostafa@brandvitals.io" } };
+const DEMO_PASS = "765a6737318f20d02dfe5ebbf42930861fd404ff40f3e91acfd6dc97ff0398bb";
 
 function seed(): DB {
   const companies: Company[] = [
@@ -157,11 +165,11 @@ function seed(): DB {
   const E = (stage: Stage, d: number, by: string, note: string, note_ar: string): Event => ({ stage, at: ago(d), by, note, note_ar });
   const A = (id: string, job_id: string, candidate_id: string, d: number, stage: Stage, fit: number | null, screen_note: string, screen_note_ar: string, history: Event[], viewed = false, cover = ""): Application =>
     ({ id, job_id, candidate_id, cover, applied_at: ago(d), stage, fit, screen_note, screen_note_ar, viewed, history });
-  const S = ME.screener;
+  const S = "Mostafa Ali";
   const applications: Application[] = [
     A("ap1", "j1", "c-sara", 1, "screening", null, "", "", [], false, "Real estate social is exactly what I do now, and I report on leads every week."),
     A("ap2", "j1", "c-omar", 2, "shortlisted", 5, "Seven years, three compounds, has led a team. Strong match for the senior level; salary expectation within range.", "سبع سنين وتلات كمبوندات وقاد فريق. مناسب جدًا للمستوى الأول، وتوقعاته للمرتب في النطاق.", [E("shortlisted", 1, S, "Portfolio and references checked.", "البورتفوليو والمراجع اتراجعوا.")]),
-    A("ap3", "j1", "c-hany", 2, "interview", 4, "Four years in real estate social, good reporting. Slightly junior for 'senior' but the closest domain match.", "أربع سنين في سوشيال العقارات وتقاريره كويسة. أقل شوية من مستوى «أول» لكنه الأقرب للمجال.", [E("shortlisted", 2, S, "Shortlisted.", "اترشّح."), E("interview", 1, ME.hr, "Interview booked for Thursday 11:00.", "المقابلة يوم الخميس الساعة ١١.")], true),
+    A("ap3", "j1", "c-hany", 2, "interview", 4, "Four years in real estate social, good reporting. Slightly junior for 'senior' but the closest domain match.", "أربع سنين في سوشيال العقارات وتقاريره كويسة. أقل شوية من مستوى «أول» لكنه الأقرب للمجال.", [E("shortlisted", 2, S, "Shortlisted.", "اترشّح."), E("interview", 1, "Rana Youssef", "Interview booked for Thursday 11:00.", "المقابلة يوم الخميس الساعة ١١.")], true),
     A("ap4", "j1", "c-mai", 2, "not_matched", 2, "Two years and no real estate experience. Kindly told, and pointed to the Social Media Coordinator role.", "سنتين خبرة ومفيش خبرة عقارات. اتبلغت بلطف واترشّح لها وظيفة منسق السوشيال ميديا.", [E("not_matched", 1, S, "Below the experience bar for this role.", "أقل من الخبرة المطلوبة للوظيفة دي.")]),
     A("ap5", "j2", "c-youssef", 4, "shortlisted", 4, "Strong Arabic type, relevant brochure work. Portfolio checked.", "خط عربي قوي وشغل بروشورات مناسب. البورتفوليو اتراجع.", [E("shortlisted", 3, S, "Shortlisted.", "اترشّح.")]),
     A("ap6", "j4", "c-lina", 1, "screening", null, "", "", []),
@@ -169,19 +177,94 @@ function seed(): DB {
     A("ap8", "j3", "c-sara", 6, "interview", 4, "Good Arabic voice and on-camera comfort shown in her samples.", "أسلوب عربي كويس وراحة قدام الكاميرا باينة في النماذج.", [E("shortlisted", 5, S, "Shortlisted.", "اترشّحت."), E("interview", 3, "Nile Roastery HR", "Interview on Sunday.", "المقابلة يوم الأحد.")], true)
   ];
   const notes: Note[] = [
-    { id: "n1", to: "candidate", at: ago(3), text: "Nile Roastery invited you to an interview for Content Creator (Arabic).", text_ar: "نايل روستري دعتك لمقابلة لوظيفة صانع محتوى (عربي).", link: "/applications", read: false },
-    { id: "n2", to: "candidate", at: ago(0, 6), text: "New job that matches your profile: Social Media Coordinator at Atlas Residences.", text_ar: "وظيفة جديدة مناسبة لبروفايلك: منسق سوشيال ميديا في أطلس ريزيدنسز.", link: "/jobs/j9", read: false },
-    { id: "n3", to: "company", at: ago(1), text: "Brand Vitals screened Omar Nabil for Senior Social Media Specialist: fit 5/5.", text_ar: "Brand Vitals فرزت عمر نبيل لوظيفة أخصائي سوشيال ميديا أول: توافق ٥/٥.", link: "/company/applicants/ap2", read: false },
+    { id: "n1", to: "candidate", who: "c-sara", at: ago(3), text: "Nile Roastery invited you to an interview for Content Creator (Arabic).", text_ar: "نايل روستري دعتك لمقابلة لوظيفة صانع محتوى (عربي).", link: "/applications", read: false },
+    { id: "n2", to: "candidate", who: "c-sara", at: ago(0, 6), text: "New job that matches your profile: Social Media Coordinator at Atlas Residences.", text_ar: "وظيفة جديدة مناسبة لبروفايلك: منسق سوشيال ميديا في أطلس ريزيدنسز.", link: "/jobs/j9", read: false },
+    { id: "n3", to: "company", who: "co-atlas", at: ago(1), text: "Brand Vitals screened Omar Nabil for Senior Social Media Specialist: fit 5/5.", text_ar: "Brand Vitals فرزت عمر نبيل لوظيفة أخصائي سوشيال ميديا أول: توافق ٥/٥.", link: "/company/applicants/ap2", read: false },
     { id: "n4", to: "screening", at: ago(1), text: "New application to screen: Sara Hassan for Senior Social Media Specialist.", text_ar: "طلب جديد للفرز: سارة حسن لوظيفة أخصائي سوشيال ميديا أول.", link: "/screening/review/ap1", read: false },
     { id: "n5", to: "screening", at: ago(1), text: "New application to screen: Lina Abdelrahman for Performance Marketing Manager.", text_ar: "طلب جديد للفرز: لينا عبد الرحمن لوظيفة مدير تسويق أداء.", link: "/screening/review/ap6", read: false }
   ];
-  return { companies, jobs, candidates, applications, saved: ["j4", "j9"], seen: [], notes };
+  const at = ago(30);
+  const users: User[] = [
+    { id: "u-sara", email: DEMO.candidate.email, pass: DEMO_PASS, role: "candidate", ref: "c-sara", name: "Sara Hassan", name_ar: "سارة حسن", at },
+    { id: "u-rana", email: DEMO.company.email, pass: DEMO_PASS, role: "company", ref: "co-atlas", name: "Rana Youssef", name_ar: "رنا يوسف", title: "HR Manager", at },
+    { id: "u-mostafa", email: DEMO.screening.email, pass: DEMO_PASS, role: "screening", ref: "", name: "Mostafa Ali", name_ar: "مصطفى علي", title: "Talent team", at }
+  ];
+  return { users, companies, jobs, candidates, applications, saved: { "c-sara": ["j4", "j9"] }, seen: [], notes };
 }
 
 // ---------- tiny reactive store ----------
 let db: DB = load();
 const subs = new Set<() => void>();
 function load(): DB { try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch { /* ignore */ } return seed(); }
+
+// ---------- accounts and session ----------
+let sessionId = ((): string => { try { return localStorage.getItem(SESSION) || ""; } catch { return ""; } })();
+function applySession() {
+  const u = db.users.find(x => x.id === sessionId);
+  if (!u) sessionId = "";
+  const is = (r: Role) => u?.role === r;
+  Object.assign(ME, { user: u?.id || "", role: u?.role || null, candidate: is("candidate") ? u!.ref : "", company: is("company") ? u!.ref : "",
+    hr: is("company") ? u!.name : "", hr_ar: is("company") ? u!.name_ar || u!.name : "", screener: is("screening") ? u!.name : "", screener_ar: is("screening") ? u!.name_ar || u!.name : "" });
+}
+applySession();
+function setSession(id: string) {
+  sessionId = id;
+  try { if (id) localStorage.setItem(SESSION, id); else localStorage.removeItem(SESSION); } catch { /* ignore */ }
+  applySession();
+  db = { ...db }; // a new snapshot, so every screen re-renders for the new account
+  subs.forEach(f => f());
+}
+export const currentUser = (d: DB) => d.users.find(u => u.id === ME.user) || null;
+export const homeOf = (r: Role | null) => r === "company" ? "/company" : r === "screening" ? "/screening" : "/jobs";
+export const savedOf = (d: DB, cid: string) => d.saved[cid] || [];
+const hash = async (pw: string) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(SALT + pw)))].map(b => b.toString(16).padStart(2, "0")).join("");
+export const validEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
+const COLORS = ["#1E3A8A", "#0F766E", "#7C2D12", "#6D28D9", "#9D174D", "#155E75", "#3F6212"];
+
+export interface SignUp {
+  role: "candidate" | "company"; name: string; email: string; password: string;
+  headline?: string; fields?: Field[]; years?: number; city?: string;
+  title?: string; company?: string; industry?: string; size?: string;
+}
+/** Demo auth with the same shape as the live one (email + password, one role per account). Screening accounts are created by Brand Vitals only. */
+export const auth = {
+  async signIn(email: string, password: string): Promise<User | "wrong"> {
+    const u = db.users.find(x => x.email.toLowerCase() === email.trim().toLowerCase());
+    if (!u || u.pass !== await hash(password)) return "wrong";
+    setSession(u.id);
+    return u;
+  },
+  demo(role: Role) { const u = db.users.find(x => x.email === DEMO[role].email); if (u) setSession(u.id); return u || null; },
+  async signUp(f: SignUp): Promise<User | "taken"> {
+    const email = f.email.trim().toLowerCase();
+    if (db.users.some(x => x.email.toLowerCase() === email)) return "taken";
+    const pass = await hash(f.password);
+    const name = f.name.trim();
+    const city = (f.city || "").trim();
+    const id = uid();
+    let next = { ...db };
+    let ref: string;
+    if (f.role === "candidate") {
+      const c: Candidate = { id: "c-" + id, name, headline: (f.headline || "").trim(), city, city_ar: city, email, phone: "", about: "", years: f.years || 0, experience: [], education: [], skills: [], languages: ["Arabic", "English"], cv: null, link: "",
+        interests: { fields: f.fields || [], types: ["full_time"], modes: ["onsite", "hybrid", "remote"], salary: 0, currency: "EGP" } };
+      ref = c.id;
+      next = { ...next, candidates: [...next.candidates, c] };
+    } else {
+      const coName = (f.company || "").trim(); const ind = (f.industry || "").trim();
+      const co: Company = { id: "co-" + id, name: coName, name_ar: coName, industry: ind, industry_ar: ind, city, city_ar: city, size: f.size || "1–50", founded: String(new Date().getFullYear()), about: "", about_ar: "", color: COLORS[db.companies.length % COLORS.length] };
+      ref = co.id;
+      next = { ...next, companies: [...next.companies, co] };
+    }
+    const u: User = { id: "u-" + id, email, pass, role: f.role, ref, name, title: (f.title || "").trim() || undefined, at: new Date().toISOString() };
+    save({ ...next, users: [...next.users, u] });
+    setSession(u.id);
+    return u;
+  },
+  signOut() { signedOutAt = Date.now(); setSession(""); }
+};
+let signedOutAt = 0;
+/** True right after signing out, so protected pages send you to sign-in rather than sign-up. */
+export const justSignedOut = () => Date.now() - signedOutAt < 4000;
 function save(next: DB) {
   db = next;
   try { localStorage.setItem(KEY, JSON.stringify(db)); }
@@ -189,9 +272,12 @@ function save(next: DB) {
   subs.forEach(f => f());
 }
 export function useDB() { return useSyncExternalStore(cb => { subs.add(cb); return () => subs.delete(cb); }, () => db); }
-export function resetDemo() { save(seed()); }
+export function resetDemo() { save(seed()); setSession(sessionId); }
 // another tab (or the other role in a second window) changed the demo: pick it up live
-if (typeof window !== "undefined") window.addEventListener("storage", e => { if (e.key === KEY) { db = load(); subs.forEach(f => f()); } });
+if (typeof window !== "undefined") window.addEventListener("storage", e => {
+  if (e.key === KEY) { db = load(); applySession(); subs.forEach(f => f()); }
+  if (e.key === SESSION) { sessionId = e.newValue || ""; applySession(); db = { ...db }; subs.forEach(f => f()); }
+});
 
 export const jobOf = (d: DB, id: string) => d.jobs.find(j => j.id === id);
 export const companyOf = (d: DB, id: string) => d.companies.find(c => c.id === id)!;
@@ -228,24 +314,31 @@ export const statsOf = (d: DB, jobId: string) => {
   return { applied: a.length, screened: a.filter(x => x.stage !== "screening").length, considered: a.filter(x => VISIBLE_TO_COMPANY.includes(x.stage) && x.stage !== "not_selected").length, notSelected: a.filter(x => x.stage === "not_matched" || x.stage === "not_selected").length };
 };
 
-const note = (to: Role, text: string, text_ar: string, link: string): Note => ({ id: uid(), to, at: new Date().toISOString(), text, text_ar, link, read: false });
+const note = (to: Role, who: string, text: string, text_ar: string, link: string): Note => ({ id: uid(), to, who: who || undefined, at: new Date().toISOString(), text, text_ar, link, read: false });
+/** Notes for one account: addressed to it, or to its whole role (the screening team). */
+export const notesFor = (d: DB, role: Role, who: string) => d.notes.filter(n => n.to === role && (!n.who || n.who === who));
 
 export const actions = {
   apply(job_id: string, cover: string) {
-    if (db.applications.some(a => a.job_id === job_id && a.candidate_id === ME.candidate)) return;
+    if (!ME.candidate || db.applications.some(a => a.job_id === job_id && a.candidate_id === ME.candidate)) return;
     const j = jobOf(db, job_id)!; const c = candidateOf(db, ME.candidate)!;
     const id = uid();
     save({ ...db, applications: [{ id, job_id, candidate_id: ME.candidate, cover, applied_at: new Date().toISOString(), stage: "screening", fit: null, screen_note: "", viewed: false, history: [] }, ...db.applications],
-      notes: [note("screening", `New application to screen: ${c.name} for ${j.title}.`, `طلب جديد للفرز: ${c.name_ar || c.name} لوظيفة ${j.title_ar}.`, "/screening/review/" + id), ...db.notes] });
+      notes: [note("screening", "", `New application to screen: ${c.name} for ${j.title}.`, `طلب جديد للفرز: ${c.name_ar || c.name} لوظيفة ${j.title_ar}.`, "/screening/review/" + id), ...db.notes] });
   },
   withdraw(id: string) { save({ ...db, applications: db.applications.filter(a => a.id !== id) }); },
-  toggleSave(job_id: string) { save({ ...db, saved: db.saved.includes(job_id) ? db.saved.filter(x => x !== job_id) : [job_id, ...db.saved] }); },
+  toggleSave(job_id: string) {
+    if (!ME.candidate) return;
+    const cur = savedOf(db, ME.candidate);
+    save({ ...db, saved: { ...db.saved, [ME.candidate]: cur.includes(job_id) ? cur.filter(x => x !== job_id) : [job_id, ...cur] } });
+  },
   seeJob(job_id: string) { if (db.seen.includes(job_id)) return; save({ ...db, seen: [...db.seen, job_id], jobs: db.jobs.map(j => j.id === job_id ? { ...j, views: j.views + 1 } : j) }); },
   updateProfile(c: Candidate) { save({ ...db, candidates: db.candidates.map(x => x.id === c.id ? c : x) }); },
   postJob(j: Omit<Job, "id" | "posted_at" | "status" | "company_id" | "views">) {
     const job: Job = { ...j, id: uid(), company_id: ME.company, posted_at: new Date().toISOString(), status: "open", views: 0 };
-    const me = candidateOf(db, ME.candidate)!;
-    const extra = me.interests.fields.includes(job.field) ? [note("candidate", `New job that matches your interests: ${job.title} at ${companyOf(db, ME.company).name}.`, `وظيفة جديدة مناسبة لاهتماماتك: ${job.title_ar} في ${companyOf(db, ME.company).name_ar}.`, "/jobs/" + job.id)] : [];
+    const co = companyOf(db, ME.company);
+    // every candidate whose career interests include this field hears about it
+    const extra = db.candidates.filter(c => c.interests.fields.includes(job.field)).map(c => note("candidate", c.id, `New job that matches your interests: ${job.title} at ${co.name}.`, `وظيفة جديدة مناسبة لاهتماماتك: ${job.title_ar} في ${co.name_ar}.`, "/jobs/" + job.id));
     save({ ...db, jobs: [job, ...db.jobs], notes: [...extra, ...db.notes] });
     return job.id;
   },
@@ -253,12 +346,12 @@ export const actions = {
   markViewed(id: string) {
     const a = appOf(db, id); if (!a || a.viewed) return;
     const j = jobOf(db, a.job_id)!; const co = companyOf(db, j.company_id);
-    const extra = a.candidate_id === ME.candidate ? [note("candidate", `${co.name} viewed your application for ${j.title}.`, `${co.name_ar} شافت طلبك لوظيفة ${j.title_ar}.`, "/applications")] : [];
+    const extra = [note("candidate", a.candidate_id, `${co.name} viewed your application for ${j.title}.`, `${co.name_ar} شافت طلبك لوظيفة ${j.title_ar}.`, "/applications")];
     save({ ...db, applications: db.applications.map(x => x.id === id ? { ...x, viewed: true } : x), notes: [...extra, ...db.notes] });
   },
   move(id: string, stage: Stage, by: string, note_en: string, fit?: number) {
     const a = appOf(db, id)!; const j = jobOf(db, a.job_id)!; const co = companyOf(db, j.company_id); const c = candidateOf(db, a.candidate_id)!;
-    const screener = by === ME.screener;
+    const screener = !!ME.screener && by === ME.screener;
     const msg: Partial<Record<Stage, [string, string]>> = {
       shortlisted: [`Brand Vitals sent your application for ${j.title} to ${co.name}.`, `Brand Vitals بعتت طلبك لوظيفة ${j.title_ar} لـ ${co.name_ar}.`],
       not_matched: [`Brand Vitals reviewed your application for ${j.title}. See the feedback.`, `Brand Vitals راجعت طلبك لوظيفة ${j.title_ar}. شوف الرأي.`],
@@ -268,12 +361,12 @@ export const actions = {
       not_selected: [`${co.name} moved forward with other candidates for ${j.title}.`, `${co.name_ar} كمّلت مع متقدمين تانيين لوظيفة ${j.title_ar}.`]
     };
     const extra: Note[] = [];
-    if (a.candidate_id === ME.candidate && msg[stage]) extra.push(note("candidate", msg[stage]![0], msg[stage]![1], "/applications"));
-    if (stage === "shortlisted" && j.company_id === ME.company) extra.push(note("company", `Brand Vitals screened ${c.name} for ${j.title}: fit ${fit}/5.`, `Brand Vitals فرزت ${c.name_ar || c.name} لوظيفة ${j.title_ar}: توافق ${fit}/٥.`, "/company/applicants/" + id));
+    if (msg[stage]) extra.push(note("candidate", a.candidate_id, msg[stage]![0], msg[stage]![1], "/applications"));
+    if (stage === "shortlisted") extra.push(note("company", j.company_id, `Brand Vitals screened ${c.name} for ${j.title}: fit ${fit}/5.`, `Brand Vitals فرزت ${c.name_ar || c.name} لوظيفة ${j.title_ar}: توافق ${fit}/٥.`, "/company/applicants/" + id));
     save({ ...db, notes: [...extra, ...db.notes], applications: db.applications.map(x => x.id !== id ? x : { ...x, stage, fit: fit ?? x.fit,
       screen_note: screener && note_en ? note_en : x.screen_note, screen_note_ar: screener && note_en ? note_en : x.screen_note_ar,
       history: [...x.history, { stage, at: new Date().toISOString(), by, note: note_en, note_ar: note_en }] }) });
   },
-  readAll(role: Role) { save({ ...db, notes: db.notes.map(n => n.to === role ? { ...n, read: true } : n) }); },
+  readAll(role: Role, who: string) { save({ ...db, notes: db.notes.map(n => n.to === role && (!n.who || n.who === who) ? { ...n, read: true } : n) }); },
   read(id: string) { save({ ...db, notes: db.notes.map(n => n.id === id ? { ...n, read: true } : n) }); }
 };

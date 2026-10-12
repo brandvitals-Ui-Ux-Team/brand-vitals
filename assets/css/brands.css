@@ -543,7 +543,7 @@ body[data-brand="crew"] {
 [data-theme="light"] body[data-brand="crew"] {
   --bg: #F7F6FF; --bg-2: #EEEBFF; --surface: #FFFFFF; --surface-2: #F3F1FF;
   --text: #121528; --text-2: #4A5068; --text-3: #5A6078; --bl: #121528;
-  --accent: #6C47FF; --accent-2: #0E7490; --accent-ink: #FFFFFF;
+  --accent: #5F3CE6; --accent-2: #0E7490; --accent-ink: #FFFFFF;
 }
 [data-brand="crew"] { --cw-grad: linear-gradient(110deg, #6C47FF 0%, #8B5CF6 45%, #22D3EE 100%); }
 /* headings stay in the family's display face (Alexandria), like every Vitals brand */
@@ -971,7 +971,7 @@ body[data-brand="studio"] {
 .sth .wh__copy h1, .gh .wh__copy h1, .rh .wh__copy h1 { margin-inline: auto; }
 
 /* ---- STUDIO: edit-suite window, reel + Photoshop cards, timeline ---- */
-.sth-rec { flex-shrink: 0; display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .65rem; border-radius: 999px; font-family: var(--font-mono); font-size: .7rem; font-weight: 600; color: #FF4D3D; background: color-mix(in srgb, #FF4D3D 12%, transparent); border: 1px solid color-mix(in srgb, #FF4D3D 35%, transparent); }
+.sth-rec { flex-shrink: 0; display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .65rem; border-radius: 999px; font-family: var(--font-mono); font-size: .7rem; font-weight: 600; color: #FF6A5C; background: color-mix(in srgb, #FF4D3D 12%, transparent); border: 1px solid color-mix(in srgb, #FF4D3D 35%, transparent); }
 .sth-rec::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: sth-blink 1.4s steps(2) infinite; }
 @keyframes sth-blink { 50% { opacity: .2; } }
 .sth-reel { width: clamp(160px, 15vw, 200px); padding: .7rem; display: grid; gap: .55rem; }
@@ -1055,7 +1055,7 @@ body[data-brand="studio"] {
 .rh-co { width: 36px; height: 36px; flex: none; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: .72rem; color: #fff; background: #1E3A8A; }
 .rh-pay { padding: 0 .9rem; font-weight: 600; }
 .rh-job__foot { display: flex; justify-content: space-between; align-items: center; padding: 0 .9rem; }
-.rh-match { padding: .15rem .5rem; border-radius: 999px; font-weight: 700; font-size: .7rem; color: #0E8A5F; background: #E1F5EC; }
+.rh-match { padding: .15rem .5rem; border-radius: 999px; font-weight: 700; font-size: .7rem; color: #0B7650; background: #E1F5EC; }
 .rh-apply { padding: .3rem .8rem; border-radius: 999px; font-weight: 600; color: var(--accent-ink); background: var(--accent); }
 .rh-pipe { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); width: min(900px, 100%); margin: clamp(2rem, 4vw, 2.75rem) auto 0; padding: 0; position: relative; }
 .rh-pipe::before { content: ""; position: absolute; top: 15px; left: 10%; right: 10%; height: 2px; background: var(--line-strong); }
@@ -1135,7 +1135,7 @@ body[data-brand="studio"] {
 [data-theme="light"] body[data-brand="studio"] {
   --bg: #F3F7F6; --bg-2: #E9F0EE; --surface: #FFFFFF; --surface-2: #EDF3F1;
   --text: #0C1716; --text-2: #4C5D5A; --text-3: #586966; --bl: #0C1716;
-  --accent: #C2410C; --accent-2: #A16207; --accent-ink: #FFFFFF; --teal: #0F766E;
+  --accent: #AE3A0A; --accent-2: #A16207; --accent-ink: #FFFFFF; --teal: #0F766E;
 }
 [data-brand="studio"] .btn--primary { color: var(--accent-ink); background: linear-gradient(100deg, var(--accent), color-mix(in srgb, var(--accent-2) 70%, var(--accent))); }
 [data-brand="studio"] .sb-hero, [data-brand="studio"] main { background-image: radial-gradient(70% 40% at 50% 0%, color-mix(in srgb, var(--teal) 12%, transparent), transparent 70%); background-repeat: no-repeat; }
@@ -1190,3 +1190,9 @@ body[data-brand="studio"] {
 .rq-hr p { color: var(--text-2); font-size: .93rem; }
 @media (max-width: 960px) { .go-plans, .go-sec, .rq-hr { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rq-hr > div:nth-child(3) { border-inline-start: 0; } }
 @media (max-width: 640px) { .go-plans, .go-sec, .cw-fees, .rq-hr { grid-template-columns: minmax(0, 1fr); } .rq-hr > div + div { border-inline-start: 0; border-top: 1px solid var(--line); padding-bottom: 1rem; } }
+.pf__screen:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* light theme: the edit-suite labels need darker ink to stay readable */
+[data-theme="light"] .sth-rec { color: #B8301F; }
+[data-theme="light"] .sth-ps__top > b { color: #0A5FA8; }
+[data-theme="light"] .status-live { color: color-mix(in srgb, var(--accent-2) 82%, #000); }

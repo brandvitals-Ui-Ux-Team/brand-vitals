@@ -26,6 +26,7 @@ export function CompanyHome() {
   return <div className="page">
     <div className="page-head"><div className="page-head__t"><h1>{T(co.name, co.name_ar)}</h1><p className="muted">{T(co.industry, co.industry_ar)} · {T(co.city, co.city_ar)}</p></div>
       <Link className="btn btn--primary" to="/company/post"><FilePlus2 />{L("Post a job", "انشر وظيفة")}</Link></div>
+    {jobs.length === 0 && <div className="card card--pad rc-guest"><div><b>{L("Post your first job", "انشر أول وظيفة")}</b><p className="small muted">{L("It takes one page. Brand Vitals screens every applicant within 48 hours, and you meet only the matches.", "صفحة واحدة. Brand Vitals بتفرز كل متقدم خلال ٤٨ ساعة، وإنت بتقابل المناسبين بس.")}</p></div><Link className="btn btn--primary" to="/company/post"><FilePlus2 />{L("Post a job", "انشر وظيفة")}</Link></div>}
     <div className="grid4">
       <div className="card kpi"><span className="kpi__l">{L("Open jobs", "وظايف مفتوحة")}</span><span className="kpi__v">{jobs.filter(j => j.status === "open").length}</span><span className="small faint">{L(`${views} views in total`, `${views} مشاهدة إجمالًا`)}</span></div>
       <div className="card kpi"><span className="kpi__l">{L("Applied", "اتقدموا")}</span><span className="kpi__v">{apps.length}</span></div>
@@ -139,7 +140,7 @@ export function Applicant() {
   </div>;
 }
 
-const EMPTY = { title: "", title_ar: "", field: "social" as Field, type: "full_time" as JobType, mode: "onsite" as WorkMode, level: "mid" as Level, city: "New Cairo", city_ar: "القاهرة الجديدة",
+const EMPTY = { title: "", title_ar: "", field: "social" as Field, type: "full_time" as JobType, mode: "onsite" as WorkMode, level: "mid" as Level, city: "", city_ar: "",
   saudi: false, salary_min: 15000, salary_max: 25000, currency: "EGP", exp_min: 2, exp_max: 5, education: "bachelor" as Edu, openings: 1, skills: [] as string[],
   description: "", description_ar: "", requirements: [""], requirements_ar: [] as string[] };
 
@@ -147,9 +148,11 @@ export function PostJob() {
   const { L } = useI18n();
   const nav = useNavigate();
   const toast = useToast();
-  const [f, setF] = useState(EMPTY);
+  const db = useDB();
+  const home = companyOf(db, ME.company);
+  const [f, setF] = useState(() => ({ ...EMPTY, city: home.city, city_ar: home.city_ar, currency: /riyadh|jeddah|dammam|ksa|saudi|الرياض|جدة|السعودية/i.test(home.city + home.city_ar) ? "SAR" : "EGP" }));
   const [skill, setSkill] = useState("");
-  const ok = f.title.trim().length > 2 && f.description.trim().length > 20 && f.salary_max >= f.salary_min && f.exp_max >= f.exp_min && f.requirements.some(r => r.trim()) && f.skills.length > 0;
+  const ok = f.title.trim().length > 2 && f.city.trim().length > 1 && f.description.trim().length > 20 && f.salary_max >= f.salary_min && f.exp_max >= f.exp_min && f.requirements.some(r => r.trim()) && f.skills.length > 0;
   const addSkill = () => { const v = skill.trim(); if (v && !f.skills.includes(v)) setF({ ...f, skills: [...f.skills, v] }); setSkill(""); };
   const submit = () => {
     const req = f.requirements.map(r => r.trim()).filter(Boolean);

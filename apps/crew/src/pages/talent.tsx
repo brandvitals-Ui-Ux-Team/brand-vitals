@@ -87,7 +87,7 @@ export function FindWork() {
         {list.length === 0 && <div className="card"><Empty icon={<Search />} title={L("No jobs match", "مفيش شغل مطابق")} text={L("Try All jobs, or another size.", "جرّب كل الشغل أو حجم تاني.")} /></div>}
         {list.map(b => { const mine = props.find(p => p.brief_id === b.id); const n = db.proposals.filter(p => p.brief_id === b.id).length; return <Link key={b.id} to={"/talent/jobs/" + b.id} className="card job">
           <div className="row row--between"><span className="small faint">{L("Posted", "اتنشرت")} {ago(b.created_at, lang)}</span>{mine ? <ProposalPill s={mine.status} /> : b.mode === "managed" && <span className="pill pill--violet pill--plain">{L("Managed by Vitals", "بإدارة Vitals")}</span>}</div>
-          <h3 className="job__t">{b.title}</h3>
+          <h2 className="job__t">{b.title}</h2>
           <p className="small muted">{L("Fixed price", "سعر ثابت")} · <b>{money(b.budget)}</b> · {b.level ? L(b.level === "elite" ? "Elite" : b.level === "pro" ? "Pro" : "Vetted", b.level === "elite" ? "نخبة" : b.level === "pro" ? "محترف" : "معتمد") : ""} · {b.duration || ""} · {L("due", "التسليم")} {date(b.deadline, lang)}</p>
           <p className="small job__d">{b.description}</p>
           <div className="chips">{(b.skills || []).map(s => <span key={s} className="tag">{s}</span>)}</div>

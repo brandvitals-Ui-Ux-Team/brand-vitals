@@ -4,7 +4,7 @@
    ========================================================================== */
 :root {
   --bg: #F5F6F8; --bg-2: #EDEFF3; --surface: #FFFFFF; --surface-2: #FAFBFC; --sunken: #F1F3F6;
-  --text: #0F1A2E; --text-2: #4A5568; --text-3: #6B7488;
+  --text: #0F1A2E; --text-2: #4A5568; --text-3: #5D6578;
   --line: #E3E6EC; --line-2: #D3D8E1;
   --accent: #1E3A8A; --accent-hover: #172E6E; --accent-soft: #E8EDF9; --accent-ink: #FFFFFF; --accent-2: #2563EB;
   --info: #2457C5; --info-soft: #E7EEFB; --violet: #4338CA; --violet-soft: #ECEBFB;
@@ -36,14 +36,6 @@
 .rc-edge svg { width: 16px; height: 16px; flex: none; color: var(--info); margin-top: 1px; }
 .rc-edge--inline { font-size: 13px; }
 
-/* view-as menu */
-.rc-viewas { position: relative; }
-.rc-viewas__btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding-inline: 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); font-size: 13px; }
-.rc-viewas__menu { position: absolute; top: calc(100% + 6px); inset-inline-start: 0; width: 300px; z-index: 50; }
-.rc-viewas__menu button { display: flex; gap: 10px; align-items: center; width: 100%; padding: 8px 10px; border-radius: 8px; text-align: start; }
-.rc-viewas__menu button svg { width: 18px; height: 18px; color: var(--text-3); flex: none; }
-.rc-viewas__menu button.on { background: var(--accent-soft); }
-.rc-viewas__menu button.on svg { color: var(--accent); }
 
 /* avatars + company marks: formal, monochrome */
 .rc-av { background: var(--navy); color: #fff; }
@@ -249,8 +241,6 @@
 }
 @media (max-width: 640px) {
   .rc-hide-m { display: none !important; }
-  .rc-viewas__btn > .faint { display: none; }
-  .rc-viewas__menu { width: min(300px, 86vw); }
   .rc-results-h .rc-row { width: 100%; justify-content: space-between; }
   .rc-sort > .faint { display: none; }
   .rc-jd__actions > * { flex: 1; }
@@ -264,3 +254,53 @@
 .rc-check { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
 .rc-check input { margin-top: 3px; accent-color: var(--accent-2); }
 .rc-check > span { display: grid; gap: 2px; }
+
+/* ---------- account menu (the avatar) ---------- */
+.rc-acct { position: relative; }
+.rc-acct__btn { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; }
+.rc-acct__btn:hover .rc-av, .rc-acct__btn[aria-expanded="true"] .rc-av { box-shadow: 0 0 0 3px var(--accent-soft); }
+.rc-acct__btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.rc-acct__menu { top: calc(100% + 8px); inset-inline-end: 0; width: 290px; }
+.rc-acct__id { display: flex; gap: 10px; align-items: center; padding: 8px 10px 10px; }
+.rc-acct__id > span { display: grid; gap: 2px; min-width: 0; }
+.rc-acct__id .faint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-acct__demo { color: var(--text-2); font-size: 13px; }
+.rc-role { display: inline-flex; align-items: center; width: max-content; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 600; }
+.rc-acct__id .rc-role { margin-top: 4px; }
+
+/* ---------- visitors ---------- */
+.rc-join { display: grid; gap: 8px; margin: 10px 4px 0; padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); }
+.rc-join .link { justify-self: center; }
+.rc-guest { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-color: color-mix(in srgb, var(--accent-2) 35%, var(--line)); background: linear-gradient(120deg, var(--accent-soft), var(--surface) 70%); }
+.rc-guest > div { display: grid; gap: 4px; max-width: 62ch; }
+.rc-center { text-align: center; margin: 0; }
+
+/* ---------- sign in / sign up ---------- */
+.rc-auth { min-height: 100vh; background: var(--bg); }
+.rc-auth .auth__side { position: sticky; top: 0; height: 100vh; align-self: start; color: #EEF2FA; background: radial-gradient(900px 520px at 0% 110%, rgba(37, 99, 235, 0.38), transparent 62%), radial-gradient(700px 460px at 100% 0%, rgba(147, 180, 255, 0.2), transparent 60%), #0A1326; }
+.rc-auth .auth__side li { color: #C3CEE6; }
+.rc-auth .auth__side li svg { color: #93B4FF; }
+.rc-auth .auth__box { width: min(440px, 100%); }
+.rc-auth h1 { font-size: 1.6rem; letter-spacing: -0.02em; margin: 4px 0 6px; }
+.rc-auth__logo img { height: 26px; width: auto; display: block; }
+.rc-steps-n { display: block; font-size: 12px; font-weight: 600; color: var(--accent-2); letter-spacing: 0.02em; margin-top: 6px; }
+.rc-pw { position: relative; display: block; }
+.rc-pw .inp { padding-inline-end: 44px; width: 100%; }
+.rc-pw .icon-btn { position: absolute; top: 50%; inset-inline-end: 4px; transform: translateY(-50%); }
+.rc-err { margin: 0; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--bad) 10%, transparent); color: var(--bad); font-size: 13px; font-weight: 500; }
+.rc-check--plain { padding: 0; border: 0; }
+.rc-pick { display: grid; gap: 12px; }
+.rc-pick__b { display: flex; gap: 14px; align-items: center; padding: 18px; border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface); text-align: start; transition: border-color .2s, box-shadow .2s, transform .2s; }
+.rc-pick__b:hover, .rc-pick__b:focus-visible { border-color: var(--accent-2); box-shadow: 0 10px 26px -18px rgba(30, 58, 138, .55); transform: translateY(-1px); }
+.rc-pick__b > span:nth-child(2) { display: grid; gap: 4px; flex: 1; }
+.rc-pick__b > svg { color: var(--text-3); flex: none; }
+.rc-pick__ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); flex: none; }
+.rc-pick__ic svg { width: 22px; height: 22px; }
+.rc-demo { display: grid; gap: 8px; }
+.rc-demo__list { display: grid; gap: 8px; }
+.rc-demo__b { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--line-2); background: var(--surface-2); text-align: start; }
+.rc-demo__b:hover, .rc-demo__b:focus-visible { border-style: solid; border-color: var(--accent-2); }
+.rc-demo__b > svg:first-child { width: 18px; height: 18px; color: var(--accent); flex: none; }
+.rc-demo__b > span { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.rc-demo__b > svg:last-child { color: var(--text-3); flex: none; }
+@media (prefers-reduced-motion: reduce) { .rc-pick__b { transition: none; } .rc-pick__b:hover { transform: none; } }

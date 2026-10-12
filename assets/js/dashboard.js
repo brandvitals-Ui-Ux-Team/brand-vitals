@@ -73,6 +73,8 @@
     { path: "404.html", ar: "صفحة الخطأ 404", en: "404 page" }
   ];
   const CORE_PAGES = ALL_CORE_PAGES.filter(p => pageBrand(p) === BRAND);
+  // ?page=about.html (the footer's dashboard link) opens that page in the Pages tab.
+  const START_PAGE = (() => { try { const p = new URLSearchParams(location.search).get("page"); return CORE_PAGES.some(x => x.path === p) ? p : null; } catch (e) { return null; } })();
   const CSS_PATH = "assets/css/main.css";
   const JS_PATH = "assets/js/main.js";
   const CONFIG_PATH = "cms/config.json";
@@ -407,7 +409,8 @@
       "Open GitHub's token page with the button below.|Give it a name and pick an expiry.|Under Repository access choose Only select repositories, then brand-vitals-website.|Under Permissions > Repository permissions set Contents to Read and write.|Click Generate token, copy it here and press Save."
     ],
     openTokenPage: ["افتح صفحة التوكن على GitHub", "Open GitHub token page"],
-    tokenNote: ["التوكن بيتحفظ في المتصفح ده بس، ومش بيترفع على الموقع أبدًا. ما تستخدمش اللوحة من جهاز عام.", "The token is stored in this browser only and is never published. Do not use the dashboard on a shared device."],
+    tokenNote: ["التوكن بيتحفظ لحد ما تقفل المتصفح، إلا لو اخترت تفتكره على الجهاز ده. عمره ما بيترفع على الموقع. ما تستخدمش اللوحة من جهاز عام.", "The token is kept until you close the browser, unless you choose to remember it on this device. It is never published. Do not use the dashboard on a shared device."],
+    rememberToken: ["افتكر التوكن على الجهاز ده", "Remember on this device"],
     access: ["كود الدخول", "Access code"],
     accessNote: ["الكود بيقفل شاشة اللوحة بس. الحماية الحقيقية للنشر هي التوكن.", "The code only locks this screen. Real publishing protection is the token."],
     newCode: ["الكود الجديد", "New code"],
@@ -632,7 +635,7 @@
   const S = {
     ui: store.get(LS.lang) === "en" ? "en" : "ar",
     repo: Object.assign({}, DEFAULT_REPO, safeJSON(store.get(LS.repo)) || {}),
-    token: store.get(LS.token) || "",
+    token: store.sget(LS.token) || store.get(LS.token) || "",
     codeHash: DEFAULT_HASH,
     source: "site",
     ghError: "",
@@ -640,7 +643,7 @@
     orig: {}, docs: {}, base: {}, text: {},
     uploads: {}, cache: {},
     deleted: new Set(),
-    tab: "overview", page: HOME, file: HOME,
+    tab: START_PAGE ? "pages" : "overview", page: START_PAGE || HOME, file: HOME,
     open: new Set(), seq: 0, keys: new WeakMap(), fieldByKey: new Map(),
     undo: [], lastUndo: null,
     preview: Object.assign({ device: "desktop", lang: "en", theme: "dark", select: true }, safeJSON(store.get(LS.preview)) || {}),
@@ -2271,6 +2274,7 @@
     const tok = h("input", { class: "inp inp--mono", type: "password", dir: "ltr", autocomplete: "off", spellcheck: "false", placeholder: "github_pat_…" });
     tok.value = S.token;
     const showTok = h("input", { type: "checkbox", onchange: e => { tok.type = e.target.checked ? "text" : "password"; } });
+    const keepTok = h("input", { type: "checkbox" }); keepTok.checked = !!store.get(LS.token);
     const status = h("div", { class: "conn" });
     const setStatus = (kind, msg) => { status.className = "conn conn--" + kind; status.replaceChildren(icon(kind === "ok" ? "check" : kind === "err" ? "warn" : "branch"), h("span", null, msg)); };
     if (!S.token) setStatus("idle", t("noToken"));
@@ -2280,7 +2284,8 @@
       S.repo = { owner: owner.value.trim() || DEFAULT_REPO.owner, repo: repo.value.trim() || DEFAULT_REPO.repo, branch: branch.value.trim() || "main" };
       store.set(LS.repo, JSON.stringify(S.repo));
       S.token = tok.value.trim();
-      if (S.token) store.set(LS.token, S.token); else store.del(LS.token);
+      store.del(LS.token); store.sdel(LS.token);
+      if (S.token) { if (keepTok.checked) store.set(LS.token, S.token); else store.sset(LS.token, S.token); }
       toast(t("saved"), "ok");
       if (S.token) {
         await test();
@@ -2305,7 +2310,8 @@
         h("div", { class: "fld" }, h("span", { class: "fld__label" }, t("branch")), branch)),
       h("div", { class: "fld" }, h("div", { class: "fld__head" }, h("span", { class: "fld__label" }, t("token")), h("label", { class: "chk chk--sm" }, showTok, h("span", null, t("showToken")))), tok),
       h("div", { class: "row" }, btn(t("save"), "check", save, "sm primary"), btn(t("test"), "refresh", test, "sm"),
-        btn(t("forget"), "trash", () => { S.token = ""; tok.value = ""; store.del(LS.token); setStatus("idle", t("noToken")); toast(t("forgot")); }, "sm ghost")),
+        btn(t("forget"), "trash", () => { S.token = ""; tok.value = ""; store.del(LS.token); store.sdel(LS.token); keepTok.checked = false; setStatus("idle", t("noToken")); toast(t("forgot")); }, "sm ghost")),
+      h("label", { class: "chk chk--sm" }, keepTok, h("span", null, t("rememberToken"))),
       h("p", { class: "note note--warn" }, icon("key"), h("span", null, t("tokenNote")))]));
     const steps = t("tokenSteps").split("|");
     P.append(card("key", t("tokenHow"), [
@@ -3651,6 +3657,7 @@ grant execute on function public.bv_stats(int, text, text[], text[]) to authenti
   }
   function lockApp() {
     store.sdel(LS.session);
+    store.sdel(LS.token);
     store.del(LS.remember);
     saveDraft();
     S.loaded = false;

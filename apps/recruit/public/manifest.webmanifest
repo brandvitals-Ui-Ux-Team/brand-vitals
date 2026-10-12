@@ -1,0 +1,31 @@
+{
+  "name": "Vitals Recruit",
+  "short_name": "Recruit",
+  "description": "Creative and marketing jobs, every application screened by Brand Vitals.",
+  "lang": "en",
+  "dir": "auto",
+  "start_url": "/recruit/?app=1",
+  "scope": "/recruit/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A1326",
+  "theme_color": "#0A1326",
+  "icons": [
+    {
+      "src": "/recruit/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/recruit/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/recruit/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

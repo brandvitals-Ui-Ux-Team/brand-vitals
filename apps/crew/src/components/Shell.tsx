@@ -104,7 +104,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <Avatar name={cur[2].split(" · ")[0]} />
         </div>
       </header>
-      {children}
+      <main id="content" className="main__in">{children}</main>
     </div>
   </div>;
 }

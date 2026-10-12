@@ -1032,7 +1032,16 @@
         a.href = "https://wa.me/" + Forms.waNumber() + "?text=" + encodeURIComponent(msg);
         Analytics.event("contact", { channel: "whatsapp_fab" });
       });
-      document.body.appendChild(a);
+      let dock = document.querySelector(".quick-dock");
+      if (!dock) {
+        dock = document.createElement("aside");
+        dock.className = "quick-dock";
+        dock.setAttribute("aria-label", I18n.lang === "ar" ? "تواصل سريع" : "Quick contact");
+        document.body.appendChild(dock);
+      }
+      const top = document.querySelector(".to-top");
+      if (top) dock.appendChild(top);
+      dock.appendChild(a);
       // Appear once the loader has finished, then show the label briefly.
       const show = () => {
         a.classList.add("is-in");

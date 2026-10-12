@@ -17,7 +17,7 @@ const SITE = "https://brandvitals.io";
 const NO_AR = new Set(["dashboard.html", "404.html"]);
 // Files and folders that never ship.
 const SKIP = new Set(["node_modules", "dist", "apps", "scripts", "supabase", "api", ".git", ".github", ".vercel", ".impeccable",
-  "package.json", "package-lock.json", "server.js", "README.md", "SITEMAP.md", "vercel.json", ".gitignore", "docs"]);
+  "package.json", "package-lock.json", "server.js", "README.md", "SITEMAP.md", "vercel.json", ".gitignore", "docs", ".env.example", ".gitattributes"]);
 
 const pageUrl = (file, lang) => {
   const name = file === "index.html" ? "" : file;
@@ -54,6 +54,28 @@ function addAlternates($, file, lang) {
 const LOCAL_ASSET = /^(assets|cms)\//;
 const toParent = v => (LOCAL_ASSET.test(v) ? "../" + v : v);
 
+
+// Arabic for aria-label and alt text. A page can also set data-ar-label / data-ar-alt on the element itself.
+const AR_A11Y = {
+  "Toggle color theme": "تبديل المظهر", "Switch language": "تغيير اللغة", "Primary": "القائمة الرئيسية", "Open menu": "فتح القائمة", "Mobile": "قائمة الجوال",
+  "Back to top": "العودة للأعلى", "Breadcrumb": "مسار التنقل", "Screens": "الشاشات", "Projects": "المشاريع", "Platforms we run": "المنصات التي نديرها",
+  "Filter case studies": "تصفية دراسات الحالة", "Filter articles by market": "تصفية المقالات حسب السوق",
+  "Clothing e-commerce store": "متجر ملابس إلكتروني", "Digital menu design": "تصميم منيو رقمي", "Fresh Valley website redesign": "إعادة تصميم موقع Fresh Valley",
+  "Frosty Foods website redesign": "إعادة تصميم موقع Frosty Foods", "meats.com.sa website redesign": "إعادة تصميم موقع meats.com.sa",
+  "Mohamed Ahmed": "محمد أحمد", "Mohamed Tarek": "محمد طارق",
+  "Extra work: anything outside the agreement, priced and approved": "الشغل الإضافي: أي حاجة برا الاتفاق، بسعرها وبموافقة العميل",
+  "Send for approval: pick the client, name the work, drop the file": "ابعت للموافقة: اختار العميل، سمّي الشغل، ونزّل الملف",
+  "The Vitals GO dashboard: every deliverable with its light, time to green and extra work earned": "لوحة Vitals GO: كل تسليمة بلونها، والوقت لحد الأخضر، والشغل الإضافي",
+  "The client's review page with a big GO button": "صفحة مراجعة العميل بزرار GO كبير",
+  "Vitals GO, extra work screen": "Vitals GO، شاشة الشغل الإضافي", "Vitals GO, invoices screen": "Vitals GO، شاشة الفواتير", "Vitals GO, review screen": "Vitals GO، شاشة المراجعة"
+};
+const SUFFIX = [[", desktop, scroll to see the full page", "، نسخة الكمبيوتر، مرّر لرؤية الصفحة كاملة"], [", mobile, scroll to see the full page", "، نسخة الموبايل، مرّر لرؤية الصفحة كاملة"], [", desktop", "، نسخة الكمبيوتر"], [", mobile", "، نسخة الموبايل"], [", Home", "، الرئيسية"]];
+function arA11y(v) {
+  if (AR_A11Y[v]) return AR_A11Y[v];
+  for (const [en, ar] of SUFFIX) if (v.endsWith(en)) { const base = v.slice(0, -en.length); return (AR_A11Y[base] || base) + ar; }
+  return null;
+}
+
 function toArabic(html, file) {
   const $ = cheerio.load(html);
   const root = $("html");
@@ -74,6 +96,8 @@ function toArabic(html, file) {
     const $el = $(el);
     $el.attr("placeholder", $el.attr("data-ar-ph") || "");
   });
+  $("[aria-label]").each((_, el) => { const $el = $(el); const ar = $el.attr("data-ar-label") || arA11y($el.attr("aria-label")); if (ar) $el.attr("aria-label", ar); });
+  $("img[alt]").each((_, el) => { const $el = $(el); const ar = $el.attr("data-ar-alt") || arA11y($el.attr("alt")); if (ar) $el.attr("alt", ar); });
   // Meta tags carry their Arabic copy in data-ar.
   $("meta[data-ar]").each((_, el) => { $(el).attr("content", $(el).attr("data-ar")); });
   $('meta[property="og:locale"]').attr("content", "ar_EG");
@@ -86,7 +110,7 @@ function toArabic(html, file) {
     for (const a of ["src", "href", "poster", "data-src"]) {
       const v = $el.attr(a);
       if (!v) continue;
-      if (a === "href" && (v === "dashboard.html" || NO_AR.has(v))) { $el.attr(a, "../" + v); continue; }
+      if (a === "href" && NO_AR.has(v.split(/[?#]/)[0])) { $el.attr(a, "../" + v); continue; }
       $el.attr(a, toParent(v));
     }
     const ss = $el.attr("srcset");

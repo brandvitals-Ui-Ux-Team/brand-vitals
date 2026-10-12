@@ -8,10 +8,10 @@
 :root {
   --violet: #6C47FF; --violet-2: #4F2DD9; --cyan: #06B6D4; --cyan-bright: #22D3EE; --ink: #0E0A24;
   --bg: #F6F7FB; --bg-2: #EEF0F6; --surface: #FFFFFF; --surface-2: #FAFBFD; --sunken: #F2F4F8;
-  --text: #121528; --text-2: #4A5068; --text-3: #6A7088;
+  --text: #121528; --text-2: #4A5068; --text-3: #626880;
   --line: #E4E7EF; --line-2: #D2D7E3;
   --accent: #6C47FF; --accent-hover: #5A35F0; --accent-soft: #EFEBFF; --accent-ink: #FFFFFF; --accent-2: #06B6D4;
-  --ok: #0F8A5F; --ok-soft: #E3F6EE; --warn: #A35C00; --warn-soft: #FFF3DC; --bad: #C8304A; --bad-soft: #FDE8EC; --info: #0B7A93; --info-soft: #E2F7FB;
+  --ok: #0B7650; --ok-soft: #E3F6EE; --warn: #965500; --warn-soft: #FFF3DC; --bad: #B82B44; --bad-soft: #FDE8EC; --info: #096C82; --info-soft: #E2F7FB;
   --violet-soft: #EFEBFF;
   --shadow-1: 0 1px 2px rgba(18, 21, 40, 0.05); --shadow-2: 0 10px 30px -12px rgba(18, 21, 40, 0.18);
   --r: 10px; --r-lg: 14px; --r-xl: 18px;
@@ -407,7 +407,7 @@
 .mk-foot__brand img { height: 40px; width: auto; }
 .mk-foot__brand p { color: var(--text-2); max-width: 36ch; }
 .mk-foot__col { display: grid; gap: 10px; align-content: start; color: var(--text-2); }
-.mk-foot__col h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.mk-foot__col h4, .mk-foot__col .mk-foot__h { margin: 0 0 4px; font-weight: 600; line-height: 1.4; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
 .mk-foot__col a:hover { color: var(--accent); }
 .mk-foot__parent { display: inline-flex; align-items: center; gap: 6px; }
 .mk-foot__parent img { border-radius: 4px; }
@@ -426,3 +426,6 @@
 [dir="rtl"] .art__note { letter-spacing: 0; }
 .thumb.art--locked .art__name, .thumb.art--locked .art__note, .li .art--locked .art__name, .li .art--locked .art__note { display: none; }
 .thumb.art--locked .art__ico, .li .art--locked .art__ico { width: 26px; height: 26px; background: none; }
+
+@media (max-width: 560px) { .viewas__l { display: none; } .viewas__btn { padding-inline: 10px; } }
+@media (max-width: 760px), (pointer: coarse) { .mk-foot__col a, .mk-foot__legal a { display: inline-flex; align-items: center; min-height: 40px; } }

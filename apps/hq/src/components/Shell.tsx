@@ -103,7 +103,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </>}</Popover>
         </div>
       </header>
-      {children}
+      <main id="content" className="main__in">{children}</main>
     </div>
     {palette && <CommandPalette onClose={() => setPalette(false)} />}
     {send && <SendFlow onClose={() => setSend(false)} />}

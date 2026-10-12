@@ -49,7 +49,7 @@ export function Approvals() {
     <div className="tabs">{TABS.map(([k, en, ar]) => <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{L(en, ar)}<span className="count">{count(k)}</span></button>)}</div>
     <div className="row">
       <input className="inp" style={{ maxWidth: 260 }} placeholder={L("Filter by title…", "فلترة بالعنوان…")} value={q} onChange={e => setQ(e.target.value)} />
-      <select className="sel" style={{ maxWidth: 220 }} value={client} onChange={e => setClient(e.target.value)}><option value="">{L("All clients", "كل العملاء")}</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+      <select className="sel" style={{ maxWidth: 220 }} value={client} onChange={e => setClient(e.target.value)} aria-label={L("Filter by client", "فلترة حسب العميل")}><option value="">{L("All clients", "كل العملاء")}</option>{clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
     </div>
     <div className="card">
       {rows.length === 0 ? <Empty icon={<Inbox />} title={L("Nothing here", "لا يوجد شيء هنا")} text={L("Create a deliverable, upload a version and send it to the client on WhatsApp.", "أنشئ تسليمة، وارفع نسخة، وابعتها للعميل على واتساب.")} action={<button className="btn btn--primary" onClick={() => setSp({ new: "1" })}><Plus />{L("Send for approval", "ابعت للموافقة")}</button>} /> :

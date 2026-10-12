@@ -6,8 +6,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ago, date } from "../../../hq/src/lib/format";
 import { useI18n } from "../../../hq/src/lib/i18n";
-import { ME, actions, candidateOf, companyOf, jobOf, matchScore, skillMatch, statsOf, strength, useDB, type Candidate, type Field, type Job, type JobType, type Stage, type WorkMode } from "../store";
-import { Avatar, EDU, Empty, FIELD, JobCard, LEVEL, Logo, MODE, Match, Modal, Pipeline, SaveBtn, StagePill, TYPE, useSalary, useT, useToast } from "../ui";
+import { ME, actions, candidateOf, companyOf, jobOf, matchScore, savedOf, skillMatch, statsOf, strength, useDB, type Candidate, type Field, type Job, type JobType, type Stage, type WorkMode } from "../store";
+import { Avatar, EDU, Empty, FIELD, JobCard, LEVEL, Logo, MODE, Match, Modal, Pipeline, SaveBtn, StagePill, TYPE, useNeedCandidate, useSalary, useT, useToast } from "../ui";
 
 const POSTED: [string, number, string, string][] = [["1", 1, "Last 24 hours", "آخر ٢٤ ساعة"], ["7", 7, "Past week", "آخر أسبوع"], ["30", 30, "Past month", "آخر شهر"]];
 const daysOld = (iso: string) => (Date.now() - new Date(iso).getTime()) / 86400000;
@@ -18,10 +18,10 @@ export function Jobs() {
   const db = useDB();
   const [sp, setSp] = useSearchParams();
   const [panel, setPanel] = useState(false);
-  const me = candidateOf(db, ME.candidate)!;
+  const me = candidateOf(db, ME.candidate);
   const q = sp.get("q") || "";
   const where = sp.get("where") || "";
-  const sort = sp.get("sort") || "relevance";
+  const sort = sp.get("sort") || (me ? "relevance" : "newest");
   const many = (k: string) => (sp.get(k) || "").split(",").filter(Boolean);
   const sel = { field: many("field"), type: many("type"), mode: many("mode"), level: many("level") };
   const posted = sp.get("posted") || "";
@@ -40,9 +40,9 @@ export function Jobs() {
   const passes = (j: Job, skip?: keyof typeof sel) => (Object.keys(sel) as (keyof typeof sel)[]).every(k => k === skip || !sel[k].length || sel[k].includes(j[k] as string));
   const list = useMemo(() => {
     const l = base.filter(j => passes(j));
-    return sort === "newest" ? [...l].sort((a, b) => b.posted_at.localeCompare(a.posted_at)) : sort === "salary" ? [...l].sort((a, b) => b.salary_max - a.salary_max) : [...l].sort((a, b) => matchScore(me, b) - matchScore(me, a));
+    return sort === "newest" ? [...l].sort((a, b) => b.posted_at.localeCompare(a.posted_at)) : sort === "salary" ? [...l].sort((a, b) => b.salary_max - a.salary_max) : me ? [...l].sort((a, b) => matchScore(me, b) - matchScore(me, a)) : [...l].sort((a, b) => b.posted_at.localeCompare(a.posted_at));
   }, [base, sel.field.join(), sel.type.join(), sel.mode.join(), sel.level.join(), sort, me]); // eslint-disable-line react-hooks/exhaustive-deps
-  const recommended = db.jobs.filter(j => j.status === "open" && !db.applications.some(a => a.job_id === j.id && a.candidate_id === me.id)).sort((a, b) => matchScore(me, b) - matchScore(me, a)).slice(0, 3);
+  const recommended = me ? db.jobs.filter(j => j.status === "open" && !db.applications.some(a => a.job_id === j.id && a.candidate_id === me.id)).sort((a, b) => matchScore(me, b) - matchScore(me, a)).slice(0, 3) : [];
   const active = Object.values(sel).flat().length + (posted ? 1 : 0);
 
   const Facet = ({ k, title, opts }: { k: keyof typeof sel; title: string; opts: Record<string, [string, string]> }) => <fieldset className="rc-facet">
@@ -53,13 +53,16 @@ export function Jobs() {
   </fieldset>;
 
   return <div className="page">
+    <h1 className="sr-only">{L("Creative and marketing jobs", "وظايف كرييتيف وماركتينج")}</h1>
     <form className="rc-hero-search" onSubmit={e => { e.preventDefault(); const n = new URLSearchParams(sp); qIn ? n.set("q", qIn) : n.delete("q"); whereIn ? n.set("where", whereIn) : n.delete("where"); setSp(n); }}>
       <label className="rc-search"><Search /><input className="inp inp--bare" value={qIn} onChange={e => setQIn(e.target.value)} placeholder={L("Job title, skill or company", "المسمى أو المهارة أو الشركة")} /></label>
       <label className="rc-search"><MapPin /><input className="inp inp--bare" value={whereIn} onChange={e => setWhereIn(e.target.value)} placeholder={L("City or 'remote'", "المدينة أو «عن بُعد»")} /></label>
       <button className="btn btn--primary btn--lg" type="submit">{L("Search", "دوّر")}</button>
     </form>
 
-    {!q && !active && recommended.length > 0 && <section className="stack">
+    {!ME.role && <div className="card card--pad rc-guest"><div><b>{L("See how well you match every job", "اعرف إنت مناسب لكل وظيفة قد إيه")}</b><p className="small muted">{L("Create a free profile: your match %, one-tap applications, and an answer on every one within 48 hours.", "اعمل بروفايل مجاني: نسبة توافقك، تقديم بضغطة، ورد على كل طلب خلال ٤٨ ساعة.")}</p></div><Link className="btn btn--primary" to="/signup?as=candidate&next=/jobs">{L("Create a free profile", "اعمل بروفايل مجاني")}</Link></div>}
+
+    {me && !q && !active && recommended.length > 0 && <section className="stack">
       <div className="rc-sec-h"><h2><Sparkles size={18} /> {L("Recommended for you", "مقترحة ليك")}</h2><span className="small faint">{L("Based on your skills and career interests", "على حسب مهاراتك واهتماماتك المهنية")}</span></div>
       <div className="rc-reco">{recommended.map(j => <Link key={j.id} to={"/jobs/" + j.id} className="card rc-reco__i">
         <span className="rc-reco__h"><Logo co={companyOf(db, j.company_id)} /><Match pct={matchScore(me, j)} /></span>
@@ -84,8 +87,8 @@ export function Jobs() {
           <p><b>{L(`${list.length} jobs`, `${list.length} وظيفة`)}</b>{q && <span className="muted"> {L(`for “${q}”`, `لـ «${q}»`)}</span>}</p>
           <div className="rc-row">
             <button className="btn btn--sm rc-only-m" onClick={() => setPanel(true)}><SlidersHorizontal />{L("Filters", "الفلاتر")}{active ? ` (${active})` : ""}</button>
-            <label className="rc-sort small"><span className="faint">{L("Sort by", "رتّب حسب")}</span><select className="sel" value={sort} onChange={e => set("sort", e.target.value === "relevance" ? "" : e.target.value)}>
-              <option value="relevance">{L("Best match", "الأنسب ليك")}</option><option value="newest">{L("Newest", "الأحدث")}</option><option value="salary">{L("Highest salary", "أعلى مرتب")}</option></select></label>
+            <label className="rc-sort small"><span className="faint">{L("Sort by", "رتّب حسب")}</span><select className="sel" value={sort} onChange={e => set("sort", e.target.value === (me ? "relevance" : "newest") ? "" : e.target.value)}>
+              {me && <option value="relevance">{L("Best match", "الأنسب ليك")}</option>}<option value="newest">{L("Newest", "الأحدث")}</option><option value="salary">{L("Highest salary", "أعلى مرتب")}</option></select></label>
           </div>
         </div>
         {active > 0 && <div className="chips">{(Object.keys(sel) as (keyof typeof sel)[]).flatMap(k => sel[k].map(v => <button key={k + v} className="chip-btn on" onClick={() => toggle(k, v)}>{L(...({ field: FIELD, type: TYPE, mode: MODE, level: LEVEL }[k] as Record<string, [string, string]>)[v])} <X size={13} /></button>))}
@@ -104,17 +107,19 @@ export function JobDetail() {
   const nav = useNavigate();
   const toast = useToast();
   const salary = useSalary();
+  const need = useNeedCandidate();
   const [open, setOpen] = useState(false);
   const [cover, setCover] = useState("");
   const j = jobOf(db, id);
   useEffect(() => { if (j) actions.seeJob(j.id); }, [j?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!j) return <div className="page"><Empty icon={<Briefcase />} title={L("Job not found", "الوظيفة مش موجودة")} action={<Link className="btn" to="/jobs">{L("All jobs", "كل الوظايف")}</Link>} /></div>;
   const co = companyOf(db, j.company_id);
-  const me = candidateOf(db, ME.candidate)!;
-  const mine = db.applications.find(a => a.job_id === j.id && a.candidate_id === ME.candidate);
+  const me = candidateOf(db, ME.candidate);
+  const mine = me && db.applications.find(a => a.job_id === j.id && a.candidate_id === me.id);
   const st = statsOf(db, j.id);
-  const sm = skillMatch(me, j);
-  const pct = matchScore(me, j);
+  const sm = me ? skillMatch(me, j) : { have: [] as string[], missing: j.skills };
+  const pct = me ? matchScore(me, j) : 0;
+  const staff = !!ME.role && ME.role !== "candidate";
   const similar = db.jobs.filter(x => x.id !== j.id && x.status === "open" && (x.field === j.field || x.company_id === j.company_id)).slice(0, 4);
   const reqs = lang === "ar" && j.requirements_ar.length ? j.requirements_ar : j.requirements;
   const submit = () => { actions.apply(j.id, cover.trim()); setOpen(false); setCover(""); toast(L("Application sent. Brand Vitals will screen it within 48 hours.", "الطلب اتبعت. Brand Vitals هتفرزه خلال ٤٨ ساعة.")); nav("/applications"); };
@@ -130,7 +135,7 @@ export function JobDetail() {
           </div></div>
           <div className="rc-jd__actions">
             {mine ? <Link className="btn btn--lg" to="/applications"><Check />{L("Applied · view status", "اتقدّمت · شوف الحالة")}</Link>
-              : <button className="btn btn--primary btn--lg" disabled={j.status === "closed"} onClick={() => setOpen(true)}><Send />{L("Apply now", "قدّم دلوقتي")}</button>}
+              : !staff && <button className="btn btn--primary btn--lg" disabled={j.status === "closed"} onClick={() => me ? setOpen(true) : need(["Create a free profile to apply. It takes a minute.", "اعمل بروفايل مجاني عشان تقدّم. هياخد دقيقة."])}><Send />{L("Apply now", "قدّم دلوقتي")}</button>}
             <SaveBtn id={j.id} label />
             <button className="btn btn--lg" onClick={share}><Link2 />{L("Share", "شارك")}</button>
           </div>
@@ -165,6 +170,11 @@ export function JobDetail() {
             <h3>{L("Your application", "طلبك")}</h3>
             <StagePill s={mine.stage} />
             <Pipeline s={mine.stage} />
+          </> : !me ? <>
+            <h3>{staff ? L("Applicants are screened first", "المتقدمين بيتفرزوا الأول") : L("How you match", "توافقك مع الوظيفة")}</h3>
+            {!staff && <><p className="small muted">{L("Sign up to see your match %, the skills you have and the ones you're missing.", "سجّل عشان تشوف نسبة توافقك، والمهارات اللي عندك واللي ناقصاك.")}</p>
+              <Link className="btn btn--primary btn--block" to={"/signup?as=candidate&next=/jobs/" + j.id}>{L("Create a free profile", "اعمل بروفايل مجاني")}</Link>
+              <p className="small rc-center">{L("Have an account?", "عندك حساب؟")} <Link className="link" to={"/signin?next=/jobs/" + j.id}>{L("Sign in", "سجّل الدخول")}</Link></p></>}
           </> : <>
             <div className="rc-row" style={{ justifyContent: "space-between" }}><h3>{L("How you match", "توافقك مع الوظيفة")}</h3><Match pct={pct} /></div>
             <p className="small"><b>{L(`${sm.have.length} of ${j.skills.length} skills`, `${sm.have.length} من ${j.skills.length} مهارات`)}</b> {L("on your profile", "في بروفايلك")}</p>
@@ -185,7 +195,7 @@ export function JobDetail() {
         </div>}
       </div>
     </div>
-    {open && <Modal title={L(`Apply: ${j.title}`, `التقديم: ${j.title_ar}`)} onClose={() => setOpen(false)} footer={<><button className="btn" onClick={() => setOpen(false)}>{L("Cancel", "إلغاء")}</button><button className="btn btn--primary" onClick={submit} disabled={!me.cv}><Send />{L("Send application", "ابعت الطلب")}</button></>}>
+    {open && me && <Modal title={L(`Apply: ${j.title}`, `التقديم: ${j.title_ar}`)} onClose={() => setOpen(false)} footer={<><button className="btn" onClick={() => setOpen(false)}>{L("Cancel", "إلغاء")}</button><button className="btn btn--primary" onClick={submit} disabled={!me.cv}><Send />{L("Send application", "ابعت الطلب")}</button></>}>
       <div className="stack">
         <div className="rc-mini"><Avatar name={me.name} size="lg" /><div><b>{T(me.name, me.name_ar)}</b><div className="small muted">{T(me.headline, me.headline_ar)} · {T(me.city, me.city_ar)} · {L(`${me.years} years`, `${me.years} سنين خبرة`)}</div></div></div>
         {me.cv ? <div className="rc-file"><FileText size={16} /><span>{me.cv.name}</span><Link className="small link" to="/profile">{L("Change", "غيّر")}</Link></div>
@@ -236,7 +246,7 @@ export function Applications() {
 export function Saved() {
   const { L } = useI18n();
   const db = useDB();
-  const jobs = db.saved.map(id => jobOf(db, id)).filter(Boolean) as Job[];
+  const jobs = savedOf(db, ME.candidate).map(id => jobOf(db, id)).filter(Boolean) as Job[];
   return <div className="page rc-narrow">
     <div className="page-head"><div className="page-head__t"><h1>{L("Saved jobs", "الوظايف المحفوظة")}</h1><p className="muted">{L("Jobs you bookmarked to apply later.", "وظايف حفظتها عشان تقدّم عليها بعدين.")}</p></div></div>
     <div className="card list">{jobs.length ? jobs.map(j => <JobCard key={j.id} j={j} />) : <Empty icon={<Bookmark />} title={L("No saved jobs", "مفيش وظايف محفوظة")} text={L("Tap the bookmark on any job to keep it here.", "دوس على علامة الحفظ في أي وظيفة عشان تفضل هنا.")} action={<Link className="btn btn--primary btn--sm" to="/jobs">{L("Browse jobs", "شوف الوظايف")}</Link>} />}</div>

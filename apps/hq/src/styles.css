@@ -4,10 +4,10 @@
    ========================================================================== */
 :root {
   --bg: #F6F7F5; --bg-2: #EEF1EE; --surface: #FFFFFF; --surface-2: #F9FAF9; --sunken: #F1F4F1;
-  --text: #0E1512; --text-2: #4F5C57; --text-3: #6B7873;
+  --text: #0E1512; --text-2: #4F5C57; --text-3: #5F6B66;
   --line: #E3E8E4; --line-2: #D3DAD5;
   --accent: #097A53; --accent-hover: #076845; --accent-soft: #E3F4EC; --accent-ink: #FFFFFF; --accent-2: #007299;
-  --ok: #0E8A5F; --ok-soft: #E1F5EC; --warn: #B26B00; --warn-soft: #FFF2DB; --bad: #C9353F; --bad-soft: #FDE8EA; --info: #2F5FD0; --info-soft: #E6EDFD;
+  --ok: #0B7650; --ok-soft: #E1F5EC; --warn: #965A00; --warn-soft: #FFF2DB; --bad: #B92F39; --bad-soft: #FDE8EA; --info: #2F5FD0; --info-soft: #E6EDFD;
   --violet: #6D4AD6; --violet-soft: #EEE9FD;
   --shadow-1: 0 1px 2px rgba(14, 21, 18, 0.06), 0 1px 1px rgba(14, 21, 18, 0.04);
   --shadow-2: 0 12px 32px -12px rgba(14, 21, 18, 0.18), 0 2px 6px rgba(14, 21, 18, 0.05);
@@ -79,6 +79,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .demo-pill svg { width: 16px; height: 16px; flex: none; }
 
 .main { min-width: 0; display: flex; flex-direction: column; }
+.main__in { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .top { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 10px; height: 60px; padding-inline: 24px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); }
 .top__burger { display: none; }
 .search-btn { display: flex; align-items: center; gap: 8px; height: 36px; width: min(420px, 100%); padding-inline: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text-3); }
@@ -496,3 +498,22 @@ a.li:hover, button.li:hover { background: var(--surface-2); }
 @media (max-width: 520px) { .page > .grid4 { grid-template-columns: minmax(0, 1fr); } }
 .nav-more { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: start; cursor: pointer; border-radius: 8px; }
 .nav-more:hover { color: var(--text); }
+
+/* respect the system setting: no animation for people who turn motion off */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- phones: nothing wider than the screen, comfortable touch targets ---------- */
+.page-head > * { min-width: 0; max-width: 100%; }
+.main, .main__in { max-width: 100%; }
+@media (max-width: 860px), (pointer: coarse) {
+  .seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .seg::-webkit-scrollbar { display: none; }
+  .seg button { height: 36px; flex: none; }
+  .cal__add { min-width: 32px; min-height: 32px; opacity: .75; }
+  .link-btn { min-height: 40px; }
+}
+/* grid and flex children may shrink below their content, so wide tables scroll inside their card instead of widening the page */
+.page > *, .stack > *, .split > *, .grid2 > *, .grid3 > *, .grid4 > *, .card { min-width: 0; }
+.table-wrap { max-width: 100%; overflow-x: auto; }
