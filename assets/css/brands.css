@@ -856,3 +856,97 @@ body[data-brand="recruit"] {
 .eh__beam--r { clip-path: polygon(86% 0, 100% 0, 70% 100%, 0 100%); }
 .eh__copy h1 { max-width: 24ch; font-size: clamp(2.3rem, 1.1rem + 3.6vw, 4.1rem); }
 .wh__copy .lead, .eh__copy .lead { text-wrap: balance; }
+
+/* ==========================================================================
+   PALETTES v2 (Oct 2026) · the Brand Vitals idea applied to every brand:
+   a dark background tinted toward the brand hue, and one pair of
+   neighbouring colours that blend into a gradient on the key words.
+   Light themes use the deeper, AA-safe versions of the same pair.
+   ========================================================================== */
+body[data-brand="studio"] {
+  --bg: #0C0A08; --bg-2: #120F0C; --surface: #18140F; --surface-2: #201A14;
+  --text: #F5EFE6; --text-2: #B3A898; --text-3: #998E7F; --bl: #F5E6CF;
+  --accent: #F5A524; --accent-2: #FF7A45; --accent-ink: #1A0E02;
+}
+[data-theme="light"] body[data-brand="studio"] {
+  --bg: #F7F4EF; --bg-2: #EFEAE2; --surface: #FFFFFF; --surface-2: #F3EEE6;
+  --text: #19140D; --text-2: #5C5347; --text-3: #665C50; --bl: #19140D;
+  --accent: #A65A00; --accent-2: #B23E12; --accent-ink: #FFFFFF;
+}
+body[data-brand="web"] {
+  --bg: #060A14; --bg-2: #09101E; --surface: #0E1628; --surface-2: #131D33;
+  --text: #EAF0FF; --text-2: #93A2C2; --text-3: #8091B2; --bl: #BFD0FF;
+  --accent: #5B8CFF; --accent-2: #38BDF8; --accent-ink: #030A1E;
+}
+[data-theme="light"] body[data-brand="web"] {
+  --bg: #F4F7FC; --bg-2: #EAF0F8; --surface: #FFFFFF; --surface-2: #EEF3FA;
+  --text: #0A1124; --text-2: #4D5A76; --text-3: #56637E; --bl: #0A1124;
+  --accent: #2552D9; --accent-2: #0369A1; --accent-ink: #FFFFFF;
+}
+body[data-brand="live"] {
+  --bg: #0B0911; --bg-2: #100D18; --surface: #17131F; --surface-2: #1E1928;
+  --text: #F4F1FA; --text-2: #A9A2BC; --text-3: #968FAA; --bl: #E8DEFF;
+  --accent: #A78BFA; --accent-2: #F472B6; --accent-ink: #13082A;
+}
+[data-theme="light"] body[data-brand="live"] {
+  --bg: #F7F5FA; --bg-2: #EEEBF4; --surface: #FFFFFF; --surface-2: #F1EEF6;
+  --text: #15111D; --text-2: #585168; --text-3: #605A70; --bl: #15111D;
+  --accent: #6D3FD8; --accent-2: #BE185D; --accent-ink: #FFFFFF;
+}
+body[data-brand="hq"] {
+  --bg: #050A08; --bg-2: #08110E; --surface: #0C1713; --surface-2: #111F1A;
+  --text: #EAF6F0; --text-2: #9DB3A9; --text-3: #869C92; --bl: #D2F1E3;
+  --accent: #34E0A1; --accent-2: #2DD4BF; --accent-ink: #03140D;
+}
+[data-theme="light"] body[data-brand="hq"] {
+  --bg: #F5F8F6; --bg-2: #ECF2EE; --surface: #FFFFFF; --surface-2: #EEF3F0;
+  --text: #0C1511; --text-2: #55655E; --text-3: #56665F; --bl: #0C1511;
+  --accent: #047857; --accent-2: #0F766E; --accent-ink: #FFFFFF;
+}
+/* the key words get the brand's gradient, like "that grow." on Brand Vitals */
+[data-brand] .accent-text, [data-brand] .rq-accent { background: linear-gradient(100deg, var(--accent) 10%, var(--accent-2) 90%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+[data-brand="crew"] { --cw-grad: linear-gradient(105deg, var(--accent) 0%, #8B5CF6 45%, var(--accent-2) 100%); }
+body[data-brand="recruit"] { --accent-2: #7DD3FC; }
+[data-theme="light"] body[data-brand="recruit"] { --accent-2: #2563EB; }
+
+/* ==========================================================================
+   GO · calmer, product-first. One accent, status shown as small dots,
+   tighter radii, no glows. The screenshots carry the page.
+   ========================================================================== */
+[data-brand="hq"] { --gl-red: #E5484D; --gl-amber: #E8A317; --gl-green: #34E0A1; }
+[data-brand="hq"] .gl-kicker, [data-brand="hq"] .gl-hero .gl-kicker { padding: 0; border-radius: 0; background: none; color: var(--accent); font-size: .76rem; letter-spacing: .14em; display: inline-flex; align-items: center; gap: .6rem; }
+[data-brand="hq"] .gl-kicker::before, [data-brand="hq"] .gl-kicker::after { content: ""; width: 22px; height: 1px; background: currentColor; opacity: .5; }
+[data-brand="hq"] .gl-hero .gl-kicker { color: #6EE7B7; }
+.gl-hero { background: radial-gradient(60% 50% at 50% 0%, rgba(52, 224, 161, .12), transparent 70%), #050A08; }
+.gl-hero__road { display: none; }
+.gl-hero__t { font-size: clamp(2.6rem, 1.4rem + 4.6vw, 5.2rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.02; }
+[dir="rtl"] .gl-hero__t { letter-spacing: 0; }
+.gl-w--amber { color: #fff; }
+.gl-w--green { color: #fff; }
+.gl-hero__t .gl-w:last-child { background: linear-gradient(100deg, #34E0A1, #2DD4BF); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.gl-h2 { font-weight: 600; letter-spacing: -0.03em; }
+[dir="rtl"] .gl-h2 { letter-spacing: 0; }
+.go-frame { box-shadow: 0 40px 90px -40px rgba(0, 0, 0, .7); border-color: rgba(255, 255, 255, .12); }
+.go-tour__tab[aria-selected="true"] { background: var(--text); color: var(--bg); }
+.gl-states { gap: .75rem; }
+.gl-state { justify-items: start; text-align: start; border-radius: 16px; padding: 1.5rem 1.4rem; gap: .55rem; }
+.gl-state__lamp, .gl-state--green .gl-state__lamp, .gl-state--amber .gl-state__lamp, .gl-state--red .gl-state__lamp { width: 10px; height: 10px; box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); }
+.gl-state--amber .gl-state__lamp { color: var(--gl-amber); }
+.gl-state--red .gl-state__lamp { color: var(--gl-red); }
+.gl-state--green .gl-state__lamp { color: var(--gl-green); }
+.gl-state__lamp b { display: none; }
+.gl-state--green { border-color: var(--line); }
+.gl-tiles { gap: .75rem; }
+.gl-tile { justify-items: start; text-align: start; border-radius: 16px; }
+.gl-tile::before { width: 8px; height: 8px; box-shadow: none; background: var(--accent); }
+.gl-ba__col { border-radius: 16px; text-align: start; }
+.gl-ba__col li { border-radius: 10px; padding: .7rem .9rem; background: var(--surface-2); }
+.gl-ba__col--go { background: #050A08; }
+.gl-ba__col--go li { background: rgba(52, 224, 161, .1); color: #D1FAE5; }
+[data-brand="hq"] .bv-fam__i, [data-brand="hq"] .go-phone { border-radius: 16px; }
+[data-brand="hq"] .go-phone { border-radius: 30px; }
+/* dark-mode review fixes */
+.gl-ba__col--go, .gl-ba__col--go h3 { color: #fff; }
+[data-theme="light"] .eh__beam { opacity: .18; }
+[data-theme="light"] .eh__truss i { box-shadow: 0 6px 14px color-mix(in srgb, var(--accent) 35%, transparent); }
+[data-theme="light"] .wh-side { opacity: 1; }
