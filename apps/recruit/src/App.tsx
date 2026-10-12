@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { I18nProvider } from "../../hq/src/lib/i18n";
-import { Applications, JobDetail, Jobs, Profile } from "./pages/candidate";
+import { Applications, CompanyPage, JobDetail, Jobs, Profile, Saved } from "./pages/candidate";
 import { Applicant, CompanyHome, CompanyJob, CompanyJobs, PostJob } from "./pages/company";
 import { Queue, Review } from "./pages/screening";
 import { Landing, Shell, ToastProvider } from "./ui";
@@ -13,6 +13,8 @@ export function App() {
       <Route path="/jobs/:id" element={<JobDetail />} />
       <Route path="/applications" element={<Applications />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/saved" element={<Saved />} />
+      <Route path="/companies/:id" element={<CompanyPage />} />
       <Route path="/company" element={<CompanyHome />} />
       <Route path="/company/post" element={<PostJob />} />
       <Route path="/company/jobs" element={<CompanyJobs />} />
