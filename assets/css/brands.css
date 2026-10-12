@@ -1087,3 +1087,62 @@ body[data-brand="studio"] {
 .sth .sth-reel { width: clamp(140px, 12vw, 175px); }
 .gh .gh-phone { width: clamp(140px, 12.5vw, 185px); }
 .rh .wh__copy .rq-hero__t { font-size: clamp(2rem, 1.1rem + 2.6vw, 3.2rem); max-width: 24ch; }
+
+/* ==========================================================================
+   CREW · Compared, row by row: the usual way on one side, Crew on the other,
+   one topic per row, a VS badge on the spine.
+   ========================================================================== */
+.cw-vs { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); max-width: 980px; margin-inline: auto; column-gap: 1rem; }
+.cw-vs::after { content: ""; position: absolute; z-index: 0; top: 0; bottom: 0; inset-inline-start: calc(50% + .5rem); inset-inline-end: 0; border-radius: 24px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), color-mix(in srgb, var(--accent-2) 10%, var(--surface))); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); box-shadow: 0 30px 60px -36px color-mix(in srgb, var(--accent) 60%, transparent); }
+.cw-vs > * { position: relative; z-index: 1; }
+.cw-vs__head, .cw-vs__row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; }
+.cw-vs__head { position: relative; padding-block: 1.6rem 1rem; }
+.cw-vs__side { display: grid; justify-items: center; gap: .35rem; text-align: center; padding-inline: 1rem; }
+.cw-vs__side b { font-size: 1.2rem; }
+.cw-vs__side--crew b { background: var(--cw-grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.35rem; }
+.cw-vs__tag { display: inline-flex; align-items: center; gap: .4rem; font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+[dir="rtl"] .cw-vs__tag { letter-spacing: 0; }
+.cw-vs__tag img { border-radius: 6px; }
+.cw-vs__side--crew .cw-vs__tag { color: var(--accent); }
+.cw-vs__badge { position: absolute; left: 50%; top: 2.1rem; transform: translateX(-50%); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .8rem; color: #fff; background: var(--cw-grad); box-shadow: 0 0 0 6px var(--bg); z-index: 2; }
+.cw-vs__row { border-top: 1px solid var(--line); }
+.cw-vs__topic { grid-column: 1 / -1; justify-self: center; margin: .9rem 0 .2rem; padding: .15rem .7rem; border-radius: 999px; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); background: var(--bg); border: 1px solid var(--line); }
+[dir="rtl"] .cw-vs__topic { letter-spacing: 0; }
+.cw-vs__cell { display: flex; align-items: center; justify-content: center; gap: .6rem; padding: .7rem 1.2rem 1.1rem; text-align: center; color: var(--text-3); font-size: .98rem; }
+.cw-vs__cell--crew { color: var(--text); font-weight: 600; }
+.cw-vs__ico { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+.cw-vs__ico svg { width: 13px; height: 13px; }
+.cw-vs__ico--no { color: var(--text-3); background: var(--surface-2); }
+.cw-vs__ico--ok { color: #fff; background: var(--cw-grad); }
+.cw-vs__row:last-child .cw-vs__cell { padding-bottom: 1.6rem; }
+@media (max-width: 700px) {
+  .cw-vs { column-gap: .5rem; }
+  .cw-vs::after { inset-inline-start: calc(50% + .25rem); border-radius: 18px; }
+  .cw-vs__cell { flex-direction: column; gap: .35rem; padding-inline: .5rem; font-size: .85rem; }
+  .cw-vs__side b { font-size: 1rem; }
+  .cw-vs__side--crew b { font-size: 1.1rem; }
+}
+
+/* ==========================================================================
+   STUDIO palette v4 · the classic film grade: deep teal shadows, warm orange
+   and gold highlights. Teal carries the UI, orange→gold the key words.
+   ========================================================================== */
+body[data-brand="studio"] {
+  --bg: #071012; --bg-2: #0A1618; --surface: #0F1F22; --surface-2: #14282B;
+  --text: #EEF5F3; --text-2: #A2B6B3; --text-3: #8AA09D; --bl: #CDEAE5;
+  --accent: #FF8A3D; --accent-2: #FFC857; --accent-ink: #1C0C02; --teal: #2EC4B6;
+}
+[data-theme="light"] body[data-brand="studio"] {
+  --bg: #F3F7F6; --bg-2: #E9F0EE; --surface: #FFFFFF; --surface-2: #EDF3F1;
+  --text: #0C1716; --text-2: #4C5D5A; --text-3: #586966; --bl: #0C1716;
+  --accent: #C2410C; --accent-2: #A16207; --accent-ink: #FFFFFF; --teal: #0F766E;
+}
+[data-brand="studio"] .btn--primary { color: var(--accent-ink); background: linear-gradient(100deg, var(--accent), color-mix(in srgb, var(--accent-2) 70%, var(--accent))); }
+[data-brand="studio"] .sb-hero, [data-brand="studio"] main { background-image: radial-gradient(70% 40% at 50% 0%, color-mix(in srgb, var(--teal) 12%, transparent), transparent 70%); background-repeat: no-repeat; }
+.sth .sth-tl .c--b { background: color-mix(in srgb, var(--teal) 70%, transparent); }
+.sth .sth-tl .c--a { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 80%, transparent), color-mix(in srgb, var(--accent-2) 70%, transparent)); }
+.sth .sth-reel__frame { background: linear-gradient(160deg, color-mix(in srgb, var(--teal) 45%, var(--surface-2)), color-mix(in srgb, var(--accent) 35%, var(--bg)) 85%); }
+.sth .sth-ps__canvas span { background: linear-gradient(135deg, var(--teal), var(--accent) 70%, var(--accent-2)); }
+.sth .sth-ps__layers div.on { background: color-mix(in srgb, var(--teal) 18%, transparent); }
+.sth .sth-tl__lens span { background: radial-gradient(circle at 35% 35%, #fff, var(--teal) 45%, #064E48); }
+

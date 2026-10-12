@@ -1403,3 +1403,19 @@ a.post-card { color: inherit; }
 [data-theme="light"] .eco-card[data-eco="recruit"] { --eco: #1E3A8A; }
 @media (max-width: 1080px) { .eco-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .eco-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ==========================================================================
+   DARK MODE RHYTHM (all sites) · instead of one flat black, every other
+   section sits on a slightly lifted band tinted with the brand's own hue,
+   with a soft light falling from the top. Heroes and sections that already
+   have their own background are left alone.
+   ========================================================================== */
+[data-theme="dark"] main > section:nth-of-type(even):not(.rq-band):not(.cw-promise):not(.gl-hero):not(.hero):not(.sb-hero):not(.rq-hero):not(.cw-hero) {
+  background:
+    radial-gradient(55% 160px at 50% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 100%),
+    color-mix(in srgb, var(--accent) 4%, var(--bg-2));
+  border-block: 1px solid var(--line);
+}
+[data-theme="dark"] main > section:nth-of-type(odd):not(:first-child):not(.rq-band):not(.cw-promise):not(.band-light):not(.gl-hero) {
+  background: radial-gradient(40% 220px at 100% 0%, color-mix(in srgb, var(--accent-2) 5%, transparent), transparent 100%);
+}
