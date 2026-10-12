@@ -648,23 +648,3 @@ body[data-brand="crew"] {
 .cw-fam__i--parent { background: var(--cw-grad); border-color: transparent; color: #fff; }
 .cw-fam__i--parent span { color: rgba(255, 255, 255, .85); }
 @media (max-width: 960px) { .cw-stats { grid-template-columns: 1fr 1fr; } .cw-stats > div:nth-child(2) { border-inline-end: 0; } .cw-stats > div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); } .cw-fam { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cw-fam__i--parent { grid-column: 1 / -1; } }
-
-/* ==========================================================================
-   BRAND PAGES · editorial pass (same rules as the main site): no icon tiles,
-   no numbered mono labels, no rule before kickers, print-like corners.
-   ========================================================================== */
-.ico-tile { display: none; }
-.svc-card__top { margin-bottom: 0; }
-.svc-card__top .mono { font-family: var(--font-body); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
-[dir="rtl"] .svc-card__top .mono { letter-spacing: 0; }
-.sb-kicker::before { display: none; }
-.sb-card, .svc-card, .sb-panel, .slate, .case { border-radius: 6px; }
-.slate { box-shadow: none; }
-.svc-card:hover { transform: none; }
-
-.sb-card__k { font-family: var(--font-body); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
-[dir="rtl"] .sb-card__k { letter-spacing: 0; }
-
-/* gradient text read as a template; solid accent instead */
-.cw-grad, .cw-promise__l em, .cw-stats dt { background: none; -webkit-text-fill-color: currentColor; color: var(--accent); }
-.cw-promise__l em { color: #C9BBFF; }
