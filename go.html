@@ -166,20 +166,31 @@
   <main id="main">
 
     <!-- ============ HERO · centered copy, the real dashboard below ============ -->
-    <section class="gl-hero">
-      <div class="gl-hero__road" aria-hidden="true"></div>
-      <div class="container gl-hero__in">
-        <p class="gl-kicker" data-reveal data-en="Client approvals for agencies" data-ar="موافقات العملاء للوكالات">Client approvals for agencies</p>
-        <h1 class="gl-hero__t" data-reveal style="--rd:.12s"><span class="gl-w gl-w--amber" data-en="Send." data-ar="ابعت.">Send.</span> <span class="gl-w gl-w--green" data-en="Approve." data-ar="وافِق.">Approve.</span> <span class="gl-w" data-en="Get paid." data-ar="اقبض.">Get paid.</span></h1>
-        <p class="lead gl-hero__lead" data-reveal style="--rd:.16s" data-en="Every piece of work your agency sends gets a light: amber while the client looks, red if they want changes, green when they say GO. Then the extra work gets billed." data-ar="كل شغل الوكالة بتبعته بياخد لون: أصفر وهو عند العميل، أحمر لو عايز تعديل، أخضر لما يقول GO. وبعدها الشغل الإضافي بيتحاسب عليه.">Every piece of work your agency sends gets a light: amber while the client looks, red if they want changes, green when they say GO. Then the extra work gets billed.</p>
-        <div class="gl-hero__cta" data-reveal style="--rd:.2s">
+    <section class="gl-hero wh gh">
+      <div class="container">
+        <div class="wh__stage">
+          <div class="wh-side wh-side--l gh-phone" aria-hidden="true"><img src="assets/img/go/client-review.webp" alt="" width="400" height="860" loading="eager" decoding="async"></div>
+          <div class="wh-side wh-side--r gh-phone" aria-hidden="true"><img src="assets/img/go/portal.webp" alt="" width="400" height="860" loading="eager" decoding="async"></div>
+          <div class="browser wh__browser gh-win" data-reveal>
+            <div class="browser__bar" aria-hidden="true"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">brandvitals.io/app</span><span class="gh-go">GO</span></div>
+            <div class="wh__copy">
+              <p class="gl-kicker" data-en="Client approvals for agencies" data-ar="موافقات العملاء للوكالات">Client approvals for agencies</p>
+              <h1 class="gl-hero__t"><span class="gl-w gl-w--amber" data-en="Send." data-ar="ابعت.">Send.</span> <span class="gl-w gl-w--green" data-en="Approve." data-ar="وافِق.">Approve.</span> <span class="gl-w" data-en="Get paid." data-ar="اقبض.">Get paid.</span></h1>
+              <p class="lead gl-hero__lead" data-en="Every piece of work your agency sends gets a light: amber while the client looks, red if they want changes, green when they say GO. Then the extra work gets billed." data-ar="كل شغل الوكالة بتبعته بياخد لون: أصفر وهو عند العميل، أحمر لو عايز تعديل، أخضر لما يقول GO. وبعدها الشغل الإضافي بيتحاسب عليه.">Every piece of work your agency sends gets a light: amber while the client looks, red if they want changes, green when they say GO. Then the extra work gets billed.</p>
+              <div class="gl-hero__cta">
           <a class="btn btn--primary btn--lg" href="/app/"><span data-en="Try the live demo" data-ar="جرّب الديمو">Try the live demo</span></a>
           <a class="btn btn--ghost btn--lg" href="#brief"><span data-en="Set up my agency" data-ar="جهّز وكالتي">Set up my agency</span></a>
         </div>
-        <p class="gl-note" data-reveal style="--rd:.24s" data-en="No sign-up for the demo. Your clients never need an account." data-ar="الديمو من غير تسجيل. وعملاءك مش محتاجين حساب أبدًا.">No sign-up for the demo. Your clients never need an account.</p>
-        <div class="go-hero-shot" data-reveal style="--rd:.28s">
-          <div class="browser go-frame"><div class="browser__bar" aria-hidden="true"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">brandvitals.io/app</span></div><div class="go-frame__img"><img class="only-en" src="assets/img/go/dashboard-en.webp" alt="The Vitals GO dashboard: every deliverable with its light, time to green and extra work earned" width="1440" height="900" loading="eager" decoding="async"><img class="only-ar" src="assets/img/go/dashboard-ar.webp" alt="The Vitals GO dashboard: every deliverable with its light, time to green and extra work earned" width="1440" height="900" loading="eager" decoding="async"></div></div>
+              <p class="gl-note" data-en="No sign-up for the demo. Your clients never need an account." data-ar="الديمو من غير تسجيل. وعملاءك مش محتاجين حساب أبدًا.">No sign-up for the demo. Your clients never need an account.</p>
+            </div>
+          </div>
         </div>
+        <ol class="gh-strip" data-reveal style="--rd:.12s">
+          <li class="gh-strip--amber"><i></i><span data-en="With the client" data-ar="عند العميل">With the client</span></li>
+          <li class="gh-strip--red"><i></i><span data-en="Changes" data-ar="تعديل">Changes</span></li>
+          <li class="gh-strip--green"><i></i><span>GO</span></li>
+          <li class="gh-strip--paid"><i></i><span data-en="Billed" data-ar="اتحاسب">Billed</span></li>
+        </ol>
       </div>
     </section>
 
@@ -193,14 +204,19 @@
         </div>
         <div class="go-tour" data-pf data-reveal style="--rd:.08s">
           <div class="go-tour__tabs" role="tablist" aria-label="Screens">
-            <button class="go-tour__tab" type="button" role="tab" id="go-tab-review" aria-controls="go-review" aria-selected="true" tabindex="0"><span data-en="Review" data-ar="المراجعة">Review</span></button>
+            <button class="go-tour__tab" type="button" role="tab" id="go-tab-dashboard" aria-controls="go-dashboard" aria-selected="true" tabindex="0"><span data-en="Dashboard" data-ar="الرئيسية">Dashboard</span></button>
+            <button class="go-tour__tab" type="button" role="tab" id="go-tab-review" aria-controls="go-review" aria-selected="false" tabindex="-1"><span data-en="Review" data-ar="المراجعة">Review</span></button>
             <button class="go-tour__tab" type="button" role="tab" id="go-tab-client" aria-controls="go-client" aria-selected="false" tabindex="-1"><span data-en="Client's GO" data-ar="GO العميل">Client's GO</span></button>
             <button class="go-tour__tab" type="button" role="tab" id="go-tab-extra" aria-controls="go-extra" aria-selected="false" tabindex="-1"><span data-en="Extra work" data-ar="الشغل الإضافي">Extra work</span></button>
             <button class="go-tour__tab" type="button" role="tab" id="go-tab-invoices" aria-controls="go-invoices" aria-selected="false" tabindex="-1"><span data-en="Invoices" data-ar="الفواتير">Invoices</span></button>
             <button class="go-tour__tab" type="button" role="tab" id="go-tab-calendar" aria-controls="go-calendar" aria-selected="false" tabindex="-1"><span data-en="Calendar" data-ar="التقويم">Calendar</span></button>
           </div>
           <div class="go-tour__stage">
-            <div class="go-tour__panel" role="tabpanel" id="go-review" aria-labelledby="go-tab-review">
+            <div class="go-tour__panel" role="tabpanel" id="go-dashboard" aria-labelledby="go-tab-dashboard">
+              <div class="browser go-frame"><div class="browser__bar" aria-hidden="true"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">brandvitals.io/app</span></div><div class="go-frame__img"><img class="only-en" src="assets/img/go/dashboard-en.webp" alt="The Vitals GO dashboard: every deliverable with its light, time to green and extra work earned" width="1440" height="900" loading="lazy" decoding="async"><img class="only-ar" src="assets/img/go/dashboard-ar.webp" alt="The Vitals GO dashboard: every deliverable with its light, time to green and extra work earned" width="1440" height="900" loading="lazy" decoding="async"></div></div>
+              <p class="go-tour__cap" data-en="Every client, every light and the extra work earned, on one screen." data-ar="كل عميل وكل لون والشغل الإضافي اللي اتحاسب عليه، في شاشة واحدة.">Every client, every light and the extra work earned, on one screen.</p>
+            </div>
+            <div class="go-tour__panel" role="tabpanel" id="go-review" aria-labelledby="go-tab-review" hidden>
               <div class="browser go-frame"><div class="browser__bar" aria-hidden="true"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">brandvitals.io/app/deliverables</span></div><div class="go-frame__img"><img class="only-en" src="assets/img/go/review-en.webp" alt="Vitals GO, review screen" width="1440" height="900" loading="lazy" decoding="async"><img class="only-ar" src="assets/img/go/review-ar.webp" alt="Vitals GO, review screen" width="1440" height="900" loading="lazy" decoding="async"></div></div>
               <p class="go-tour__cap" data-en="Pinned notes, versions and the scope, on one screen." data-ar="ملاحظات على النقطة نفسها، والنسخ، والنطاق، في شاشة واحدة.">Pinned notes, versions and the scope, on one screen.</p>
             </div>
