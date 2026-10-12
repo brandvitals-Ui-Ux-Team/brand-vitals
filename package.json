@@ -6,10 +6,11 @@
   "type": "module",
   "workspaces": [
     "apps/hq",
-    "apps/crew"
+    "apps/crew",
+    "apps/recruit"
   ],
   "scripts": {
-    "build": "npm run build:hq && npm run build:crew && npm run build:site",
+    "build": "npm run build:hq && npm run build:crew && npm run build:recruit && npm run build:site",
     "build:site": "node scripts/build-site.mjs",
     "build:hq": "npm run build --workspace apps/hq",
     "dev": "npm run build:site && node server.js",
@@ -21,6 +22,8 @@
     "test:api": "node --test api/tests/api.test.mjs",
     "build:crew": "npm run build --workspace apps/crew",
     "dev:crew": "npm run dev --workspace apps/crew",
+    "build:recruit": "npm run build --workspace apps/recruit",
+    "dev:recruit": "npm run dev --workspace apps/recruit",
     "deploy:pages": "npm run build && node scripts/deploy-pages.mjs"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 // Local preview server that mirrors production (Vercel):
 //   - serves the built site from dist/ (run `npm run build:site` first, or `npm run dev`)
 //   - /api/* runs the serverless functions in api/
-//   - /app/* and /crew/* fall back to the Vitals GO and Vitals Crew single-page apps
+//   - /app/*, /crew/* and /recruit/* fall back to the Vitals GO, Crew and Recruit single-page apps
 // Usage: node server.js [port]
 import http from "node:http";
 import fs from "node:fs";
@@ -32,7 +32,7 @@ http.createServer(async (req, res) => {
     const mod = await import(pathToFileURL(fn).href);
     return mod.default(req, res);
   }
-  const spa = ["app", "crew"].find(a => urlPath === "/" + a || urlPath.startsWith("/" + a + "/"));
+  const spa = ["app", "crew", "recruit"].find(a => urlPath === "/" + a || urlPath.startsWith("/" + a + "/"));
   if (spa) {
     const f = path.join(ROOT, path.normalize(urlPath));
     if (f.startsWith(ROOT) && fs.existsSync(f) && fs.statSync(f).isFile()) return send(res, f);

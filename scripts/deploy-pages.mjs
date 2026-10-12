@@ -4,7 +4,7 @@
 //   npm run build && node scripts/deploy-pages.mjs
 //
 // GitHub Pages is static, so this adds what Vercel normally does for us:
-// - SPA fallback for /app/* and /crew/* through 404.html (path restored in the app),
+// - SPA fallback for /app/*, /crew/* and /recruit/* through 404.html (path restored in the app),
 // - stubs for the old URLs Vercel redirects (approve.html, hq.html, live.html),
 // - .nojekyll so folders and files are served as-is.
 // Server functions (/api/*) don't exist on Pages; the apps run in demo mode there.
@@ -25,11 +25,11 @@ fs.writeFileSync(path.join(out, ".nojekyll"), "");
 
 // SPA fallback: a deep link like /crew/talent/jobs 404s on Pages; 404.html stores it and opens the app,
 // which restores the path before the router starts.
-const SAVE = `<script>(function(){var p=location.pathname,m=p.match(/^\\/(app|crew)(\\/.*)?$/);if(m&&p!=="/"+m[1]+"/"){sessionStorage.setItem("spa-path",p+location.search+location.hash);location.replace("/"+m[1]+"/");}})();</script>`;
+const SAVE = `<script>(function(){var p=location.pathname,m=p.match(/^\\/(app|crew|recruit)(\\/.*)?$/);if(m&&p!=="/"+m[1]+"/"){sessionStorage.setItem("spa-path",p+location.search+location.hash);location.replace("/"+m[1]+"/");}})();</script>`;
 const RESTORE = `<script>(function(){var r=sessionStorage.getItem("spa-path");if(r){sessionStorage.removeItem("spa-path");history.replaceState(null,"",r);}})();</script>`;
 const f404 = path.join(out, "404.html");
 fs.writeFileSync(f404, fs.readFileSync(f404, "utf8").replace(/<head>/i, "<head>\n  " + SAVE));
-for (const app of ["app", "crew"]) {
+for (const app of ["app", "crew", "recruit"]) {
   const f = path.join(out, app, "index.html");
   if (fs.existsSync(f)) fs.writeFileSync(f, fs.readFileSync(f, "utf8").replace(/<head>/i, "<head>\n    " + RESTORE));
 }

@@ -21,6 +21,14 @@
     {
       "source": "/crew/:path*",
       "destination": "/crew/index.html"
+    },
+    {
+      "source": "/recruit",
+      "destination": "/recruit/index.html"
+    },
+    {
+      "source": "/recruit/:path*",
+      "destination": "/recruit/index.html"
     }
   ],
   "functions": {
@@ -113,6 +121,24 @@
     },
     {
       "source": "/crew/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/recruit/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/recruit/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

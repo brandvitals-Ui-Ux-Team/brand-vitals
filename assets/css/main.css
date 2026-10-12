@@ -1389,3 +1389,17 @@ a.post-card { color: inherit; }
   .hero--center .tick:nth-child(3) { border-inline-start: 0; padding-inline-start: 1rem; }
   .hero--center .tick:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
 }
+
+/* homepage hero: two-line title, two-line paragraph */
+.hero--center .hero__title { font-size: clamp(2.9rem, 1.2rem + 5.4vw, 6.2rem); }
+.hero--center .hero__copy { max-width: 1080px; }
+.hero--center .hero__sub { max-width: 66ch; text-wrap: balance; }
+
+/* ecosystem: six brands, three per row */
+.eco-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.eco-card[data-eco="crew"] { --eco: #A58BFF; }
+.eco-card[data-eco="recruit"] { --eco: #93B4FF; }
+[data-theme="light"] .eco-card[data-eco="crew"] { --eco: #6C47FF; }
+[data-theme="light"] .eco-card[data-eco="recruit"] { --eco: #1E3A8A; }
+@media (max-width: 1080px) { .eco-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .eco-grid { grid-template-columns: minmax(0, 1fr); } }

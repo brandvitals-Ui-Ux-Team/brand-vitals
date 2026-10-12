@@ -29,12 +29,9 @@ export function Landing() {
   return null;
 }
 
-const FAMILY: [string, string, string, string, string][] = [
-  ["/index.html", "/assets/img/favicon.svg", "Brand Vitals", "The growth agency", "وكالة النمو"],
-  ["/studio.html", "/assets/img/brands/studio-mark.svg", "Vitals Studio", "Production studio", "ستوديو إنتاج"],
-  ["/web.html", "/assets/img/brands/web-mark.svg", "Vitals Web", "Websites", "مواقع"],
-  ["/events.html", "/assets/img/brands/events-mark.svg", "Vitals Events", "Events", "فعاليات"],
-  ["/go.html", "/assets/img/brands/go-mark.svg", "Vitals GO", "Client approvals", "موافقات العملاء"]
+const BRANDS: [string, string][] = [
+  ["/studio.html", "Vitals Studio"], ["/web.html", "Vitals Web"], ["/events.html", "Vitals Events"],
+  ["/go.html", "Vitals GO"], ["/recruit.html", "Vitals Recruit"], ["/index.html", "Brand Vitals"]
 ];
 
 export function MkNav({ light }: { light?: boolean }) {
@@ -51,10 +48,38 @@ export function MkNav({ light }: { light?: boolean }) {
   </header>;
 }
 
+/** Same footer as crew.html on the Brand Vitals site, so the app never looks like a separate brand. */
 export function MkFooter() {
   const { L } = useI18n();
+  const [theme] = useTheme();
   return <footer className="mk-foot">
-    <div className="mk-foot__fam">{FAMILY.map(([h, img, n, en, ar]) => <a key={h} href={h}><img src={img} alt="" width={30} height={30} /><span><b>{n}</b><span className="small">{L(en, ar)}</span></span></a>)}</div>
-    <div className="mk-foot__bar small"><span>© {new Date().getFullYear()} Vitals Crew · <a href="/index.html">{L("A Brand Vitals company", "إحدى شركات براند ڤايتلز")}</a></span><span><a href="/crew.html">{L("About Vitals Crew", "عن Vitals Crew")}</a> · <a href="/privacy.html">{L("Privacy", "الخصوصية")}</a> · <a href="/contact.html">{L("Contact", "تواصل")}</a></span></div>
+    <div className="mk-foot__grid">
+      <div className="mk-foot__brand">
+        <a href="/crew.html" aria-label="Vitals Crew"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Crew" height={40} /></a>
+        <p>{L("Vetted freelancers and creative teams, reviewed 100% by Brand Vitals.", "فريلانسرز وفرق إبداعية معتمدة، بمراجعة ١٠٠٪ من براند ڤايتلز.")}</p>
+      </div>
+      <div className="mk-foot__col">
+        <h4>Vitals Crew</h4>
+        <a href="/crew.html#vetting">{L("How we vet", "إزاي بنعتمد")}</a>
+        <a href="/crew.html#clients">{L("For clients", "للعملاء")}</a>
+        <a href="/crew.html#talent">{L("For talent", "للمواهب")}</a>
+        <a href="/crew.html#review">{L("Review team", "فريق المراجعة")}</a>
+        <a href="/crew/">{L("Open the platform", "افتح المنصة")}</a>
+      </div>
+      <div className="mk-foot__col">
+        <h4>{L("Brands", "البراندات")}</h4>
+        {BRANDS.map(([h, n]) => <a key={h} href={h}>{n}</a>)}
+      </div>
+      <div className="mk-foot__col">
+        <h4>{L("Contact", "تواصل")}</h4>
+        <a href="https://wa.me/201090861397" target="_blank" rel="noopener" dir="ltr">WhatsApp +20 109 086 1397</a>
+        <span>{L("New Cairo, Cairo, Egypt", "القاهرة الجديدة، القاهرة، مصر")}</span>
+        <span>{L("Sun to Thu, 10:00 to 18:00", "الأحد إلى الخميس، 10:00 إلى 18:00")}</span>
+      </div>
+    </div>
+    <div className="mk-foot__bar small">
+      <span>© {new Date().getFullYear()} Vitals Crew. <a className="mk-foot__parent" href="/index.html"><img src="/assets/img/favicon.svg" alt="" width={16} height={16} />{L("A Brand Vitals company", "إحدى شركات Brand Vitals")}</a></span>
+      <a href="/privacy.html">{L("Privacy Policy", "سياسة الخصوصية")}</a>
+    </div>
   </footer>;
 }
