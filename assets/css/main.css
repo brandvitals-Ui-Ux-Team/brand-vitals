@@ -1518,3 +1518,53 @@ a.post-card { color: inherit; }
 .fd-row__p img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: center 25%; border: 2px solid var(--line-strong); }
 .fd-row__p b { font-size: 1.05rem; }
 .fd-row__line { color: var(--text-2); max-width: 52ch; }
+
+/* ==========================================================================
+   COMPLETENESS PASS (Oct 2026): markets, pricing mechanics, Saudi contact,
+   careers and Recruit, legal cross-links
+   ========================================================================== */
+.mkt-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(.75rem, 1.5vw, 1rem); }
+.mkt-card { display: grid; gap: 1.1rem; align-content: start; padding: clamp(1.5rem, 3vw, 2.2rem); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.mkt-card__tag { display: inline-flex; align-items: center; gap: .55rem; font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 1rem + 1vw, 1.9rem); }
+.mkt-card__tag::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--mk, var(--accent)); box-shadow: 0 0 0 5px color-mix(in srgb, var(--mk, var(--accent)) 18%, transparent); }
+.mkt-card--eg { --mk: #F5B14C; }
+.mkt-card--sa { --mk: #34D399; }
+.mkt-card__rows { display: grid; margin: 0; border-top: 1px solid var(--line); }
+.mkt-card__rows div { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--line); }
+.mkt-card__rows dt { color: var(--text-3); font-size: .86rem; font-weight: 600; }
+.mkt-card__rows dd { margin: 0; color: var(--text-2); font-size: .95rem; }
+.mkt-card__link { display: inline-flex; align-items: center; gap: .45rem; justify-self: start; color: var(--accent); font-weight: 600; font-size: .92rem; }
+.mkt-card__link svg { width: 16px; height: 16px; }
+[dir="rtl"] .mkt-card__link svg { transform: scaleX(-1); }
+.mkt-note { margin-top: 1.4rem; text-align: center; color: var(--text-3); font-size: .92rem; }
+.flow-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .75rem; counter-reset: fs; }
+.flow-steps li { counter-increment: fs; display: grid; gap: .4rem; align-content: start; padding: 1.3rem 1.2rem; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.flow-steps li::before { content: "0" counter(fs); font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+.flow-steps b { font-size: 1.02rem; }
+.flow-steps span { color: var(--text-2); font-size: .9rem; }
+.pay-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+.pay-card { display: grid; gap: .45rem; align-content: start; padding: 1.4rem; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); }
+.pay-card h3 { font-size: 1.05rem; }
+.pay-card p { color: var(--text-2); font-size: .92rem; }
+.price-models { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.price-model { display: grid; gap: .5rem; align-content: start; padding: 1.5rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); transition: border-color .2s, transform .2s; }
+.price-model:hover { border-color: var(--accent); transform: translateY(-2px); }
+.price-model img { width: 40px; height: 40px; border-radius: 10px; }
+.price-model b { font-size: 1.1rem; }
+.price-model span { color: var(--text-2); font-size: .93rem; }
+.ksa-band { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: center; padding: clamp(1.6rem, 3.5vw, 2.6rem); border-radius: var(--r-lg); border: 1px solid color-mix(in srgb, #34D399 40%, var(--line)); background: linear-gradient(120deg, color-mix(in srgb, #34D399 10%, var(--surface)), var(--surface)); }
+.ksa-band__list { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.ksa-band__list li { display: flex; gap: .6rem; align-items: baseline; color: var(--text-2); }
+.ksa-band__list li::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #34D399; transform: translateY(-2px); }
+.recruit-note { display: flex; align-items: center; gap: 1.2rem; padding: 1.4rem 1.6rem; border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface); transition: border-color .2s; }
+.recruit-note:hover { border-color: var(--accent); }
+.recruit-note img { border-radius: 12px; flex: none; }
+.recruit-note > span { display: grid; gap: .25rem; flex: 1; }
+.recruit-note > span > span { color: var(--text-2); font-size: .93rem; }
+.recruit-note svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+[dir="rtl"] .recruit-note svg { transform: scaleX(-1); }
+.legal-cross { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+.legal-cross a { color: var(--accent); font-weight: 600; }
+@media (max-width: 960px) { .flow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pay-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .mkt-grid, .price-models, .ksa-band { grid-template-columns: minmax(0, 1fr); } .mkt-card__rows div { grid-template-columns: minmax(0, 1fr); gap: .2rem; } }
+@media (max-width: 480px) { .flow-steps, .pay-grid { grid-template-columns: minmax(0, 1fr); } }

@@ -1162,3 +1162,31 @@ body[data-brand="studio"] {
 .go-extras { margin-top: clamp(1.4rem, 3vw, 2rem); text-align: center; color: var(--text-2); font-size: .95rem; max-width: 70ch; margin-inline: auto; }
 .go-extras b { color: var(--text); }
 @media (max-width: 860px) { .go-steps { grid-template-columns: minmax(0, 1fr); } }
+
+/* GO plans + security, Crew fees, Recruit HR (completeness pass) */
+.go-plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; align-items: stretch; }
+.go-plan { display: grid; gap: .6rem; align-content: start; padding: 1.6rem; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); }
+.go-plan h3 { font-size: 1.35rem; }
+.go-plan__for { color: var(--text-3); font-size: .9rem; }
+.go-plan ul { display: grid; gap: .5rem; margin: .4rem 0 0; padding: 0; list-style: none; }
+.go-plan li { display: flex; gap: .55rem; color: var(--text-2); font-size: .93rem; }
+.go-plan li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: .45rem; border-radius: 50%; background: var(--accent); }
+.go-plan--main { border-color: color-mix(in srgb, var(--accent) 55%, transparent); box-shadow: 0 24px 50px -32px color-mix(in srgb, var(--accent) 60%, transparent); }
+.go-sec { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+.go-sec li { display: grid; gap: .4rem; align-content: start; padding: 1.3rem; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); }
+.go-sec b { font-size: 1rem; }
+.go-sec span { color: var(--text-2); font-size: .9rem; }
+.cw-fees { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 980px; margin-inline: auto; }
+.cw-fee { padding: 1.8rem; border-radius: 22px; border: 1px solid var(--line); background: var(--surface); }
+.cw-fee h3 { font-size: 1.2rem; margin-bottom: .9rem; }
+.cw-fee ul { display: grid; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+.cw-fee li { display: flex; gap: .55rem; color: var(--text-2); }
+.cw-fee li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: .5rem; border-radius: 50%; background: var(--cw-grad); }
+.cw-fee--talent { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.rq-hr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--text); }
+.rq-hr > div { display: grid; gap: .5rem; align-content: start; padding: 1.4rem clamp(.8rem, 1.6vw, 1.4rem) 0; }
+.rq-hr > div + div { border-inline-start: 1px solid var(--line); }
+.rq-hr h3 { font-size: 1.12rem; }
+.rq-hr p { color: var(--text-2); font-size: .93rem; }
+@media (max-width: 960px) { .go-plans, .go-sec, .rq-hr { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rq-hr > div:nth-child(3) { border-inline-start: 0; } }
+@media (max-width: 640px) { .go-plans, .go-sec, .cw-fees, .rq-hr { grid-template-columns: minmax(0, 1fr); } .rq-hr > div + div { border-inline-start: 0; border-top: 1px solid var(--line); padding-bottom: 1rem; } }

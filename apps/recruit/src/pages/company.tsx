@@ -140,7 +140,7 @@ export function Applicant() {
 }
 
 const EMPTY = { title: "", title_ar: "", field: "social" as Field, type: "full_time" as JobType, mode: "onsite" as WorkMode, level: "mid" as Level, city: "New Cairo", city_ar: "القاهرة الجديدة",
-  salary_min: 15000, salary_max: 25000, currency: "EGP", exp_min: 2, exp_max: 5, education: "bachelor" as Edu, openings: 1, skills: [] as string[],
+  saudi: false, salary_min: 15000, salary_max: 25000, currency: "EGP", exp_min: 2, exp_max: 5, education: "bachelor" as Edu, openings: 1, skills: [] as string[],
   description: "", description_ar: "", requirements: [""], requirements_ar: [] as string[] };
 
 export function PostJob() {
@@ -181,6 +181,7 @@ export function PostJob() {
         <label className="field"><span>{L("Currency", "العملة")}</span><select className="sel" value={f.currency} onChange={e => setF({ ...f, currency: e.target.value })}>{["EGP", "SAR", "AED", "USD"].map(x => <option key={x}>{x}</option>)}</select></label>
       </div>
       {(f.salary_max < f.salary_min || f.exp_max < f.exp_min) && <p className="small" style={{ color: "var(--bad)" }}>{L("The “to” values must be at least the “from” values.", "قيم «لحد» لازم تكون أكبر من أو تساوي قيم «من».")}</p>}
+      {f.currency === "SAR" && <label className="rc-check"><input type="checkbox" checked={f.saudi} onChange={e => setF({ ...f, saudi: e.target.checked })} /><span><b>{L("Saudization role", "وظيفة توطين")}</b><span className="small muted">{L("Reserved for Saudi nationals. Screening and the job page show it from the start.", "مخصّصة للسعوديين. يظهر ذلك في الفرز وصفحة الوظيفة من البداية.")}</span></span></label>}
       <p className="small faint">{L("Every job on Vitals Recruit shows a salary range. It brings better applicants.", "كل وظيفة على Vitals Recruit بتعرض نطاق المرتب. ده بيجيب متقدمين أنسب.")}</p>
       <div className="grid2">
         <label className="field"><span>{L("City", "المدينة")}</span><input className="inp" value={f.city} onChange={e => setF({ ...f, city: e.target.value, city_ar: e.target.value })} /></label>

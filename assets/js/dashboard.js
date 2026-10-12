@@ -13,18 +13,19 @@
      ====================================================================== */
   // Each brand has its own dashboard: dashboard.html?brand=studio etc.
   const BRANDS = {
-    bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers"] },
+    bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers", "vitals-score"] },
     studio: { name: "Vitals Studio", home: "studio.html", logo: "assets/img/brands/studio-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
     live: { name: "Vitals Events", home: "events.html", logo: "assets/img/brands/events-light.svg", forms: ["live"] },
     hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
-    crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] }
+    crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] },
+    recruit: { name: "Vitals Recruit", home: "recruit.html", logo: "assets/img/brands/recruit-light.svg", forms: ["recruit"] }
   };
   const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["studio.html", "web.html", "events.html", "go.html", "crew.html"];
-  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "go.html": "hq", "crew.html": "crew" };
+  const SUB_PAGES = ["studio.html", "web.html", "events.html", "go.html", "crew.html", "recruit.html"];
+  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "go.html": "hq", "crew.html": "crew", "recruit.html": "recruit" };
   const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
@@ -39,6 +40,7 @@
     { path: "events.html", ar: "Vitals Events", en: "Vitals Events" },
     { path: "go.html", ar: "Vitals GO", en: "Vitals GO" },
     { path: "crew.html", ar: "Vitals Crew", en: "Vitals Crew" },
+    { path: "recruit.html", ar: "Vitals Recruit", en: "Vitals Recruit" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
@@ -62,7 +64,12 @@
     { path: "blog-ecommerce-kpi-stack.html", ar: "مقال: مؤشرات التجارة الإلكترونية", en: "Article: E-commerce KPI stack" },
     { path: "blog-b2b-to-b2c.html", ar: "مقال: من B2B إلى B2C", en: "Article: B2B to B2C" },
     { path: "blog-arabic-seo-guide.html", ar: "مقال: دليل السيو العربي", en: "Article: Arabic SEO guide" },
-    { path: "privacy.html", ar: "الخصوصية والشروط", en: "Privacy & terms" },
+    { path: "blog-ksa-seasons.html", ar: "مقال: مواسم السعودية", en: "Article: Saudi calendar" },
+    { path: "blog-ksa-snapchat.html", ar: "مقال: سناب شات في السعودية", en: "Article: Snapchat in KSA" },
+    { path: "blog-egypt-pricing.html", ar: "مقال: التسويق والأسعار في مصر", en: "Article: Egypt pricing" },
+    { path: "blog-egypt-whatsapp.html", ar: "مقال: واتساب في مصر", en: "Article: WhatsApp in Egypt" },
+    { path: "privacy.html", ar: "سياسة الخصوصية", en: "Privacy policy" },
+    { path: "terms.html", ar: "الشروط والأحكام", en: "Terms of service" },
     { path: "404.html", ar: "صفحة الخطأ 404", en: "404 page" }
   ];
   const CORE_PAGES = ALL_CORE_PAGES.filter(p => pageBrand(p) === BRAND);

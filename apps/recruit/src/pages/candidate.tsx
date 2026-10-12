@@ -126,7 +126,7 @@ export function JobDetail() {
         <div className="card card--pad rc-jd">
           <div className="rc-jd__head"><Logo co={co} size="lg" /><div className="rc-jd__id"><h1>{T(j.title, j.title_ar)}</h1>
             <p className="muted"><Link className="link" to={"/companies/" + co.id}>{T(co.name, co.name_ar)}</Link> · <MapPin size={13} /> {T(j.city, j.city_ar)} · {L("Posted", "اتنشرت")} {ago(j.posted_at, lang)}</p>
-            <div className="chips"><span className="tag">{L(...TYPE[j.type])}</span><span className="tag">{L(...MODE[j.mode])}</span>{j.status === "closed" && <span className="pill pill--bad">{L("No longer accepting applications", "مش بتستقبل طلبات")}</span>}</div>
+            <div className="chips"><span className="tag">{L(...TYPE[j.type])}</span><span className="tag">{L(...MODE[j.mode])}</span>{j.saudi && <span className="rc-saudi">{L("Saudization role · Saudi nationals", "وظيفة توطين · للسعوديين")}</span>}{j.status === "closed" && <span className="pill pill--bad">{L("No longer accepting applications", "مش بتستقبل طلبات")}</span>}</div>
           </div></div>
           <div className="rc-jd__actions">
             {mine ? <Link className="btn btn--lg" to="/applications"><Check />{L("Applied · view status", "اتقدّمت · شوف الحالة")}</Link>

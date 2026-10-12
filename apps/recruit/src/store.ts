@@ -16,7 +16,7 @@ export interface Job {
   id: string; company_id: string; title: string; title_ar: string; field: Field; type: JobType; mode: WorkMode; level: Level;
   city: string; city_ar: string; salary_min: number; salary_max: number; currency: string; exp_min: number; exp_max: number; education: Edu;
   skills: string[]; description: string; description_ar: string; requirements: string[]; requirements_ar: string[];
-  posted_at: string; status: "open" | "closed"; views: number; openings: number;
+  posted_at: string; status: "open" | "closed"; views: number; openings: number; saudi?: boolean;
 }
 export interface Experience { title: string; title_ar?: string; company: string; company_ar?: string; from: string; to: string; summary: string; summary_ar?: string }
 export interface Education { school: string; school_ar?: string; degree: string; degree_ar?: string; year: string }
@@ -35,7 +35,7 @@ export interface Application {
 export interface Note { id: string; to: Role; at: string; text: string; text_ar: string; link: string; read: boolean }
 export interface DB { companies: Company[]; jobs: Job[]; candidates: Candidate[]; applications: Application[]; saved: string[]; seen: string[]; notes: Note[] }
 
-const KEY = "recruit-demo-v2";
+const KEY = "recruit-demo-v3";
 const day = 86400000;
 const ago = (d: number, h = 0) => new Date(Date.now() - d * day - h * 3600000).toISOString();
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -94,7 +94,7 @@ function seed(): DB {
       description_ar: "إدارة وتحسين حملات محلية لافتتاح الفروع الجديدة. عقد ٦ شهور.",
       requirements: ["1+ year running Meta campaigns", "Basic Excel reporting"],
       requirements_ar: ["خبرة سنة أو أكتر في حملات Meta", "تقارير أساسية على Excel"] }),
-    J({ id: "j8", company_id: "co-glow", title: "PR & Communications Lead", title_ar: "قائد العلاقات العامة والاتصال", field: "pr", type: "full_time", mode: "hybrid", level: "lead", city: "Riyadh", city_ar: "الرياض", salary_min: 26000, salary_max: 34000, currency: "SAR", exp_min: 7, exp_max: 12, education: "bachelor", openings: 1, d: 15, views: 129,
+    J({ id: "j8", saudi: true, company_id: "co-glow", title: "PR & Communications Lead", title_ar: "قائد العلاقات العامة والاتصال", field: "pr", type: "full_time", mode: "hybrid", level: "lead", city: "Riyadh", city_ar: "الرياض", salary_min: 26000, salary_max: 34000, currency: "SAR", exp_min: 7, exp_max: 12, education: "bachelor", openings: 1, d: 15, views: 129,
       skills: ["Media relations", "Influencer partnerships", "Launch comms", "Arabic writing"],
       description: "Own media relations, influencer partnerships and launch communications in KSA.",
       description_ar: "مسؤول عن العلاقات الإعلامية وشراكات المؤثرين واتصالات الإطلاق في السعودية.",

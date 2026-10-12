@@ -102,7 +102,7 @@ export function JobCard({ j, compact }: { j: Job; compact?: boolean }) {
   return <Link to={"/jobs/" + j.id} className={"rc-job" + (compact ? " rc-job--compact" : "")}>
     <Logo co={co} />
     <span className="rc-job__main">
-      <span className="rc-job__top"><b className="rc-job__t">{T(j.title, j.title_ar)}</b>{fresh && <span className="rc-new">{L("New", "جديد")}</span>}</span>
+      <span className="rc-job__top"><b className="rc-job__t">{T(j.title, j.title_ar)}</b>{j.saudi && <span className="rc-saudi">{L("Saudization role", "وظيفة توطين")}</span>}{fresh && <span className="rc-new">{L("New", "جديد")}</span>}</span>
       <span className="rc-job__co">{T(co.name, co.name_ar)} · <MapPin size={12} /> {T(j.city, j.city_ar)}</span>
       {!compact && <span className="rc-job__tags"><span className="tag">{L(...TYPE[j.type])}</span><span className="tag">{L(...MODE[j.mode])}</span><span className="tag">{L(...LEVEL[j.level])} · {L(`${j.exp_min}–${j.exp_max} yrs`, `${j.exp_min}–${j.exp_max} سنين`)}</span><span className="tag">{L(...FIELD[j.field])}</span></span>}
       {!compact && <span className="rc-job__meta small faint">{ago(j.posted_at, lang)} · {L(`${count} applicants`, `${count} متقدم`)}{j.status === "closed" ? " · " + L("Closed", "مقفولة") : ""}</span>}

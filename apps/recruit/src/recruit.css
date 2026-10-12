@@ -256,3 +256,11 @@
   .rc-jd__actions > * { flex: 1; }
   .rc-kv div { grid-template-columns: 120px minmax(0, 1fr); }
 }
+
+/* Saudization roles */
+.rc-saudi { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; color: #047857; background: #D1FAE5; }
+.rc-saudi::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+:root[data-theme="dark"] .rc-saudi { color: #6EE7B7; background: rgba(52, 211, 153, .14); }
+.rc-check { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.rc-check input { margin-top: 3px; accent-color: var(--accent-2); }
+.rc-check > span { display: grid; gap: 2px; }
