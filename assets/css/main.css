@@ -1357,3 +1357,35 @@ a.post-card { color: inherit; }
   .vs-bar__t { grid-column: 1 / -1; grid-row: 2; }
   .vs-go { justify-self: stretch; }
 }
+
+/* ==========================================================================
+   CENTERED HEROES (same structure as Vitals Crew): the first section of every
+   page is one centered column. No text next to a graphic; anything visual
+   sits below the copy.
+   ========================================================================== */
+/* homepage */
+.hero--center .hero__inner { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.hero--center .hero__copy { justify-items: center; text-align: center; max-width: 980px; }
+.hero--center .hero__title { margin-inline: auto; }
+.hero--center .hero__sub { margin-inline: auto; }
+.hero--center .btn-row { justify-content: center; }
+.hero--center .eyebrow { justify-content: center; }
+.hero--center .hero__meta { width: min(1000px, 100%); margin-inline: auto; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); overflow: hidden; padding: 0; }
+.hero--center .tick { justify-items: center; text-align: center; padding: 1.4rem 1rem; border-inline-start: 1px solid var(--line); }
+.hero--center .tick:first-child { padding-inline-start: 1rem; border-inline-start: 0; }
+.hero--center .tick__label { max-width: 22ch; }
+.hero__note { margin-top: .9rem; text-align: center; font-size: .78rem; color: var(--text-3); }
+
+/* every inner page (services, cases, blog, about, contact, pricing…) */
+.page-hero .container { justify-items: center; text-align: center; }
+.page-hero__title, .page-hero__title--md { margin-inline: auto; }
+.page-hero .lead { margin-inline: auto; }
+.page-hero .eyebrow { justify-content: center; }
+.page-hero .breadcrumb, .page-hero .btn-row, .page-hero .chip-row, .page-hero .case-card__meta, .page-hero .post-card__meta { justify-content: center; }
+.page-hero .case-metrics { margin-inline: auto; }
+
+@media (max-width: 860px) {
+  .hero--center .hero__meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero--center .tick:nth-child(3) { border-inline-start: 0; padding-inline-start: 1rem; }
+  .hero--center .tick:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+}

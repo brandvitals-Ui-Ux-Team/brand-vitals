@@ -648,3 +648,19 @@ body[data-brand="crew"] {
 .cw-fam__i--parent { background: var(--cw-grad); border-color: transparent; color: #fff; }
 .cw-fam__i--parent span { color: rgba(255, 255, 255, .85); }
 @media (max-width: 960px) { .cw-stats { grid-template-columns: 1fr 1fr; } .cw-stats > div:nth-child(2) { border-inline-end: 0; } .cw-stats > div:nth-child(-n + 2) { border-bottom: 1px solid var(--line); } .cw-fam { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cw-fam__i--parent { grid-column: 1 / -1; } }
+
+/* ==========================================================================
+   CENTERED HEROES on brand pages (Studio, Web, Events): copy in one centered
+   column, the brand's illustration below it instead of beside it.
+   ========================================================================== */
+.sb-hero__grid { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: clamp(2.5rem, 5vw, 3.5rem); }
+.sb-hero__copy { justify-items: center; text-align: center; max-width: 900px; }
+.sb-hero h1 { margin-inline: auto; }
+.sb-hero .lead { margin-inline: auto; }
+.sb-hero .btn-row { justify-content: center; }
+.sb-hero .sb-kicker, .sb-hero .eyebrow { justify-content: center; }
+.sb-facts { justify-content: center; }
+.sb-facts div { justify-items: center; text-align: center; }
+.sb-hero__visual { width: min(760px, 100%); margin-inline: auto; }
+.sb-hero h1 { max-width: 19ch; text-wrap: balance; }
+.hero--center .hero__title, .page-hero__title { text-wrap: balance; }
