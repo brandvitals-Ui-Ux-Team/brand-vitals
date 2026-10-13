@@ -240,6 +240,26 @@
       "source": "/recruit",
       "destination": "/jobs/",
       "permanent": true
+    },
+    {
+      "source": "/frames",
+      "destination": "/frames.html",
+      "permanent": false
+    },
+    {
+      "source": "/web",
+      "destination": "/web.html",
+      "permanent": false
+    },
+    {
+      "source": "/stage",
+      "destination": "/stage.html",
+      "permanent": false
+    },
+    {
+      "source": "/go",
+      "destination": "/go.html",
+      "permanent": false
     }
   ],
   "crons": [

@@ -37,7 +37,7 @@ for (const app of ["app", "crew", "jobs"]) {
 
 // Old URLs that Vercel redirects (see vercel.json)
 const stub = to => `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${to}"><link rel="canonical" href="${to}"><title>Moved</title><a href="${to}">${to}</a>`;
-for (const [from, to] of [["approve.html", "/go.html"], ["hq.html", "/go.html"], ["live.html", "/stage.html"], ["ar/approve.html", "/ar/go.html"], ["ar/hq.html", "/ar/go.html"], ["ar/live.html", "/ar/stage.html"], ["approve/index.html", "/go.html"], ["studio.html", "/frames.html"], ["ar/studio.html", "/ar/frames.html"], ["events.html", "/stage.html"], ["ar/events.html", "/ar/stage.html"], ["recruit.html", "/jobs.html"], ["ar/recruit.html", "/ar/jobs.html"]]) {
+for (const [from, to] of [["approve.html", "/go.html"], ["hq.html", "/go.html"], ["live.html", "/stage.html"], ["ar/approve.html", "/ar/go.html"], ["ar/hq.html", "/ar/go.html"], ["ar/live.html", "/ar/stage.html"], ["approve/index.html", "/go.html"], ["studio.html", "/frames.html"], ["ar/studio.html", "/ar/frames.html"], ["events.html", "/stage.html"], ["ar/events.html", "/ar/stage.html"], ["recruit.html", "/jobs.html"], ["ar/recruit.html", "/ar/jobs.html"], ["frames/index.html", "/frames.html"], ["web/index.html", "/web.html"], ["stage/index.html", "/stage.html"], ["go/index.html", "/go.html"]]) {
   const f = path.join(out, from);
   if (!fs.existsSync(f)) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, stub(to)); }
 }
