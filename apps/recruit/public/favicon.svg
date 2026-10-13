@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16233F"/><stop offset="1" stop-color="#0A1326"/></linearGradient>
-    <linearGradient id="p" x1="8" y1="0" x2="56" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#93B4FF"/><stop offset="1" stop-color="#C7D9F7"/></linearGradient>
+    <linearGradient id="t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F5BD3"/><stop offset="1" stop-color="#13285E"/></linearGradient>
+    <linearGradient id="p" x1="8" y1="0" x2="56" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".85"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient>
   </defs>
   <rect width="64" height="64" rx="14" fill="url(#t)"/>
-  <path fill="#FFFFFF" d="M18.95 7L31.98 7Q37.85 7 41.09 9.72Q44.32 12.44 44.32 17.37Q44.32 22.56 41.11 25.43Q39.99 26.41 38.58 27.10L45.05 37L37.38 37L32.58 28.34Q32.28 28.34 31.98 28.34L25.72 28.34L25.72 37L18.95 37L18.95 7M25.72 22.86L31.98 22.86Q34.76 22.86 36.33 21.55Q37.89 20.24 37.89 17.59Q37.89 15.01 36.33 13.73Q34.76 12.44 31.98 12.44L25.72 12.44"/>
+  <path fill="#FFFFFF" d="M41.84 7.30L41.84 27.54Q41.84 32.21 39.17 34.75Q36.50 37.30 31.87 37.30Q28.90 37.30 26.46 36.09Q24.02 34.88 22.16 32.71L25.25 28.09Q26.82 29.74 28.50 30.57Q30.18 31.40 31.53 31.40Q33.19 31.40 34.14 30.38Q35.10 29.36 35.10 27.41L35.10 12.81L24.87 12.81L24.87 7.30"/>
   <path d="M9 47.5H25L28 51.5L32 42L36 54L39 47.5H55" fill="none" stroke="url(#p)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

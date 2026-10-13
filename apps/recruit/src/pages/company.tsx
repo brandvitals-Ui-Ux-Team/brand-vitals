@@ -93,7 +93,7 @@ export function CompanyJob() {
   return <div className="page">
     <Link to="/company/jobs" className="link-btn small"><ArrowLeft size={15} className="flip-rtl" />{L("All jobs", "كل الوظايف")}</Link>
     <div className="page-head"><div className="page-head__t"><h1>{T(j.title, j.title_ar)}</h1><p className="muted">{salary(j.salary_min, j.salary_max, j.currency)} · {L(...MODE[j.mode])} · {L(...LEVEL[j.level])} · {L("Posted", "اتنشرت")} {ago(j.posted_at, lang)} · {L(`${j.views} views`, `${j.views} مشاهدة`)}</p></div>
-      <div className="rc-row"><Link className="btn" to={"/jobs/" + j.id}><Eye />{L("View as candidate", "شوفها كمتقدم")}</Link><button className="btn" onClick={() => actions.closeJob(j.id)}>{j.status === "open" ? L("Close job", "اقفل الوظيفة") : L("Reopen job", "افتح الوظيفة تاني")}</button></div></div>
+      <div className="rc-row"><Link className="btn" to={"/view/" + j.id}><Eye />{L("View as candidate", "شوفها كمتقدم")}</Link><button className="btn" onClick={() => actions.closeJob(j.id)}>{j.status === "open" ? L("Close job", "اقفل الوظيفة") : L("Reopen job", "افتح الوظيفة تاني")}</button></div></div>
     <div className="rc-edge rc-edge--inline"><ShieldCheck /><span>{L(`${mine.length} applied. Brand Vitals screened them; you see the ${mine.length - hidden.length} who match. ${hidden.length} are filtered out or still in screening.`, `${mine.length} اتقدموا. Brand Vitals فرزتهم؛ إنت بتشوف الـ ${mine.length - hidden.length} المناسبين. ${hidden.length} اتستبعدوا أو لسه بيتفرزوا.`)}</span></div>
     <div className="rc-board">{COLS.map(([stages, en, ar]) => {
       const list = mine.filter(a => stages.includes(a.stage)).sort((a, b) => (b.fit || 0) - (a.fit || 0));
@@ -185,7 +185,7 @@ export function PostJob() {
       </div>
       {(f.salary_max < f.salary_min || f.exp_max < f.exp_min) && <p className="small" style={{ color: "var(--bad)" }}>{L("The “to” values must be at least the “from” values.", "قيم «لحد» لازم تكون أكبر من أو تساوي قيم «من».")}</p>}
       {f.currency === "SAR" && <label className="rc-check"><input type="checkbox" checked={f.saudi} onChange={e => setF({ ...f, saudi: e.target.checked })} /><span><b>{L("Saudization role", "وظيفة توطين")}</b><span className="small muted">{L("Reserved for Saudi nationals. Screening and the job page show it from the start.", "مخصّصة للسعوديين. يظهر ذلك في الفرز وصفحة الوظيفة من البداية.")}</span></span></label>}
-      <p className="small faint">{L("Every job on Vitals Recruit shows a salary range. It brings better applicants.", "كل وظيفة على Vitals Recruit بتعرض نطاق المرتب. ده بيجيب متقدمين أنسب.")}</p>
+      <p className="small faint">{L("Every job on Vitals Jobs shows a salary range. It brings better applicants.", "كل وظيفة على Vitals Jobs بتعرض نطاق المرتب. ده بيجيب متقدمين أنسب.")}</p>
       <div className="grid2">
         <label className="field"><span>{L("City", "المدينة")}</span><input className="inp" value={f.city} onChange={e => setF({ ...f, city: e.target.value, city_ar: e.target.value })} /></label>
         <label className="field"><span>{L("Openings", "عدد الأماكن")}</span><input className="inp" type="number" min={1} max={50} value={f.openings} onChange={e => setF({ ...f, openings: Math.max(1, +e.target.value) })} /></label>

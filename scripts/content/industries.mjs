@@ -16,7 +16,7 @@ export default [
     approach: [
       [["Margin-aware targets", "أهداف تراعي الهامش"], ["We set CPA and ROAS goals from your unit economics.", "نحدّد أهداف التكلفة والعائد من اقتصاديات الوحدة لديك."]],
       [["Hero product focus", "التركيز على المنتجات الرئيسية"], ["Fewer, better products in ads often multiply returns.", "منتجات أقل وأفضل في الإعلانات غالبًا تضاعف العائد."]],
-      [["Weekly creative testing", "اختبار إبداعي أسبوعي"], ["Briefed from data, produced with Vitals Studio.", "مبني على البيانات ومنتَج مع Vitals Studio."]],
+      [["Weekly creative testing", "اختبار إبداعي أسبوعي"], ["Briefed from data, produced with Vitals Frames.", "مبني على البيانات ومنتَج مع Vitals Frames."]],
       [["Retention flows", "مسارات الاحتفاظ"], ["Email, SMS and WhatsApp to turn first orders into repeat customers.", "إيميل ورسائل وواتساب لتحويل الطلب الأول إلى عميل متكرر."]]
     ],
     cases: ["case-luxury-beauty.html", "case-heritage-fashion.html", "case-architectural-products.html", "case-national-hypermarket.html"],
@@ -42,7 +42,7 @@ export default [
     ],
     approach: [
       [["Positioning first", "التموضع أولًا"], ["A clear story for who the project is for and why it is worth it.", "قصة واضحة عن لمن المشروع ولماذا يستحق."]],
-      [["Film and creative", "أفلام وإبداع"], ["Produced with Vitals Studio to sell the lifestyle, not only the unit.", "منتجة مع Vitals Studio لبيع أسلوب الحياة، لا الوحدة فقط."]],
+      [["Film and creative", "أفلام وإبداع"], ["Produced with Vitals Frames to sell the lifestyle, not only the unit.", "منتجة مع Vitals Frames لبيع أسلوب الحياة، لا الوحدة فقط."]],
       [["Qualified lead forms", "فورمز عملاء مؤهلة"], ["Budget, timeline and unit type captured before the call.", "الميزانية والتوقيت ونوع الوحدة تُجمع قبل المكالمة."]],
       [["CRM feedback loop", "حلقة تغذية من نظام العملاء"], ["Sales outcomes sent back to the ad platforms to improve targeting.", "نتائج المبيعات تُعاد للمنصات الإعلانية لتحسين الاستهداف."]]
     ],
@@ -50,7 +50,7 @@ export default [
     faq: [
       { q: ["Do you work with developers in Saudi Arabia?", "هل تعملون مع مطوّرين في السعودية؟"], a: ["Yes. Our work includes a luxury real estate project in Saudi Arabia covering positioning, creative, film and digital experience.", "نعم. تشمل أعمالنا مشروعًا عقاريًا فاخرًا في السعودية شمل التموضع والإبداع والفيلم والتجربة الرقمية."] },
       { q: ["How do you improve lead quality?", "كيف تحسّنون جودة العملاء؟"], a: ["Better targeting, qualifying questions in forms, and feeding CRM outcomes back to the platforms so they learn what a good lead looks like.", "استهداف أفضل، وأسئلة تأهيل في الفورمز، وإعادة نتائج نظام العملاء للمنصات لتتعلّم شكل العميل الجيد."] },
-      { q: ["Can you produce the project film?", "هل يمكنكم إنتاج فيلم المشروع؟"], a: ["Yes, through Vitals Studio, our production studio.", "نعم، عبر Vitals Studio، ستوديو الإنتاج لدينا."] }
+      { q: ["Can you produce the project film?", "هل يمكنكم إنتاج فيلم المشروع؟"], a: ["Yes, through Vitals Frames, our production studio.", "نعم، عبر Vitals Frames، ستوديو الإنتاج لدينا."] }
     ]
   },
   {

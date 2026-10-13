@@ -1,4 +1,4 @@
-// Shared pieces for Vitals Recruit: labels, pills, the application pipeline, job cards, toasts,
+// Shared pieces for Vitals Jobs: labels, pills, the application pipeline, job cards, toasts,
 // notifications and the plain dashboard frame. Each account has one role, so the frame shows only that role's menu.
 import { AlertCircle, Bell, Bookmark, BookmarkCheck, Briefcase, Building2, CheckCircle2, ClipboardList, FilePlus2, Home, LogOut, MapPin, Menu, Moon, RotateCcw, Search, ShieldCheck, Sun, UserRound, UserPlus, X } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
@@ -114,7 +114,7 @@ export function JobCard({ j, compact }: { j: Job; compact?: boolean }) {
   const applied = !!me && db.applications.some(a => a.job_id === j.id && a.candidate_id === me.id);
   const fresh = Date.now() - new Date(j.posted_at).getTime() < 2 * 86400000;
   const count = db.applications.filter(a => a.job_id === j.id).length;
-  return <Link to={"/jobs/" + j.id} className={"rc-job" + (compact ? " rc-job--compact" : "")}>
+  return <Link to={"/view/" + j.id} className={"rc-job" + (compact ? " rc-job--compact" : "")}>
     <Logo co={co} />
     <span className="rc-job__main">
       <span className="rc-job__top"><b className="rc-job__t">{T(j.title, j.title_ar)}</b>{j.saudi && <span className="rc-saudi">{L("Saudization role", "وظيفة توطين")}</span>}{fresh && <span className="rc-new">{L("New", "جديد")}</span>}</span>
@@ -275,10 +275,10 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return <div className="shell rc-shell">
     <aside className={"side" + (side ? " open" : "")} aria-label={L("Main navigation", "التنقل الرئيسي")}>
-      <div className="side__brand"><a href="/recruit.html"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Recruit" /></a></div>
+      <div className="side__brand"><a href="/jobs.html"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Jobs" /></a></div>
       {(who === "candidate" || who === "guest") && <>
-        <button className="big-send" onClick={() => nav("/jobs")}><Search />{L("Find jobs", "دوّر على وظيفة")}</button>
-        <A to="/jobs" icon={<Briefcase />} label={L("Jobs", "الوظائف")} />
+        <button className="big-send" onClick={() => nav("/search")}><Search />{L("Find jobs", "دوّر على وظيفة")}</button>
+        <A to="/search" icon={<Briefcase />} label={L("Jobs", "الوظائف")} />
       </>}
       {who === "candidate" && <>
         <A to="/applications" icon={<ClipboardList />} label={L("My applications", "طلباتي")} count={active} />
@@ -303,7 +303,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </>}
       <div className="side__foot">
         <div className="rc-edge"><ShieldCheck /><span>{L("Every application is screened by Brand Vitals before a company sees it.", "كل طلب بيتفرز من Brand Vitals قبل ما الشركة تشوفه.")}</span></div>
-        <a className="nav-a" href="/recruit.html"><span style={{ width: 17 }} />{L("About Vitals Recruit", "عن Vitals Recruit")}</a>
+        <a className="nav-a" href="/jobs.html"><span style={{ width: 17 }} />{L("About Vitals Jobs", "عن Vitals Jobs")}</a>
       </div>
     </aside>
     {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)" }} onClick={() => setSide(false)} />}
@@ -325,12 +325,12 @@ export function Shell({ children }: { children: ReactNode }) {
   </div>;
 }
 
-/** /recruit/ opens your home when signed in; visitors get the Recruit page on the Brand Vitals site, so the brand is seen inside its family.
+/** /jobs/ opens your home when signed in; visitors get the Vitals Jobs page on the Brand Vitals site, so the brand is seen inside its family.
  *  Opened from the phone home screen (?app=1), visitors go straight to the jobs instead. */
 export function Landing() {
   const db = useDB();
   const u = currentUser(db);
   const app = new URLSearchParams(location.search).has("app");
-  useEffect(() => { if (!u && !app) window.location.replace("/recruit.html"); }, [u, app]);
-  return u ? <Navigate replace to={homeOf(u.role)} /> : app ? <Navigate replace to="/jobs" /> : null;
+  useEffect(() => { if (!u && !app) window.location.replace("/jobs.html"); }, [u, app]);
+  return u ? <Navigate replace to={homeOf(u.role)} /> : app ? <Navigate replace to="/search" /> : null;
 }

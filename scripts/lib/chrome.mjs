@@ -27,9 +27,9 @@ export const INDUSTRIES = [
 
 const eco = [
   ["index.html", "assets/img/favicon.svg", "Brand Vitals", "Growth agency", "وكالة النمو"],
-  ["studio.html", "assets/img/brands/studio-mark.svg", "Vitals Studio", "Production studio", "ستوديو إنتاج"],
+  ["frames.html", "assets/img/brands/frames-mark.svg", "Vitals Frames", "Production studio", "ستوديو إنتاج"],
   ["web.html", "assets/img/brands/web-mark.svg", "Vitals Web", "Websites, launched fast", "مواقع تنطلق بسرعة"],
-  ["events.html", "assets/img/brands/events-mark.svg", "Vitals Events", "Launches, activations and events", "إطلاقات وفعاليات وتفعيلات"],
+  ["stage.html", "assets/img/brands/stage-mark.svg", "Vitals Stage", "Launches, activations and events", "إطلاقات وفعاليات وتفعيلات"],
   ["go.html", "assets/img/brands/go-mark.svg", "Vitals GO", "Client approvals & team chat", "موافقات العملاء وتواصل الفريق"],
   ["crew.html", "assets/img/brands/crew-mark.svg", "Vitals Crew", "Vetted freelancers & teams", "فريلانسرز وفرق معتمدة"]
 ];
@@ -149,9 +149,9 @@ export const FOOTER = `<footer class="footer">
           <h4 data-en="Ecosystem" data-ar="الكيانات">Ecosystem</h4>
           <ul>
             <li><a href="index.html">Brand Vitals</a></li>
-            <li><a href="studio.html">Vitals Studio</a></li>
+            <li><a href="frames.html">Vitals Frames</a></li>
             <li><a href="web.html">Vitals Web</a></li>
-            <li><a href="events.html">Vitals Events</a></li>
+            <li><a href="stage.html">Vitals Stage</a></li>
             <li><a href="go.html">Vitals GO</a></li>
             <li><a href="crew.html">Vitals Crew</a></li>
           </ul>

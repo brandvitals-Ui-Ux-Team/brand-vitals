@@ -15,7 +15,7 @@ export default [
     included: [
       [["Account and funnel audit", "تدقيق الحسابات والقمع"], ["We start with what your accounts, pixel and site are actually doing today.", "نبدأ بما تفعله حساباتك والبيكسل وموقعك فعلًا اليوم."]],
       [["Offer and audience strategy", "استراتيجية العرض والجمهور"], ["Who to reach, with which offer, at which stage of the funnel.", "من نستهدف، وبأي عرض، وفي أي مرحلة من القمع."]],
-      [["Creative testing system", "نظام اختبار إبداعي"], ["Structured hooks, angles and formats tested every week, briefed with our Vitals Studio team.", "خطافات وزوايا وصيغ منظّمة تُختبر أسبوعيًا، بالتنسيق مع فريق Vitals Studio."]],
+      [["Creative testing system", "نظام اختبار إبداعي"], ["Structured hooks, angles and formats tested every week, briefed with our Vitals Frames team.", "خطافات وزوايا وصيغ منظّمة تُختبر أسبوعيًا، بالتنسيق مع فريق Vitals Frames."]],
       [["Conversions API and pixel setup", "إعداد Conversions API والبيكسل"], ["Server-side events so the algorithm optimizes on real outcomes.", "أحداث من السيرفر حتى تتعلّم الخوارزمية من نتائج حقيقية."]],
       [["Weekly optimization", "تحسين أسبوعي"], ["Budget moves toward what is working, based on numbers, not instinct.", "تنتقل الميزانية نحو ما ينجح، بناءً على الأرقام لا الحدس."]],
       [["Plain-language reporting", "تقارير بلغة واضحة"], ["Revenue, CPA and ROAS each month, plus what we will change next.", "الإيراد وتكلفة الاكتساب والعائد كل شهر، مع ما سنغيّره بعد ذلك."]]
@@ -36,7 +36,7 @@ export default [
     faq: [
       { q: ["What budget do I need for paid social?", "ما الميزانية المطلوبة للإعلانات المدفوعة؟"], a: ["It depends on your margins and targets. In the audit we calculate the minimum spend that can produce reliable learning for your account, and we tell you if it does not make sense yet.", "يعتمد ذلك على هوامشك وأهدافك. في التدقيق نحسب أقل إنفاق يكفي لتعلّم موثوق لحسابك، ونخبرك إن لم يكن الوقت مناسبًا بعد."] },
       { q: ["Who owns the ad accounts?", "من يملك الحسابات الإعلانية؟"], a: ["You do. We work inside your Business Manager with partner access, so the data and history stay with your company.", "أنت. نعمل داخل Business Manager الخاص بك بصلاحية شريك، فتبقى البيانات والتاريخ ملكًا لشركتك."] },
-      { q: ["Do you create the ads too?", "هل تصمّمون الإعلانات أيضًا؟"], a: ["Yes. Creative is produced with Vitals Studio and briefed from campaign data, so every new batch is informed by what already worked.", "نعم. يُنتج الإبداع مع Vitals Studio بناءً على بيانات الحملات، فتستفيد كل دفعة جديدة مما نجح سابقًا."] },
+      { q: ["Do you create the ads too?", "هل تصمّمون الإعلانات أيضًا؟"], a: ["Yes. Creative is produced with Vitals Frames and briefed from campaign data, so every new batch is informed by what already worked.", "نعم. يُنتج الإبداع مع Vitals Frames بناءً على بيانات الحملات، فتستفيد كل دفعة جديدة مما نجح سابقًا."] },
       { q: ["How fast will we see results?", "متى نرى النتائج؟"], a: ["Tracking fixes and restructuring usually show in the first weeks. Stable, scalable performance takes a few testing cycles. We agree the milestones before we start.", "إصلاح التتبع وإعادة الهيكلة تظهر عادةً في الأسابيع الأولى، أما الأداء المستقر القابل للتوسع فيحتاج بضع دورات اختبار. نتفق على المراحل قبل البدء."] }
     ]
   },
@@ -135,7 +135,7 @@ export default [
       [["Visual identity", "الهوية البصرية"], ["Logo, bilingual typography, color and imagery that work in Arabic and Latin script.", "شعار وخطوط ثنائية اللغة وألوان وصور تعمل بالحرف العربي واللاتيني."]],
       [["Brand guidelines", "دليل العلامة"], ["A practical system your team and vendors can actually follow.", "نظام عملي يستطيع فريقك ومورّدوك اتباعه فعلًا."]],
       [["Campaign creative", "إبداع الحملات"], ["Concepts and assets for launches, seasons and always-on ads.", "أفكار وأصول للإطلاقات والمواسم والإعلانات الدائمة."]],
-      [["Production with Vitals Studio", "إنتاج مع Vitals Studio"], ["Shoots, motion and monthly content made by our production studio.", "تصوير وموشن ومحتوى شهري ينتجه ستوديو الإنتاج لدينا."]]
+      [["Production with Vitals Frames", "إنتاج مع Vitals Frames"], ["Shoots, motion and monthly content made by our production studio.", "تصوير وموشن ومحتوى شهري ينتجه ستوديو الإنتاج لدينا."]]
     ],
     steps: [
       [["Discover", "الاستكشاف"], ["Interviews, market scan and a clear brief.", "مقابلات ومسح للسوق وملخص واضح."]],

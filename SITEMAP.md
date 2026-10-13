@@ -21,9 +21,9 @@ clients, metrics, testimonials or prices. Prices always read "Tailored quote".
 ## Dropdown entries
 
 1. Brand Vitals · Growth agency → `index.html`
-2. Vitals Studio · Production studio → `studio.html`
+2. Vitals Frames · Production studio → `frames.html`
 3. Vitals Web · Websites, launched fast → `web.html`
-4. Vitals Events · Brand experiences and events → `events.html`
+4. Vitals Stage · Brand experiences and events → `stage.html`
 5. Vitals GO · Agency and client platform (badge: Early access) → `go.html`
 
 ## Home: new section (between "Who we work with" and FAQ)
@@ -37,7 +37,7 @@ each in its sub-brand accent, plus a journey strip: Strategy (Brand Vitals) → 
 
 ---
 
-## studio.html · Vitals Studio (cinematic, warm)
+## frames.html · Vitals Frames (cinematic, warm)
 
 Theme: bg #0B0A09, surface #161311, text #F4EDE4, muted #A39A8F, accent tungsten #FF8A3D.
 Motif: frame corner marks, timecode labels, REC dot, letterbox bars between sections, grain.
@@ -61,7 +61,7 @@ Motif: frame corner marks, timecode labels, REC dot, letterbox bars between sect
 8. **FAQ.** Turnaround, usage rights, revisions, locations and crew, raw files.
 9. **Final CTA + form.** Production call request (name, phone, email, company, what you
    need, monthly volume, notes). Submits through the site form mechanism; until the
-   database is connected it hands off to WhatsApp with "Hi Vitals Studio, …".
+   database is connected it hands off to WhatsApp with "Hi Vitals Frames, …".
 
 ## web.html · Vitals Web (precise, technical)
 
@@ -84,7 +84,7 @@ Motif: blueprint grid, browser-chrome frames, code brackets, week ruler.
 6. **FAQ.** Hosting, domain, who owns the site, edits after launch, timeline delays.
 7. **Final CTA + form.** Package, name, phone, email, company, current site, notes.
 
-## events.html · Vitals Events (atmospheric, stage)
+## stage.html · Vitals Stage (atmospheric, stage)
 
 Theme: bg #0A0710, surface #150F1E, text #F5F0FF, muted #A396B8, accent violet #B266FF,
 spotlight warm #FFD27A.
@@ -96,7 +96,7 @@ Motif: spotlight cones and beams (CSS), stage-floor perspective lines, slow ambi
 2. **What we create.** Launch events; Activations and pop-ups; Corporate and conferences;
    Exhibition booths.
 3. **The full loop.** Concept → Creative and design → Partner production → Live day →
-   Content captured by Vitals Studio → Amplified by Brand Vitals. Message: most event
+   Content captured by Vitals Frames → Amplified by Brand Vitals. Message: most event
    companies stop when the lights go off.
 4. **What you get.** Concept deck; visual identity for the event; spatial and booth design
    direction; content plan; post-event campaign.

@@ -454,7 +454,7 @@
         service: Forms.label(form, "interest"), budget: Forms.label(form, "budget"),
         message: extra.length ? extra.join("\n") + (msg ? "\n\n" + msg : "") : msg,
         website: get("website"), form: form.dataset.form || (form.closest("#consultModal") ? "consult" : "contact"),
-        // Sub-brand forms open WhatsApp with their own first line ("Hi Vitals Studio, …").
+        // Sub-brand forms open WhatsApp with their own first line ("Hi Vitals Frames, …").
         intro: (I18n.lang === "ar" ? form.dataset.waAr : form.dataset.waEn) || ""
       };
     },

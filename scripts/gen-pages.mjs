@@ -423,7 +423,7 @@ ${[["Speed", "السرعة", "How fast your site loads on a real mobile connecti
 
 // ------------------------------------------------- refresh existing pages
 const MASTER = ["index.html", "about.html", "blog.html", "careers.html", "contact.html", "privacy.html", "products.html", "solutions.html", "work.html"];
-const SUB = ["studio.html", "web.html", "events.html", "go.html"];
+const SUB = ["frames.html", "web.html", "stage.html", "go.html"];
 
 function replaceBlock(html, startRe, endTag, replacement) {
   const m = html.match(startRe);
@@ -453,9 +453,9 @@ const META_AR = {
   "blog.html": "مقالات براند فايتلز: ما نتعلمه من إدارة النمو في مصر والمنطقة، مكتوبًا بشكل عملي.",
   "contact.html": "تواصل مع براند فايتلز في القاهرة. احجز استشارة نموّ مجانية مدتها 30 دقيقة أو راسلنا على واتساب.",
   "privacy.html": "سياسة الخصوصية وشروط الخدمة لموقع براند فايتلز.",
-  "studio.html": "Vitals Studio ستوديو إنتاج في القاهرة: إعلانات ومحتوى UGC وأفلام للعلامات وتصوير منتجات وموشن ومحتوى شهري مصنوع ليحقق نتائج.",
+  "frames.html": "Vitals Frames ستوديو إنتاج في القاهرة: إعلانات ومحتوى UGC وأفلام للعلامات وتصوير منتجات وموشن ومحتوى شهري مصنوع ليحقق نتائج.",
   "web.html": "Vitals Web: مواقع بالعربي والإنجليزي تنطلق خلال أسابيع، بباقات ومواعيد ثابتة، مع السيو والتتبع جاهزين.",
-  "events.html": "Vitals Events: تنظيم وإنتاج الفعاليات والمؤتمرات والإطلاقات والمعارض، مع محتوى يُلتقط ويُضخّم بعد الحدث.",
+  "stage.html": "Vitals Stage: تنظيم وإنتاج الفعاليات والمؤتمرات والإطلاقات والمعارض، مع محتوى يُلتقط ويُضخّم بعد الحدث.",
   "go.html": "Vitals GO: منصة للوكالات لإرسال التسليمات للعميل على واتساب، وتسجيل الموافقات، وتحويل الطلبات خارج النطاق إلى أوامر تغيير مدفوعة."
 };
 function addMetaAr(html, file) {

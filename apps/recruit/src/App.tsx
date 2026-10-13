@@ -8,13 +8,13 @@ import { Landing, Need, Shell, ToastProvider } from "./ui";
 
 // Jobs and company pages are public; everything else belongs to one role.
 export function App() {
-  return <I18nProvider><ToastProvider><BrowserRouter basename="/recruit"><Routes>
+  return <I18nProvider><ToastProvider><BrowserRouter basename="/jobs"><Routes>
     <Route path="/" element={<Landing />} />
     <Route path="/signin" element={<SignIn />} />
     <Route path="/signup" element={<SignUp />} />
     <Route path="/*" element={<Shell><Routes>
-      <Route path="/jobs" element={<Jobs />} />
-      <Route path="/jobs/:id" element={<JobDetail />} />
+      <Route path="/search" element={<Jobs />} />
+      <Route path="/view/:id" element={<JobDetail />} />
       <Route path="/companies/:id" element={<CompanyPage />} />
       <Route path="/applications" element={<Need role="candidate"><Applications /></Need>} />
       <Route path="/profile" element={<Need role="candidate"><Profile /></Need>} />
@@ -27,7 +27,7 @@ export function App() {
       <Route path="/screening" element={<Need role="screening"><Queue /></Need>} />
       <Route path="/screening/done" element={<Need role="screening"><Queue done /></Need>} />
       <Route path="/screening/review/:id" element={<Need role="screening"><Review /></Need>} />
-      <Route path="*" element={<Navigate to="/jobs" replace />} />
+      <Route path="*" element={<Navigate to="/search" replace />} />
     </Routes></Shell>} />
   </Routes></BrowserRouter></ToastProvider></I18nProvider>;
 }

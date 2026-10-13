@@ -14,18 +14,18 @@
   // Each brand has its own dashboard: dashboard.html?brand=studio etc.
   const BRANDS = {
     bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers", "vitals-score"] },
-    studio: { name: "Vitals Studio", home: "studio.html", logo: "assets/img/brands/studio-light.svg", forms: ["studio"] },
+    studio: { name: "Vitals Frames", home: "frames.html", logo: "assets/img/brands/frames-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
-    live: { name: "Vitals Events", home: "events.html", logo: "assets/img/brands/events-light.svg", forms: ["live"] },
+    live: { name: "Vitals Stage", home: "stage.html", logo: "assets/img/brands/stage-light.svg", forms: ["live"] },
     hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
     crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] },
-    recruit: { name: "Vitals Recruit", home: "recruit.html", logo: "assets/img/brands/recruit-light.svg", forms: ["recruit"] }
+    recruit: { name: "Vitals Jobs", home: "jobs.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
   };
   const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["studio.html", "web.html", "events.html", "go.html", "crew.html", "recruit.html"];
-  const PAGE_BRAND = { "studio.html": "studio", "web.html": "web", "events.html": "live", "go.html": "hq", "crew.html": "crew", "recruit.html": "recruit" };
+  const SUB_PAGES = ["frames.html", "web.html", "stage.html", "go.html", "crew.html", "jobs.html"];
+  const PAGE_BRAND = { "frames.html": "studio", "web.html": "web", "stage.html": "live", "go.html": "hq", "crew.html": "crew", "jobs.html": "recruit" };
   const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
@@ -35,12 +35,12 @@
     { path: "products.html", ar: "الأسعار", en: "Pricing" },
     { path: "contact.html", ar: "تواصل", en: "Contact" },
     { path: "careers.html", ar: "الوظائف", en: "Careers" },
-    { path: "studio.html", ar: "Vitals Studio", en: "Vitals Studio" },
+    { path: "frames.html", ar: "Vitals Frames", en: "Vitals Frames" },
     { path: "web.html", ar: "Vitals Web", en: "Vitals Web" },
-    { path: "events.html", ar: "Vitals Events", en: "Vitals Events" },
+    { path: "stage.html", ar: "Vitals Stage", en: "Vitals Stage" },
     { path: "go.html", ar: "Vitals GO", en: "Vitals GO" },
     { path: "crew.html", ar: "Vitals Crew", en: "Vitals Crew" },
-    { path: "recruit.html", ar: "Vitals Recruit", en: "Vitals Recruit" },
+    { path: "jobs.html", ar: "Vitals Jobs", en: "Vitals Jobs" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
@@ -583,9 +583,9 @@
     formConsult: ["نافذة الاستشارة", "Consultation popup"],
     formLead: ["فورم الهوم", "Home lead form"],
     formCareers: ["طلب توظيف", "Job application"],
-    formStudio: ["فورم Vitals Studio", "Vitals Studio form"],
+    formStudio: ["فورم Vitals Frames", "Vitals Frames form"],
     formWeb: ["فورم Vitals Web", "Vitals Web form"],
-    formLive: ["فورم Vitals Events", "Vitals Events form"],
+    formLive: ["فورم Vitals Stage", "Vitals Stage form"],
     formHq: ["فورم Vitals GO (وصول مبكر)", "Vitals GO early access form"],
     formCrew: ["فورم Vitals Crew (بريف أو انضمام)", "Vitals Crew brief or join form"],
     deleteLead: ["حذف", "Delete"],

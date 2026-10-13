@@ -31,7 +31,7 @@ for (const file of pages) {
       if (!v || /^(https?:|mailto:|tel:|data:|#|javascript:)/i.test(v)) continue;
       v = v.split("#")[0].split("?")[0];
       if (!v) continue;
-      if (v.startsWith("/app") || v.startsWith("/crew/") || v.startsWith("/recruit/") || v.startsWith("/api/")) continue; // SPA routes
+      if (v.startsWith("/app") || v.startsWith("/crew/") || v.startsWith("/jobs/") || v.startsWith("/api/")) continue; // SPA routes
       const target = v.startsWith("/") ? path.join(DIST, v) : path.join(path.dirname(file), v);
       const resolved = target.endsWith(path.sep) || v.endsWith("/") ? path.join(target, "index.html") : target;
       if (!fs.existsSync(resolved)) problems.push(`${rel}: broken ${a} → ${v}`);

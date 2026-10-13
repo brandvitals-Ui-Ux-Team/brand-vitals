@@ -30,8 +30,8 @@ export function Landing() {
 }
 
 const BRANDS: [string, string][] = [
-  ["/studio.html", "Vitals Studio"], ["/web.html", "Vitals Web"], ["/events.html", "Vitals Events"],
-  ["/go.html", "Vitals GO"], ["/recruit.html", "Vitals Recruit"], ["/index.html", "Brand Vitals"]
+  ["/frames.html", "Vitals Frames"], ["/web.html", "Vitals Web"], ["/stage.html", "Vitals Stage"],
+  ["/go.html", "Vitals GO"], ["/jobs.html", "Vitals Jobs"], ["/index.html", "Brand Vitals"]
 ];
 
 export function MkNav({ light }: { light?: boolean }) {

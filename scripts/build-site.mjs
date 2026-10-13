@@ -155,8 +155,8 @@ ${rows.join("\n")}
 }
 
 // ---------------------------------------------------------------------------
-// The apps (Vitals GO in dist/app, Vitals Crew in dist/crew, Vitals Recruit in dist/recruit) are built first; keep them.
-const APP_DIRS = new Set(["app", "crew", "recruit"]);
+// The apps (Vitals GO in dist/app, Vitals Crew in dist/crew, Vitals Jobs in dist/recruit) are built first; keep them.
+const APP_DIRS = new Set(["app", "crew", "jobs"]);
 if (fs.existsSync(OUT)) {
   for (const e of fs.readdirSync(OUT)) if (!APP_DIRS.has(e)) fs.rmSync(path.join(OUT, e), { recursive: true, force: true });
 }

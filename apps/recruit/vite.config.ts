@@ -1,13 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Vitals Recruit is served at brandvitals.io/recruit/ and built into the site's dist/recruit.
+// Vitals Jobs is served at brandvitals.io/jobs/ and built into the site's dist/recruit.
 // It shares the Vitals GO design system (apps/hq/src/styles.css) and a few pure helpers.
 export default defineConfig({
-  base: "/recruit/",
+  base: "/jobs/",
   plugins: [react()],
   build: {
-    outDir: "../../dist/recruit",
+    outDir: "../../dist/jobs",
     emptyOutDir: true,
     sourcemap: false,
     rollupOptions: {

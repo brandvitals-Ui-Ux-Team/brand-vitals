@@ -1,4 +1,4 @@
-// Demo store for Vitals Recruit: one shared database in localStorage. Every account has one role
+// Demo store for Vitals Jobs: one shared database in localStorage. Every account has one role
 // (candidate, company or Brand Vitals screening); signing in as each one shows the same pipeline live.
 // Every piece of seeded content exists in English and Arabic; text people type is stored as written.
 import { useSyncExternalStore } from "react";
@@ -38,7 +38,7 @@ export interface Note { id: string; to: Role; who?: string; at: string; text: st
 export interface User { id: string; email: string; pass: string; role: Role; ref: string; name: string; name_ar?: string; title?: string; at: string }
 export interface DB { users: User[]; companies: Company[]; jobs: Job[]; candidates: Candidate[]; applications: Application[]; saved: Record<string, string[]>; seen: string[]; notes: Note[] }
 
-const KEY = "recruit-demo-v4";
+const KEY = "recruit-demo-v5";
 const SESSION = "recruit-session";
 const SALT = "vitals-recruit|";
 const day = 86400000;
@@ -56,7 +56,7 @@ function seed(): DB {
     { id: "co-atlas", name: "Atlas Residences", name_ar: "أطلس ريزيدنسز", industry: "Real estate developer", industry_ar: "تطوير عقاري", city: "New Cairo", city_ar: "القاهرة الجديدة", size: "200–500", founded: "2012", color: "#1E3A8A", about: "A residential developer with four compounds in East Cairo and an in-house marketing team of 14.", about_ar: "شركة تطوير سكني عندها ٤ كمبوندات في شرق القاهرة وفريق تسويق داخلي من ١٤ شخص." },
     { id: "co-nile", name: "Nile Roastery", name_ar: "نايل روستري", industry: "Coffee chain", industry_ar: "سلسلة كافيهات", city: "Cairo", city_ar: "القاهرة", size: "50–200", founded: "2016", color: "#8A4B1E", about: "Specialty coffee with 18 branches across Egypt.", about_ar: "قهوة مختصة بـ ١٨ فرع في مصر." },
     { id: "co-glow", name: "Glow Lab Skincare", name_ar: "جلو لاب للعناية بالبشرة", industry: "Beauty e-commerce", industry_ar: "تجارة إلكترونية للتجميل", city: "Riyadh", city_ar: "الرياض", size: "50–200", founded: "2019", color: "#9D2B6B", about: "Direct-to-consumer skincare selling across the Gulf.", about_ar: "منتجات عناية بالبشرة بتتباع أونلاين مباشرة في الخليج." },
-    { id: "co-bv", name: "Brand Vitals", name_ar: "براند ڤايتلز", industry: "Growth agency", industry_ar: "وكالة نمو", city: "New Cairo", city_ar: "القاهرة الجديدة", size: "50–200", founded: "2018", color: "#0A1326", about: "The growth agency behind Vitals Studio, Web, Events, GO, Crew and Recruit.", about_ar: "وكالة النمو اللي ورا Vitals Studio وWeb وEvents وGO وCrew وRecruit." }
+    { id: "co-bv", name: "Brand Vitals", name_ar: "براند ڤايتلز", industry: "Growth agency", industry_ar: "وكالة نمو", city: "New Cairo", city_ar: "القاهرة الجديدة", size: "50–200", founded: "2018", color: "#0A1326", about: "The growth agency behind Vitals Frames, Web, Events, GO, Crew and Recruit.", about_ar: "وكالة النمو اللي ورا Vitals Frames وWeb وEvents وGO وCrew وRecruit." }
   ];
   const J = (o: Omit<Job, "posted_at" | "status" | "views"> & { d: number; views: number }): Job => { const { d, ...j } = o; return { ...j, posted_at: ago(d), status: "open" }; };
   const jobs: Job[] = [
@@ -86,8 +86,8 @@ function seed(): DB {
       requirements_ar: ["خبرة ٥ سنين أو أكتر في الإعلانات الممولة للتجارة الإلكترونية", "إدارة ميزانيات شهرية فوق ٢٠٠ ألف ريال", "منهجية لاختبار الكرييتيف", "خبرة في GA4 وأدوات قياس التطبيقات"] }),
     J({ id: "j5", company_id: "co-bv", title: "Motion Designer", title_ar: "مصمم موشن", field: "motion", type: "full_time", mode: "hybrid", level: "mid", city: "New Cairo", city_ar: "القاهرة الجديدة", salary_min: 20000, salary_max: 30000, currency: "EGP", exp_min: 3, exp_max: 6, education: "any", openings: 1, d: 8, views: 361,
       skills: ["After Effects", "Cinema 4D", "Premiere Pro", "Ad creative"],
-      description: "Animate ads, reels and launch films for agency clients with Vitals Studio.",
-      description_ar: "تحريك الإعلانات والريلز وأفلام الإطلاق لعملاء الوكالة مع Vitals Studio.",
+      description: "Animate ads, reels and launch films for agency clients with Vitals Frames.",
+      description_ar: "تحريك الإعلانات والريلز وأفلام الإطلاق لعملاء الوكالة مع Vitals Frames.",
       requirements: ["3+ years in motion design", "After Effects; Cinema 4D is a plus", "A reel link"],
       requirements_ar: ["خبرة ٣ سنين أو أكتر في الموشن", "After Effects، وCinema 4D ميزة إضافية", "لينك ريل"] }),
     J({ id: "j6", company_id: "co-bv", title: "Brand Strategist", title_ar: "استراتيجي براند", field: "brand", type: "full_time", mode: "onsite", level: "senior", city: "New Cairo", city_ar: "القاهرة الجديدة", salary_min: 35000, salary_max: 50000, currency: "EGP", exp_min: 6, exp_max: 10, education: "bachelor", openings: 1, d: 12, views: 240,
@@ -178,7 +178,7 @@ function seed(): DB {
   ];
   const notes: Note[] = [
     { id: "n1", to: "candidate", who: "c-sara", at: ago(3), text: "Nile Roastery invited you to an interview for Content Creator (Arabic).", text_ar: "نايل روستري دعتك لمقابلة لوظيفة صانع محتوى (عربي).", link: "/applications", read: false },
-    { id: "n2", to: "candidate", who: "c-sara", at: ago(0, 6), text: "New job that matches your profile: Social Media Coordinator at Atlas Residences.", text_ar: "وظيفة جديدة مناسبة لبروفايلك: منسق سوشيال ميديا في أطلس ريزيدنسز.", link: "/jobs/j9", read: false },
+    { id: "n2", to: "candidate", who: "c-sara", at: ago(0, 6), text: "New job that matches your profile: Social Media Coordinator at Atlas Residences.", text_ar: "وظيفة جديدة مناسبة لبروفايلك: منسق سوشيال ميديا في أطلس ريزيدنسز.", link: "/view/j9", read: false },
     { id: "n3", to: "company", who: "co-atlas", at: ago(1), text: "Brand Vitals screened Omar Nabil for Senior Social Media Specialist: fit 5/5.", text_ar: "Brand Vitals فرزت عمر نبيل لوظيفة أخصائي سوشيال ميديا أول: توافق ٥/٥.", link: "/company/applicants/ap2", read: false },
     { id: "n4", to: "screening", at: ago(1), text: "New application to screen: Sara Hassan for Senior Social Media Specialist.", text_ar: "طلب جديد للفرز: سارة حسن لوظيفة أخصائي سوشيال ميديا أول.", link: "/screening/review/ap1", read: false },
     { id: "n5", to: "screening", at: ago(1), text: "New application to screen: Lina Abdelrahman for Performance Marketing Manager.", text_ar: "طلب جديد للفرز: لينا عبد الرحمن لوظيفة مدير تسويق أداء.", link: "/screening/review/ap6", read: false }
@@ -215,7 +215,7 @@ function setSession(id: string) {
   subs.forEach(f => f());
 }
 export const currentUser = (d: DB) => d.users.find(u => u.id === ME.user) || null;
-export const homeOf = (r: Role | null) => r === "company" ? "/company" : r === "screening" ? "/screening" : "/jobs";
+export const homeOf = (r: Role | null) => r === "company" ? "/company" : r === "screening" ? "/screening" : "/search";
 export const savedOf = (d: DB, cid: string) => d.saved[cid] || [];
 const hash = async (pw: string) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(SALT + pw)))].map(b => b.toString(16).padStart(2, "0")).join("");
 export const validEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
@@ -338,7 +338,7 @@ export const actions = {
     const job: Job = { ...j, id: uid(), company_id: ME.company, posted_at: new Date().toISOString(), status: "open", views: 0 };
     const co = companyOf(db, ME.company);
     // every candidate whose career interests include this field hears about it
-    const extra = db.candidates.filter(c => c.interests.fields.includes(job.field)).map(c => note("candidate", c.id, `New job that matches your interests: ${job.title} at ${co.name}.`, `وظيفة جديدة مناسبة لاهتماماتك: ${job.title_ar} في ${co.name_ar}.`, "/jobs/" + job.id));
+    const extra = db.candidates.filter(c => c.interests.fields.includes(job.field)).map(c => note("candidate", c.id, `New job that matches your interests: ${job.title} at ${co.name}.`, `وظيفة جديدة مناسبة لاهتماماتك: ${job.title_ar} في ${co.name_ar}.`, "/view/" + job.id));
     save({ ...db, jobs: [job, ...db.jobs], notes: [...extra, ...db.notes] });
     return job.id;
   },
