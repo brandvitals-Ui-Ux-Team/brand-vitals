@@ -909,6 +909,16 @@
      (EGP set in the select, other sets in a hidden select[data-cur-options])
      and keeps input[name=currency] in step, so the form sends the currency.
   ------------------------------------------------------------------ */
+  /* ------------------------------------------------------------------
+     WIREFRAMES — proof sections waiting for real work stay hidden; ?wireframe=1 shows them.
+  ------------------------------------------------------------------ */
+  const Wireframes = {
+    init() {
+      if (new URLSearchParams(location.search).get("wireframe") !== "1") return;
+      document.querySelectorAll("[data-wireframe]").forEach(el => el.removeAttribute("hidden"));
+    }
+  };
+
   const CurToggle = {
     init() {
       document.querySelectorAll("[data-cur-toggle]").forEach(box => {
@@ -1228,6 +1238,7 @@
     Reveal.init();
     Counters.init();
     CurToggle.init();
+    Wireframes.init();
     Signals.init();
     Magnetic.init();
     Ripple.init();
