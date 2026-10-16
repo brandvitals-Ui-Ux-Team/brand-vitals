@@ -121,7 +121,7 @@ check marks, a thin pulse line. Status: Early access.
 4. **Built for this region.** AR/EN side-by-side approvals; Ramadan, Eid and national-day
    aware calendar (Egypt and GCC); EGP and SAR invoicing with local gateways.
 5. **Works with your current tools.** A layer on top, not a forced migration.
-6. **Pricing model.** Per client workspace; unlimited client guests free. "Add every
+6. **Pricing model.** One monthly price per agency, by active clients; unlimited client guests free. "Add every
    client. Never pay for a seat they barely use."
 7. **Approach comparison.** "General project tools" vs "Vitals GO" across eight rows.
    No competitor names.

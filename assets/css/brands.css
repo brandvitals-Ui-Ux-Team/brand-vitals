@@ -1196,3 +1196,10 @@ body[data-brand="studio"] {
 [data-theme="light"] .sth-rec { color: #B8301F; }
 [data-theme="light"] .sth-ps__top > b { color: #0A5FA8; }
 [data-theme="light"] .status-live { color: color-mix(in srgb, var(--accent-2) 82%, #000); }
+
+/* GO plans: launch prices and the beta chip */
+.go-plan__price { margin: 10px 0 14px; display: grid; gap: 2px; }
+.go-plan__price b { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+.go-plan__price span { font-size: 0.8rem; color: var(--text-3); }
+.gl-beta { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: 0.85rem; font-weight: 600; color: var(--text-2); }
+.gl-beta__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }

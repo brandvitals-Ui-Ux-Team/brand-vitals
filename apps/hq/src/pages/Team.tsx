@@ -29,7 +29,7 @@ export function Team() {
 
   return <div className="page">
     <div className="page-head">
-      <div className="page-head__t"><h1>{L("Team", "الفريق")}</h1><p className="muted">{L("Pricing is per client workspace, so add your whole team.", "التسعير لكل عميل، فأضف فريقك كله.")}</p></div>
+      <div className="page-head__t"><h1>{L("Team", "الفريق")}</h1><p className="muted">{L("You pay by active clients, so add your whole team for free.", "بتدفع حسب العملاء النشطين، فضيف التيم كله مجانًا.")}</p></div>
       {isAdmin && <button className="btn btn--primary" onClick={() => { setOpen(true); setCreated(null); setEmail(""); }}><Plus />{L("Invite teammate", "ادعُ زميلًا")}</button>}
     </div>
     <div className="card">
