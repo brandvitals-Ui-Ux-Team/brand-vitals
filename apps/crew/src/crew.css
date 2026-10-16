@@ -429,3 +429,11 @@
 
 @media (max-width: 560px) { .viewas__l { display: none; } .viewas__btn { padding-inline: 10px; } }
 @media (max-width: 760px), (pointer: coarse) { .mk-foot__col a, .mk-foot__legal a { display: inline-flex; align-items: center; min-height: 40px; } }
+
+/* /crew/ role chooser */
+.crew-pick { padding-top: 120px; min-height: 70vh; align-content: center; text-align: center; }
+.crew-pick h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -.02em; }
+.crew-pick__g { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.crew-pick__c { min-height: 170px; color: inherit; }
+.crew-pick__c:hover { border-color: var(--accent); }
+.crew-pick__ops { justify-self: center; min-height: 44px; display: inline-flex; align-items: center; }

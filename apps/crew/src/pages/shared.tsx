@@ -1,15 +1,12 @@
 // The vetting explainer used inside the app, plus the umbrella header/footer for the few
 // public app pages (join). Crew's marketing lives on crew.html, inside the Brand Vitals site.
 import { Briefcase, ClipboardCheck, FileSearch, MessagesSquare, Moon, ShieldCheck, Sun } from "lucide-react";
-import { useEffect, type ReactElement } from "react";
+import { type ReactElement } from "react";
 import { useI18n } from "../../../hq/src/lib/i18n";
 import { useTheme } from "../components/Shell";
-import { useDB } from "../lib/store";
 
 export function HowWeVet({ compact }: { compact?: boolean }) {
   const { L } = useI18n();
-  const db = useDB();
-  const rate = Math.round((db.stats.accepted_90d / Math.max(1, db.stats.applied_90d)) * 100);
   const gates: [ReactElement, string, string, string, string][] = [
     [<FileSearch />, "Portfolio review", "مراجعة البورتفوليو", "A senior reviewer scores real past work, not a CV.", "مراجع خبير بيقيّم شغل حقيقي، مش سي في."],
     [<Briefcase />, "Paid skill test", "اختبار عملي", "A small real brief, judged on craft and brief fit.", "بريف صغير حقيقي بيتقيّم على الجودة وفهم المطلوب."],
@@ -18,15 +15,26 @@ export function HowWeVet({ compact }: { compact?: boolean }) {
   ];
   return <div className={"card vet" + (compact ? " vet--compact" : "")}>
     <div className="vet__h"><ShieldCheck /><div><h2>{L("How we vet: 100% reviewed", "إزاي بنعتمد: مراجعة ١٠٠٪")}</h2>
-      <p className="small muted">{L(`Only ${rate}% of applicants were accepted in the last 90 days (${db.stats.accepted_90d} of ${db.stats.applied_90d}).`, `اتقبل ${rate}٪ بس من المتقدمين آخر ٩٠ يوم (${db.stats.accepted_90d} من ${db.stats.applied_90d}).`)}</p></div></div>
+      <p className="small muted">{L("Most applicants do not get in, and each one is told why.", "مش كل المتقدمين بيدخلوا، وكل واحد بيعرف السبب.")}</p></div></div>
     <div className="vet__g">{gates.map(([icon, en, ar, den, dar], i) => <div key={i} className="vet__i"><span className="vet__n">{icon}</span><b>{L(en, ar)}</b><span className="small muted">{L(den, dar)}</span></div>)}</div>
   </div>;
 }
 
-/** /crew/ opens the Crew page on the Brand Vitals site, so the brand is always seen inside its family. */
+/** /crew/ is a role chooser: hiring, freelancing, or the Vitals review team. (It used to bounce back to crew.html, which looped.) */
 export function Landing() {
-  useEffect(() => { window.location.replace("/crew.html"); }, []);
-  return null;
+  const { L } = useI18n();
+  return <div className="mk">
+    <MkNav light />
+    <main className="join crew-pick">
+      <h1>{L("How do you want to use Vitals Crew?", "عايز تستخدم Vitals Crew إزاي؟")}</h1>
+      <div className="crew-pick__g">
+        <a className="card choice choice--big crew-pick__c" href="/crew/client"><Briefcase /><b>{L("I'm hiring", "بوظّف")}</b><span className="small muted">{L("Post a job and get a shortlist of three vetted freelancers.", "انشر شغلانة وخد أحسن 3 فريلانسرز متراجعين.")}</span></a>
+        <a className="card choice choice--big crew-pick__c" href="/crew/join"><ShieldCheck /><b>{L("I'm a freelancer", "أنا فريلانسر")}</b><span className="small muted">{L("Apply with your best work. A reviewer looks at every piece.", "قدّم بأحسن شغلك. مراجع بيشوف كل حاجة.")}</span></a>
+      </div>
+      <a className="link small crew-pick__ops" href="/crew/ops">{L("Vitals reviewer sign in", "دخول فريق المراجعة")}</a>
+    </main>
+    <MkFooter />
+  </div>;
 }
 
 const BRANDS: [string, string][] = [
