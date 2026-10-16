@@ -307,7 +307,7 @@ a.li:hover, button.li:hover { background: var(--surface-2); }
 .public { min-height: 100%; background: var(--bg); }
 .public__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
 .public__body { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; display: grid; gap: 20px; }
-.decision { position: sticky; bottom: 0; display: grid; gap: 12px; padding: 16px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2); }
+.decision { position: sticky; bottom: 0; z-index: 30; display: grid; gap: 12px; padding: 16px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2); }
 .powered { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: var(--text-3); }
 .powered img { height: 16px; }
 
@@ -338,7 +338,7 @@ a.li:hover, button.li:hover { background: var(--surface-2); }
 
 /* ---------- v2: pins, send flow, calendar, portal, simpler home ---------- */
 .pinwrap { display: grid; gap: 12px; }
-.pinimg { position: relative; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--sunken); display: grid; place-items: center; }
+.pinimg { position: relative; isolation: isolate; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--sunken); display: grid; place-items: center; }
 .pinimg img { width: 100%; height: auto; max-height: 75vh; object-fit: contain; user-select: none; }
 .pinimg--edit { cursor: crosshair; }
 .pin { position: absolute; transform: translate(-50%, -50%); width: 28px; height: 28px; border-radius: 50% 50% 50% 4px; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 12.5px; box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 0 2px #fff; z-index: 2; }
