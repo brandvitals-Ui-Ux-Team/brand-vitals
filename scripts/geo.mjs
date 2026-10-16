@@ -12,6 +12,22 @@ import industries from "./content/geo-industries.mjs";
 import glossary from "./content/glossary.mjs";
 import arOnly from "./content/geo-ar.mjs";
 import brands from "./content/geo-brands.mjs";
+import postsA from "./content/geo-posts-a.mjs";
+import postsB from "./content/geo-posts-b.mjs";
+import postsC from "./content/geo-posts-c.mjs";
+import postsD from "./content/geo-posts-d.mjs";
+import postsE from "./content/geo-posts-e.mjs";
+import postsF from "./content/geo-posts-f.mjs";
+const more = { ...postsC, ...postsD };
+const posts = Object.fromEntries(Object.entries({ ...postsA, ...postsB }).map(([f, c]) => {
+  const m = more[f] || {}, e = postsE[f];
+  return [f, {
+    ...c,
+    sections: [...c.sections, ...(m.sections || []), ...(e ? [e.section] : [])],
+    faq: [...c.faq, ...(m.faq || []), ...(e ? [e.faq] : [])],
+    ar: m.ar && { ...m.ar, ps: [...m.ar.ps, ...(e?.ar ? [e.ar] : []), ...(postsF[f] || [])] }
+  }];
+}));
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const UPDATED = { iso: "2026-10-16", en: "16 October 2026", ar: "16 أكتوبر 2026" };
@@ -132,7 +148,8 @@ export function strip(s) {
   return s
     .replace(/\n\n?[ \t]*<section class="[^"]*" data-geo="[^"]*"[^>]*>[\s\S]*?\n    <\/section>/g, "")
     .replace(/\n[ \t]*<p class="[^"]*" data-geo="[^"]*"[^>]*>[\s\S]*?<\/p>/g, "")
-    .replace(/\n {10}<div class="acc-item" data-geo-faq[^>]*>[\s\S]*?\n {10}<\/div>/g, "");
+    .replace(/\n {10}<div class="acc-item" data-geo-faq[^>]*>[\s\S]*?\n {10}<\/div>/g, "")
+    .replace(/\n[ \t]*<(h2|p|ul)[^>]*data-geo-post[^>]*>[\s\S]*?<\/\1>/g, "");
 }
 
 export function hero(s, c) {
@@ -174,8 +191,76 @@ function brandSchema(s, file, c) {
   return s.replace(m[0], `${m[1]}\n${JSON.stringify(data, null, 2).replace(/^/gm, "  ")}\n  ${m[3]}`);
 }
 
+/** Blog posts: new sections inside the article (before the takeaway) and a short FAQ after it. */
+function postBlocks(s, c) {
+  const body = c.sections.map(([h, items, kind]) => {
+    const head = `          ${t(h[0], h[1], "h2", "", " data-geo-post")}`;
+    if (kind === "list") return `${head}\n          <ul data-geo-post>${items.map(([en, ar]) => t(en, ar, "li")).join("")}</ul>`;
+    return `${head}\n${items.map(([en, ar]) => `          ${t(en, ar, "p", "", " data-geo-post")}`).join("\n")}`;
+  }).join("\n") + (c.ar ? "\n" + [`          ${t(c.ar.h2, c.ar.h2, "h2", "", ' data-geo-post data-only="ar"')}`,
+    ...c.ar.ps.map(p => `          ${t(p, p, "p", "", ' data-geo-post data-only="ar"')}`)].join("\n") : "");
+  s = s.replace(/(\n[ \t]*<div class="takeaway")/, `\n${body}$1`);
+  if (!s.includes("data-geo-post")) throw new Error("post: no takeaway to anchor");
+  const faqSection = `    <section class="section section--tight" data-geo="post-faq">
+      <div class="container" style="max-width:780px">
+        <div class="section-head" data-reveal>
+          ${t("FAQ", "أسئلة شائعة", "p", "eyebrow")}
+          ${t("Questions about this topic.", "أسئلة عن الموضوع ده.", "h2")}
+        </div>
+        <div class="acc" data-reveal>
+${c.faq.map(i => faqItem(i)).join("\n")}
+        </div>
+      </div>
+    </section>`;
+  const POST_TERMS = {
+    "blog-arabic-seo-guide.html": ["hreflang", "technical-seo", "ai-search"], "blog-b2b-to-b2c.html": ["positioning", "landing-page", "conversion-rate", "creative-testing"],
+    "blog-creative-testing.html": ["creative-testing", "hook-rate", "creative-fatigue", "ugc"], "blog-ecommerce-kpi-stack.html": ["blended-results", "contribution-margin", "cac", "ltv"],
+    "blog-egypt-pricing.html": ["break-even-roas", "contribution-margin", "aov"], "blog-egypt-whatsapp.html": ["click-to-whatsapp", "offline-conversions", "cash-on-delivery", "conversion-rate"],
+    "blog-focus-your-catalog.html": ["aov", "contribution-margin", "landing-page", "retargeting"], "blog-ksa-seasons.html": ["cpm", "retargeting", "vat", "creative-fatigue"],
+    "blog-ksa-snapchat.html": ["pixel", "conversions-api", "attribution-window", "blended-results"], "blog-prospecting-vs-retargeting.html": ["prospecting", "retargeting", "blended-results", "attribution-window"]
+  };
+  const ids = POST_TERMS[c.file] || [];
+  const termsSection = ids.length ? `    <section class="section section--tight" data-geo="post-terms">
+      <div class="container" style="max-width:780px">
+        <div class="section-head" data-reveal>
+          ${t("Key terms", "مصطلحات مهمة", "p", "eyebrow")}
+          ${t("Terms used in this article.", "مصطلحات في المقال ده.", "h2")}
+        </div>
+        <dl class="geo-terms" data-reveal>
+${ids.map(id => { const g = TERM[id]; return `          <div><dt><a href="glossary.html#${id}" data-en="${esc(g.en)}" data-ar="${esc(g.ar)}">${esc(g.en)}</a></dt>${t(g.d[0], g.d[1], "dd")}</div>`; }).join("\n")}
+        </dl>
+      </div>
+    </section>
+` : "";
+  const keep = s.match(/\n    <section[^>]*>(?:(?!<section)[\s\S])*?data-en="Keep reading"/);
+  if (!keep) throw new Error("post: no Keep reading section");
+  return s.replace(keep[0], "\n" + termsSection + faqSection + "\n" + keep[0]);
+}
+function postSchema(s) {
+  const m = s.match(/(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/);
+  const data = JSON.parse(m[2]);
+  const g = data["@graph"] || [data];
+  const post = g.find(n => n["@type"] === "BlogPosting");
+  if (post) {
+    post.dateModified = UPDATED.iso;
+    post.author = { "@type": "Organization", "@id": "https://brandvitals.io/#org", name: "Brand Vitals", url: "https://brandvitals.io/" };
+    post.publisher = { "@id": "https://brandvitals.io/#org" };
+  }
+  return s.replace(m[0], `${m[1]}\n${JSON.stringify(data, null, 2).replace(/^/gm, "  ")}\n  ${m[3]}`);
+}
+
 const isMain = import.meta.url === `file:///${process.argv[1].replace(/\\/g, "/")}`;
 if (isMain) {
+  for (const [file, c] of Object.entries(posts)) {
+    const p = path.join(ROOT, file);
+    let s = strip(fs.readFileSync(p, "utf8"));
+    s = hero(s, c);
+    s = postBlocks(s, { ...c, file });
+    s = syncSchema(s, file);
+    s = postSchema(s);
+    fs.writeFileSync(p, s);
+  }
+  console.log("blog posts updated:", Object.keys(posts).length);
   for (const [file, c] of Object.entries(brands)) {
     const p = path.join(ROOT, file);
     let s = strip(fs.readFileSync(p, "utf8"));
