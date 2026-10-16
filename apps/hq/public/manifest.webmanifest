@@ -1,7 +1,7 @@
 {
   "name": "Vitals GO",
   "short_name": "Vitals GO",
-  "description": "Client approvals, team chat and billing for agencies.",
+  "description": "Client approvals and paid extras for agencies.",
   "lang": "en",
   "dir": "auto",
   "start_url": "/app/",

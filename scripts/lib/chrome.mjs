@@ -30,7 +30,7 @@ const eco = [
   ["frames.html", "assets/img/brands/frames-mark.svg", "Vitals Frames", "Production studio", "ستوديو إنتاج"],
   ["web.html", "assets/img/brands/web-mark.svg", "Vitals Web", "Websites, launched fast", "مواقع تنطلق بسرعة"],
   ["stage.html", "assets/img/brands/stage-mark.svg", "Vitals Stage", "Launches, activations and events", "إطلاقات وفعاليات وتفعيلات"],
-  ["go.html", "assets/img/brands/go-mark.svg", "Vitals GO", "Client approvals & team chat", "موافقات العملاء وتواصل الفريق"],
+  ["go.html", "assets/img/brands/go-mark.svg", "Vitals GO", "Client approvals & paid extras", "موافقات العملاء والشغل الإضافي المدفوع"],
   ["crew.html", "assets/img/brands/crew-mark.svg", "Vitals Crew", "Vetted freelancers & teams", "فريلانسرز وفرق معتمدة"]
 ];
 const ecoItems = () => eco.map(([href, img, name, en, ar]) =>
