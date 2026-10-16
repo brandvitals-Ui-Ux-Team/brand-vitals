@@ -29,7 +29,7 @@ api/inspect.js            reads a site's HTML: SEO, Arabic readiness, tracking p
 api/psi.js                Google PageSpeed Insights proxy (keeps the API key server-side)
 apps/hq/                  Vitals GO app (React), served at /app
 apps/crew/                Vitals Crew app (React), served at /crew; reuses the GO design system
-apps/jobs/             Vitals Jobs app (React), served at /recruit; reuses the GO design system
+apps/jobs/             Vitals Hire app (React), served at /recruit; reuses the GO design system
 supabase/migrations/      HQ database schema with row-level security
 supabase/tests/           runs the schema on real Postgres (PGlite) and tests RLS + client flows
 scripts/build-site.mjs    builds dist/: copies the site and generates Arabic pages under /ar/
@@ -131,9 +131,9 @@ Today it runs in demo mode: one shared store in the browser (`apps/crew/src/lib/
 npm run dev:crew   # Vite dev server for the Crew app on :5174
 ```
 
-## Vitals Jobs: creative and marketing jobs
+## Vitals Hire: creative and marketing jobs
 
-`apps/recruit` is the Vitals Jobs hiring platform at `/jobs/`, and `jobs.html` is its public page. It works like a job board (formal profiles, apply in one step, no feed), with one step in the middle:
+`apps/recruit` is the Vitals Hire hiring platform at `/jobs/`, and `hire.html` is its public page. It works like a job board (formal profiles, apply in one step, no feed), with one step in the middle:
 
 - **Candidates** build one profile (experience, education, skills, CV), apply with it, and follow each application through Applied, Screened by Brand Vitals, With the company, Interview and Offer. Everyone hears back within 48 hours; a "not a match" comes with the screener's reason.
 - **Companies** post a job (salary range required) and only ever see applicants who passed screening, each with a fit score out of five and a note. They move people to interview, offer, hired or not selected.
@@ -142,7 +142,7 @@ npm run dev:crew   # Vite dev server for the Crew app on :5174
 Demo mode only, like Crew: one shared store in the browser (`apps/jobs/src/store.ts`) with a "viewing as" switcher. Going live needs Supabase tables for companies, jobs, candidates and applications with row-level security that hides unscreened applications from companies.
 
 ```bash
-npm run dev:recruit   # Vite dev server for the Vitals Jobs app (apps/recruit) on :5175
+npm run dev:recruit   # Vite dev server for the Vitals Hire app (apps/recruit) on :5175
 ```
 
 ## Preview on GitHub Pages

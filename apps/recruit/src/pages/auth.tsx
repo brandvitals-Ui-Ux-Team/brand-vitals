@@ -24,8 +24,8 @@ function Frame({ who, children }: { who: "candidate" | "company" | "team" | null
   };
   const list = points[who || "candidate"];
   return <div className="auth rc-auth">
-    <aside className="auth__side" aria-label="Vitals Jobs">
-      <a href="/jobs.html"><img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals Jobs" style={{ height: 30, width: "auto" }} /></a>
+    <aside className="auth__side" aria-label="Vitals Hire">
+      <a href="/hire.html"><img src={`${import.meta.env.BASE_URL}logo-light.svg`} alt="Vitals Hire" style={{ height: 30, width: "auto" }} /></a>
       <div style={{ display: "grid", gap: 26 }}>
         <h2>{who === "company" ? L("Meet only the people worth interviewing.", "قابل اللي يستاهلوا المقابلة بس.") : who === "team" ? L("Screening, done properly.", "فرز معمول صح.") : L("Creative and marketing jobs, screened.", "وظايف كرييتيف وماركتينج، متفرزة.")}</h2>
         <ul>{list.map(([en, ar]) => <li key={en}><CheckCircle2 />{L(en, ar)}</li>)}</ul>
@@ -35,7 +35,7 @@ function Frame({ who, children }: { who: "candidate" | "company" | "team" | null
     <main className="auth__main">
       <div className="auth__box">
         <div className="row row--between">
-          <a href="/jobs.html" className="rc-auth__logo"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Jobs" /></a>
+          <a href="/hire.html" className="rc-auth__logo"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Hire" /></a>
           <button className="lang-btn" onClick={() => setLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>
         </div>
         {children}
@@ -124,7 +124,7 @@ export function SignUp() {
   const pick = (r: "candidate" | "company") => { const n = new URLSearchParams(sp); n.set("as", r); setSp(n); setStep(1); setErr(""); };
 
   if (!role) return <Frame who={null}>
-    <div><h1>{L("Join Vitals Jobs", "انضم لـ Vitals Jobs")}</h1><p className="muted small">{L("Tell us who you are. You'll only see what's made for you.", "قولنا إنت مين. هتشوف اللي معمول ليك بس.")}</p></div>
+    <div><h1>{L("Join Vitals Hire", "انضم لـ Vitals Hire")}</h1><p className="muted small">{L("Tell us who you are. You'll only see what's made for you.", "قولنا إنت مين. هتشوف اللي معمول ليك بس.")}</p></div>
     <div className="rc-pick">
       <button type="button" className="rc-pick__b" onClick={() => pick("candidate")}><span className="rc-pick__ic"><Briefcase /></span><span><b>{L("I'm looking for a job", "بدوّر على وظيفة")}</b><span className="small muted">{L("Build one profile, apply in a tap, and hear back on every application.", "اعمل بروفايل واحد، قدّم بضغطة، وخد رد على كل طلب.")}</span></span><ArrowRight size={18} className="flip-rtl" /></button>
       <button type="button" className="rc-pick__b" onClick={() => pick("company")}><span className="rc-pick__ic"><Building2 /></span><span><b>{L("I'm hiring", "بوظّف")}</b><span className="small muted">{L("Post jobs and meet only applicants Brand Vitals has screened.", "انشر وظايف وقابل بس المتقدمين اللي Brand Vitals فرزتهم.")}</span></span><ArrowRight size={18} className="flip-rtl" /></button>

@@ -213,12 +213,12 @@
     },
     {
       "source": "/recruit.html",
-      "destination": "/jobs.html",
+      "destination": "/hire.html",
       "permanent": true
     },
     {
       "source": "/ar/recruit.html",
-      "destination": "/ar/jobs.html",
+      "destination": "/ar/hire.html",
       "permanent": true
     },
     {
@@ -260,6 +260,16 @@
       "source": "/go",
       "destination": "/go.html",
       "permanent": false
+    },
+    {
+      "source": "/jobs.html",
+      "destination": "/hire.html",
+      "permanent": true
+    },
+    {
+      "source": "/ar/jobs.html",
+      "destination": "/ar/hire.html",
+      "permanent": true
     }
   ],
   "crons": [

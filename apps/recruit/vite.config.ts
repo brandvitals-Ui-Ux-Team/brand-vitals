@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Vitals Jobs is served at brandvitals.io/jobs/ and built into the site's dist/recruit.
+// Vitals Hire is served at brandvitals.io/jobs/ and built into the site's dist/recruit.
 // It shares the Vitals GO design system (apps/hq/src/styles.css) and a few pure helpers.
 export default defineConfig({
   base: "/jobs/",

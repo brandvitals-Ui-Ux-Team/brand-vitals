@@ -39,7 +39,7 @@ export function Landing() {
 
 const BRANDS: [string, string][] = [
   ["/frames.html", "Vitals Frames"], ["/web.html", "Vitals Web"], ["/stage.html", "Vitals Stage"],
-  ["/go.html", "Vitals GO"], ["/jobs.html", "Vitals Jobs"], ["/index.html", "Brand Vitals"]
+  ["/go.html", "Vitals GO"], ["/hire.html", "Vitals Hire"], ["/index.html", "Brand Vitals"]
 ];
 
 export function MkNav({ light }: { light?: boolean }) {

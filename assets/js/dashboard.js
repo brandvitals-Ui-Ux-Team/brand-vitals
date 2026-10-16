@@ -19,7 +19,7 @@
     stage: { name: "Vitals Stage", home: "stage.html", logo: "assets/img/brands/stage-light.svg", forms: ["live"] },
     go: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
     crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] },
-    jobs: { name: "Vitals Jobs", home: "jobs.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
+    jobs: { name: "Vitals Hire", home: "hire.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
   };
   // Old brand keys (before the rename) still open the right dashboard and match saved pages.
   const BRAND_ALIAS = { studio: "frames", live: "stage", hq: "go", recruit: "jobs" };
@@ -27,8 +27,8 @@
   const BRAND = (() => { try { const b = brandKey(new URLSearchParams(location.search).get("brand")); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["frames.html", "web.html", "stage.html", "go.html", "crew.html", "jobs.html"];
-  const PAGE_BRAND = { "frames.html": "frames", "web.html": "web", "stage.html": "stage", "go.html": "go", "crew.html": "crew", "jobs.html": "jobs" };
+  const SUB_PAGES = ["frames.html", "web.html", "stage.html", "go.html", "crew.html", "hire.html"];
+  const PAGE_BRAND = { "frames.html": "frames", "web.html": "web", "stage.html": "stage", "go.html": "go", "crew.html": "crew", "hire.html": "jobs" };
   const pageBrand = p => brandKey((p && p.brand) || (p && PAGE_BRAND[p.path])) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
@@ -43,7 +43,7 @@
     { path: "stage.html", ar: "Vitals Stage", en: "Vitals Stage" },
     { path: "go.html", ar: "Vitals GO", en: "Vitals GO" },
     { path: "crew.html", ar: "Vitals Crew", en: "Vitals Crew" },
-    { path: "jobs.html", ar: "Vitals Jobs", en: "Vitals Jobs" },
+    { path: "hire.html", ar: "Vitals Hire", en: "Vitals Hire" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },

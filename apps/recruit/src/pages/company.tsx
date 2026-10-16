@@ -185,7 +185,7 @@ export function PostJob() {
       </div>
       {(f.salary_max < f.salary_min || f.exp_max < f.exp_min) && <p className="small" style={{ color: "var(--bad)" }}>{L("The “to” values must be at least the “from” values.", "قيم «لحد» لازم تكون أكبر من أو تساوي قيم «من».")}</p>}
       {f.currency === "SAR" && <label className="rc-check"><input type="checkbox" checked={f.saudi} onChange={e => setF({ ...f, saudi: e.target.checked })} /><span><b>{L("Saudization role", "وظيفة توطين")}</b><span className="small muted">{L("Reserved for Saudi nationals. Screening and the job page show it from the start.", "مخصّصة للسعوديين. يظهر ذلك في الفرز وصفحة الوظيفة من البداية.")}</span></span></label>}
-      <p className="small faint">{L("Every job on Vitals Jobs shows a salary range. It brings better applicants.", "كل وظيفة على Vitals Jobs بتعرض نطاق المرتب. ده بيجيب متقدمين أنسب.")}</p>
+      <p className="small faint">{L("Every job on Vitals Hire shows a salary range. It brings better applicants.", "كل وظيفة على Vitals Hire بتعرض نطاق المرتب. ده بيجيب متقدمين أنسب.")}</p>
       <div className="grid2">
         <label className="field"><span>{L("City", "المدينة")}</span><input className="inp" value={f.city} onChange={e => setF({ ...f, city: e.target.value, city_ar: e.target.value })} /></label>
         <label className="field"><span>{L("Openings", "عدد الأماكن")}</span><input className="inp" type="number" min={1} max={50} value={f.openings} onChange={e => setF({ ...f, openings: Math.max(1, +e.target.value) })} /></label>

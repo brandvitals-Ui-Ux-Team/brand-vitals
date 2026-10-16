@@ -1,4 +1,4 @@
-// Demo store for Vitals Jobs: one shared database in localStorage. Every account has one role
+// Demo store for Vitals Hire: one shared database in localStorage. Every account has one role
 // (candidate, company or Brand Vitals screening); signing in as each one shows the same pipeline live.
 // Every piece of seeded content exists in English and Arabic; text people type is stored as written.
 import { useSyncExternalStore } from "react";

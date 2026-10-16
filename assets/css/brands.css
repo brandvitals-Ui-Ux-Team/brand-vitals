@@ -831,3 +831,8 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
 @media (max-width: 767px) {
   .gl-hero { padding-bottom: 40px; }
 }
+
+/* Vitals Hire: mark + name until the new wordmark is delivered ([Vitals Hire wordmark] wireframe in the footer) */
+.wordmark-temp { display: inline-flex; align-items: center; gap: 0.55rem; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; color: var(--text); white-space: nowrap; }
+.wordmark-temp img { width: 28px; height: 28px; border-radius: 8px; }
+.wf-logo { margin-top: 0.75rem; max-width: 260px; aspect-ratio: 260 / 48; }
