@@ -11,6 +11,7 @@ import services, { MARKET } from "./content/geo-services.mjs";
 import industries from "./content/geo-industries.mjs";
 import glossary from "./content/glossary.mjs";
 import arOnly from "./content/geo-ar.mjs";
+import brands from "./content/geo-brands.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const UPDATED = { iso: "2026-10-16", en: "16 October 2026", ar: "16 أكتوبر 2026" };
@@ -147,8 +148,43 @@ export function faq(s, items, extra = []) {
   return s.replace(/(<div class="acc" data-reveal>\n)([\s\S]*?)(\n {8}<\/div>)/, (m, open, body, close) => open + body + "\n" + html.join("\n") + close);
 }
 
+/** Sub-brand pages: BreadcrumbList on all, Service for studios and Crew/Hire, SoftwareApplication for GO. */
+function brandSchema(s, file, c) {
+  const m = s.match(/(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/);
+  let data = JSON.parse(m[2]);
+  if (!data["@graph"]) { const { "@context": ctx, ...node } = data; data = { "@context": ctx || "https://schema.org", "@graph": [node] }; }
+  const g = data["@graph"];
+  const url = "https://brandvitals.io/" + file;
+  const org = g.find(n => n["@type"] === "Organization");
+  const keep = g.filter(n => !["BreadcrumbList", "Service", "SoftwareApplication"].includes(n["@type"]));
+  keep.push({ "@type": "BreadcrumbList", itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Brand Vitals", item: "https://brandvitals.io/" },
+    { "@type": "ListItem", position: 2, name: c.name, item: url }] });
+  if (c.app) {
+    keep.push({ "@type": "SoftwareApplication", "@id": url + "#app", name: c.name, url: "https://brandvitals.io/app/", applicationCategory: "BusinessApplication", operatingSystem: "Web",
+      description: "Client approvals & paid extras for agencies: send work on one link, record every decision, and price, approve and invoice anything outside scope.",
+      inLanguage: "en", publisher: { "@id": "https://brandvitals.io/#org" },
+      offers: [["1 to 5 active clients", 1500], ["6 to 15 active clients", 4500], ["16 to 40 active clients", 9500]].map(([d, p]) => ({ "@type": "Offer", price: String(p), priceCurrency: "EGP", description: d + ", per month (launch price for founding agencies)" })) });
+  } else {
+    keep.push({ "@type": "Service", "@id": url + "#service", name: c.name, serviceType: c.serviceType, url,
+      provider: org && org["@id"] ? { "@id": org["@id"] } : { "@id": "https://brandvitals.io/#org" },
+      areaServed: [{ "@type": "Country", name: "Egypt" }, { "@type": "Country", name: "Saudi Arabia" }] });
+  }
+  data["@graph"] = keep;
+  return s.replace(m[0], `${m[1]}\n${JSON.stringify(data, null, 2).replace(/^/gm, "  ")}\n  ${m[3]}`);
+}
+
 const isMain = import.meta.url === `file:///${process.argv[1].replace(/\\/g, "/")}`;
 if (isMain) {
+  for (const [file, c] of Object.entries(brands)) {
+    const p = path.join(ROOT, file);
+    let s = strip(fs.readFileSync(p, "utf8"));
+    s = faq(s, c.faq);
+    s = syncSchema(s, file, { dated: false });
+    s = brandSchema(s, file, c);
+    fs.writeFileSync(p, s);
+  }
+  console.log("sub-brand pages updated:", Object.keys(brands).length);
   let n = 0;
   for (const [file, c] of Object.entries({ ...services, ...industries })) {
     const p = path.join(ROOT, file);

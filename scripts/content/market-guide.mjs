@@ -3,7 +3,7 @@
 // market articles). Methods and definitions are fine; no statistics, market sizes or results.
 export default {
   title: ["Egypt vs Saudi Arabia Marketing: A Practical Guide | Brand Vitals", "التسويق في مصر والسعودية: دليل عملي | Brand Vitals"],
-  desc: ["How marketing differs between Egypt and Saudi Arabia: platforms, buying behaviour, payment, language, seasons, working days and invoicing, from a team that works in both.",
+  desc: ["How marketing differs between Egypt and Saudi Arabia: platforms, buying behaviour, payment, language, seasons, working days and invoicing.",
     "إزاي التسويق بيختلف بين مصر والسعودية: المنصات وطريقة الشرا والدفع واللغة والمواسم وأيام الشغل والفواتير، من فريق شغال في السوقين."],
   h1: ["Marketing in Egypt and Saudi Arabia: what changes.", "التسويق في مصر والسعودية: إيه اللي بيتغير."],
   lead: ["Egypt and Saudi Arabia buy differently, speak differently and pay differently. This guide sets out the differences Brand Vitals plans for, market by market.",
