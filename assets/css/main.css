@@ -1897,3 +1897,9 @@ a.post-card { color: inherit; }
 .sa-cards b { font-size: 1.05rem; }
 .sa-cards span { color: var(--text-2); line-height: 1.6; }
 .geo-table--2 .geo-table__row { grid-template-columns: minmax(0, 0.45fr) minmax(0, 1fr); }
+@media (max-width: 767px) {
+  .footer__theme { width: 44px; padding: 0; justify-content: center; }
+  .footer__theme span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .legal { gap: 0.1rem 1.1rem; }
+  .footer__bar { gap: 0.5rem; padding-block: 1.25rem; }
+}

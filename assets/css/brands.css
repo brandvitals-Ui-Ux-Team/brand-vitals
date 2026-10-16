@@ -836,3 +836,19 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
 .wordmark-temp { display: inline-flex; align-items: center; gap: 0.55rem; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; color: var(--text); white-space: nowrap; }
 .wordmark-temp img { width: 28px; height: 28px; border-radius: 8px; }
 .wf-logo { margin-top: 0.75rem; max-width: 260px; aspect-ratio: 260 / 48; }
+@media (max-width: 767px) {
+  .go-tour__tabs { flex-wrap: nowrap !important; overflow-x: auto; justify-content: flex-start !important; scrollbar-width: none; }
+  .go-tour__tabs::-webkit-scrollbar { display: none; }
+  .go-tour__tabs > * { flex: none; }
+  .gl-ba__col li { padding-block: 0.3rem; font-size: 0.92rem; }
+  .gl-ba__col h3 { font-size: 1rem; }
+}
+@media (max-width: 767px) {
+  /* said again in the FAQ ("Do my clients need an account?") */
+  .gl-hero .gl-note { display: none; }
+}
+/* contrast fixes found by the axe pass */
+.gl-hero .gl-beta { color: #B0BFBA; }
+[data-theme="light"] [data-brand="crew"] .cw-kicker { color: var(--accent-2); }
+.cw-promise em { color: #B89FFF; }
+[data-theme="light"] [data-brand="crew"] .cw-promise .cw-kicker { color: #C9BBFF; }

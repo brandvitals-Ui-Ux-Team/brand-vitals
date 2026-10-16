@@ -1137,6 +1137,31 @@
   };
 
   /* ------------------------------------------------------------------
+     RAILS — on phones, card lists scroll sideways; any that actually
+     scroll become keyboard-focusable regions named after their section.
+  ------------------------------------------------------------------ */
+  const Rails = {
+    init() {
+      const sel = "[data-rail], .process__grid, .results-grid, .industry-grid, .eco-grid, .svc-grid, .phases, .pkg-grid, .inc-grid, .svc, .types, .go-steps, .go-plans, .cw-seats, .cw-track, .bh-jobs, .rq-pillars, .plan-cards, .go-sec, .cw-fees, .stack-cards, .go-tour__tabs, .eh-line";
+      const sync = () => document.querySelectorAll(sel).forEach(el => {
+        const scrolls = el.scrollWidth > el.clientWidth + 4 && getComputedStyle(el).overflowX !== "visible";
+        if (scrolls && !el.hasAttribute("tabindex")) {
+          el.tabIndex = 0;
+          if (!/^(UL|OL|DL)$/.test(el.tagName) && !el.hasAttribute("role")) { el.setAttribute("role", "region"); el.dataset.railRole = ""; }
+          const h = el.closest("section")?.querySelector("h2");
+          el.setAttribute("aria-label", h ? h.textContent.trim() : (I18n.lang === "ar" ? "قائمة قابلة للتمرير" : "Scrollable list"));
+          el.dataset.railFocus = "";
+        } else if (!scrolls && el.hasAttribute("data-rail-focus")) {
+          el.removeAttribute("tabindex"); el.removeAttribute("aria-label"); delete el.dataset.railFocus;
+          if (el.hasAttribute("data-rail-role")) { el.removeAttribute("role"); delete el.dataset.railRole; }
+        }
+      });
+      sync();
+      let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(sync, 200); });
+    }
+  };
+
+  /* ------------------------------------------------------------------
      FAQ MORE — long FAQs show five questions, then "More questions".
   ------------------------------------------------------------------ */
   const FaqMore = {
@@ -1483,6 +1508,7 @@
     Wireframes.init();
     Cycle.init();
     StackCards.init();
+    Rails.init();
     FaqMore.init();
     Tabs.init();
     MobileBar.init();
