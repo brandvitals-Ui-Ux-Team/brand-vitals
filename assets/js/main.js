@@ -36,29 +36,78 @@
   // preview, which renders the source page, still switches in place.
   const I18n = {
     lang: "en",
+    // Arabic comes in two settings: Egyptian (/ar/, the default Arabic site) and Saudi (/sa/, a smaller set).
+    dialect: "eg",
+    SA_PAGES: ["index.html", "performance-marketing.html", "stage.html", "hire.html"],
     inAr() { return /^\/ar(\/|$)/.test(location.pathname); },
-    counterpart() {
-      const p = location.pathname;
-      const next = this.inAr() ? (p.replace(/^\/ar(\/|$)/, "/") || "/") : "/ar" + (p === "/" ? "/" : p);
-      return next + location.search + location.hash;
+    inSa() { return /^\/sa(\/|$)/.test(location.pathname); },
+    file() { return location.pathname.replace(/^\/(ar|sa)(?=\/|$)/, "").split("/").pop() || "index.html"; },
+    // The same page in another language setting; Saudi falls back to the Saudi home when a page has no Saudi version.
+    target(code) {
+      const f = this.file(), name = f === "index.html" ? "" : f, q = location.search + location.hash;
+      if (code === "en") return "/" + name + q;
+      if (code === "ar") return "/ar/" + name + q;
+      return "/sa/" + (this.SA_PAGES.includes(f) ? name : "") + q;
     },
+    counterpart() { return this.target(this.lang === "en" ? "ar" : "en"); },
+    current() { return this.lang === "en" ? "en" : this.dialect === "sa" ? "sa" : "ar"; },
     init() {
-      const servedAr = this.inAr() || doc.lang === "ar";
+      const servedAr = this.inAr() || this.inSa() || /^ar/.test(doc.lang);
+      this.dialect = this.inSa() || doc.dataset.dialect === "sa" ? "sa" : "eg";
       this.lang = window.__BV_PREVIEW ? (localStorage.getItem("oso-lang") || "en") : (servedAr ? "ar" : "en");
       this.apply(this.lang);
-      document.querySelectorAll("[data-lang-toggle]").forEach(btn =>
-        btn.addEventListener("click", () => {
-          const next = this.lang === "en" ? "ar" : "en";
-          try { localStorage.setItem("oso-lang", next); } catch (e) { /* ignore */ }
-          // Static pages without an /ar/ twin (or file:// previews) switch in place.
-          if (window.__BV_PREVIEW || !/^https?:$/.test(location.protocol) || doc.dataset.i18n === "inline") { this.apply(next); return; }
-          location.href = this.counterpart();
-        })
-      );
+      const inPlace = () => window.__BV_PREVIEW || !/^https?:$/.test(location.protocol) || doc.dataset.i18n === "inline";
+      document.querySelectorAll("[data-lang-toggle]").forEach(btn => {
+        // Previews and pages without language twins keep the simple EN / عربي switch, in place.
+        if (inPlace()) {
+          btn.addEventListener("click", () => {
+            const next = this.lang === "en" ? "ar" : "en";
+            try { localStorage.setItem("oso-lang", next); } catch (e) { /* ignore */ }
+            this.apply(next);
+          });
+          return;
+        }
+        this.menu(btn);
+      });
+    },
+    // A small menu under the language button: English · عربي (مصر) · سعودي
+    menu(btn) {
+      const wrap = document.createElement("span");
+      wrap.className = "lang-wrap";
+      btn.parentNode.insertBefore(wrap, btn);
+      wrap.appendChild(btn);
+      const list = document.createElement("div");
+      list.className = "lang-menu";
+      list.id = "langMenu" + Math.random().toString(36).slice(2, 7);
+      list.hidden = true;
+      [["en", "English", "en"], ["ar", "عربي (مصر)", "ar-EG"], ["sa", "سعودي", "ar-SA"]].forEach(([code, label, hl]) => {
+        const a = document.createElement("a");
+        a.href = this.target(code);
+        a.textContent = label;
+        a.lang = hl;
+        if (code === this.current()) a.setAttribute("aria-current", "true");
+        a.addEventListener("click", () => { try { localStorage.setItem("oso-lang", code === "en" ? "en" : "ar"); localStorage.setItem("bv-dialect", code === "sa" ? "sa" : "eg"); } catch (e) { /* ignore */ } });
+        list.appendChild(a);
+      });
+      wrap.appendChild(list);
+      btn.setAttribute("aria-haspopup", "true");
+      btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-controls", list.id);
+      this.apply(this.lang);
+      const set = open => { list.hidden = !open; btn.setAttribute("aria-expanded", String(open)); };
+      btn.addEventListener("click", e => { e.stopPropagation(); set(list.hidden); if (!list.hidden) list.querySelector("a").focus(); });
+      wrap.addEventListener("keydown", e => {
+        const items = [...list.querySelectorAll("a")], i = items.indexOf(document.activeElement);
+        if (e.key === "Escape") { set(false); btn.focus(); }
+        else if (e.key === "ArrowDown" && !list.hidden) { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+        else if (e.key === "ArrowUp" && !list.hidden) { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+      });
+      document.addEventListener("click", e => { if (!wrap.contains(e.target)) set(false); });
+      wrap.addEventListener("focusout", e => { if (!wrap.contains(e.relatedTarget)) set(false); });
     },
     apply(lang) {
       this.lang = lang;
-      doc.lang = lang;
+      doc.lang = lang === "ar" && this.dialect === "sa" ? "ar-SA" : lang;
       doc.dir = lang === "ar" ? "rtl" : "ltr";
       document.querySelectorAll("[data-en]").forEach(el => {
         const val = el.dataset[lang];
@@ -70,6 +119,12 @@
         el.placeholder = lang === "ar" ? (el.dataset.arPh || "") : (el.dataset.enPh || "");
       });
       document.querySelectorAll("[data-lang-toggle]").forEach(btn => {
+        if (btn.hasAttribute("aria-haspopup")) {
+          // menu mode: the button names the current setting and opens the three choices
+          btn.textContent = { en: "EN", ar: "عربي", sa: "سعودي" }[this.current()];
+          btn.setAttribute("aria-label", lang === "en" ? "Language" : "اللغة");
+          return;
+        }
         btn.textContent = lang === "en" ? "عربي" : "EN";
         btn.setAttribute("aria-label", lang === "en" ? "التبديل إلى العربية" : "Switch to English");
       });

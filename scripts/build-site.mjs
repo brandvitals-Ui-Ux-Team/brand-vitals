@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as cheerio from "cheerio";
+import { buildSa, alternates, SA_FILES } from "./build-sa.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "dist");
@@ -17,7 +18,7 @@ const SITE = "https://brandvitals.io";
 const NO_AR = new Set(["dashboard.html", "404.html"]);
 // Files and folders that never ship.
 const SKIP = new Set(["node_modules", "dist", "apps", "scripts", "supabase", "api", ".git", ".github", ".vercel", ".impeccable",
-  "package.json", "package-lock.json", "server.js", "README.md", "SITEMAP.md", "vercel.json", ".gitignore", "docs", ".env.example", ".gitattributes"]);
+  "package.json", "package-lock.json", "server.js", "README.md", "SITEMAP.md", "PRICING-NOTES.md", "tests", "vercel.json", ".gitignore", "docs", ".env.example", ".gitattributes"]);
 
 const pageUrl = (file, lang) => {
   const name = file === "index.html" ? "" : file;
@@ -46,9 +47,9 @@ function addAlternates($, file, lang) {
   $('link[rel="canonical"]').attr("href", pageUrl(file, lang));
   $('meta[property="og:url"]').attr("content", pageUrl(file, lang));
   if (!indexable || NO_AR.has(file)) return;
-  head.append(`\n  <link rel="alternate" hreflang="en" href="${pageUrl(file, "en")}" data-build>`);
-  head.append(`\n  <link rel="alternate" hreflang="ar" href="${pageUrl(file, "ar")}" data-build>`);
-  head.append(`\n  <link rel="alternate" hreflang="x-default" href="${pageUrl(file, "en")}" data-build>\n`);
+  // en, ar (generic Arabic = the Egyptian /ar/ site), ar-EG, ar-SA where a Saudi page exists, x-default
+  for (const [l, h] of alternates(file)) head.append(`\n  <link rel="alternate" hreflang="${l}" href="${h}" data-build>`);
+  head.append("\n");
 }
 
 const LOCAL_ASSET = /^(assets|cms)\//;
@@ -166,16 +167,15 @@ function sitemap(pages) {
   const rows = [];
   for (const file of pages) {
     const pri = file === "index.html" ? "1.0" : /^(solutions|work|contact|vitals-score|hq)\.html$/.test(file) ? "0.9" : file === "privacy.html" ? "0.3" : "0.7";
-    for (const lang of ["en", "ar"]) {
-      rows.push(`  <url>
-    <loc>${pageUrl(file, lang)}</loc>
+    const alt = alternates(file).map(([l, h]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join("\n");
+    const locs = [[pageUrl(file, "en"), pri], [pageUrl(file, "ar"), (pri * 0.9).toFixed(1)]];
+    if (SA_FILES.has(file)) locs.push([SITE + "/sa/" + (file === "index.html" ? "" : file), (pri * 0.9).toFixed(1)]);
+    for (const [loc, p] of locs) rows.push(`  <url>
+    <loc>${loc}</loc>
     <lastmod>${today}</lastmod>
-    <priority>${lang === "en" ? pri : (pri * 0.9).toFixed(1)}</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="${pageUrl(file, "en")}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="${pageUrl(file, "ar")}"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="${pageUrl(file, "en")}"/>
+    <priority>${p}</priority>
+${alt}
   </url>`);
-    }
   }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -202,5 +202,6 @@ for (const file of pages) {
   fs.writeFileSync(path.join(OUT, "ar", file), toArabic(html, file));
   if (!/noindex/i.test(html.match(/<meta name="robots"[^>]*>/)?.[0] || "")) indexable.push(file);
 }
+const saPages = buildSa(OUT);
 fs.writeFileSync(path.join(OUT, "sitemap.xml"), sitemap(indexable));
-console.log(`site built → dist/  (${pages.length} pages, ${pages.length - NO_AR.size} Arabic, ${indexable.length * 2} sitemap URLs)`);
+console.log(`site built → dist/  (${pages.length} pages, ${pages.length - NO_AR.size} Arabic, ${saPages.length} Saudi, ${indexable.length * 2 + saPages.length} sitemap URLs)`);

@@ -23,7 +23,10 @@ for (const file of pages) {
     if (!($('meta[name="description"]').attr("content") || "").trim()) problems.push(`${rel}: missing meta description`);
     if ($('link[rel="alternate"][hreflang]').length < 3) problems.push(`${rel}: missing hreflang alternates`);
     if (rel.startsWith("ar/") && ($("html").attr("lang") !== "ar" || $("html").attr("dir") !== "rtl")) problems.push(`${rel}: Arabic page without lang=ar dir=rtl`);
-    if (!rel.startsWith("ar/") && !fs.existsSync(path.join(DIST, "ar", rel))) problems.push(`${rel}: no Arabic twin`);
+    // Saudi pages (/sa/) are Arabic too, with their own language tag; each has an English and an Arabic twin
+    if (rel.startsWith("sa/") && ($("html").attr("lang") !== "ar-SA" || $("html").attr("dir") !== "rtl")) problems.push(`${rel}: Saudi page without lang=ar-SA dir=rtl`);
+    const twin = rel.startsWith("sa/") ? rel.slice(3) : rel;
+    if (!rel.startsWith("ar/") && !fs.existsSync(path.join(DIST, "ar", twin))) problems.push(`${rel}: no Arabic twin`);
   }
   $("[href],[src]").each((_, el) => {
     for (const a of ["href", "src"]) {

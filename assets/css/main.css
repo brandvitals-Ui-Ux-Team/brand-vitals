@@ -1837,7 +1837,7 @@ a.post-card { color: inherit; }
    ========================================================================== */
 .answer-lead { max-width: 68ch; margin-top: 1.1rem; padding: 1rem 1.2rem; border-inline-start: 3px solid var(--accent); border-radius: 0 var(--r-md) var(--r-md) 0; background: color-mix(in srgb, var(--accent) 7%, transparent); color: var(--text); font-size: 1.02rem; line-height: 1.65; text-align: start; }
 [dir="rtl"] .answer-lead { border-radius: var(--r-md) 0 0 var(--r-md); }
-.section-head--center ~ .answer-lead, .page-hero .answer-lead { margin-inline: 0; }
+.page-hero .answer-lead { margin-inline: auto; }
 .geo-updated { margin-top: 0.8rem; color: var(--text-3); }
 .geo-table { border-top: 1px solid var(--line-strong); }
 .geo-table__row { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1rem 1.5rem; padding: 1rem 0; border-bottom: 1px solid var(--line); text-align: start; }
@@ -1881,3 +1881,19 @@ a.post-card { color: inherit; }
 .link-arrow:hover svg { transform: translateX(3px); }
 [dir="rtl"] .link-arrow svg { transform: scaleX(-1); }
 [dir="rtl"] .link-arrow:hover svg { transform: scaleX(-1) translateX(3px); }
+
+/* language menu: English · عربي (مصر) · سعودي */
+.lang-wrap { position: relative; display: inline-flex; }
+.lang-menu { position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: calc(var(--z-nav, 50) + 2); min-width: 168px; display: grid; padding: 0.35rem; border: 1px solid var(--line-strong); border-radius: var(--r-md); background: var(--surface); box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55); }
+.lang-menu[hidden] { display: none; }
+.lang-menu a { display: flex; align-items: center; min-height: 44px; padding: 0 0.85rem; border-radius: 8px; color: var(--text-2); font-weight: 600; }
+.lang-menu a:hover, .lang-menu a:focus-visible { background: var(--surface-2, var(--bg-2)); color: var(--text); }
+.lang-menu a[aria-current] { color: var(--text); }
+.lang-menu a[aria-current]::after { content: "✓"; margin-inline-start: auto; color: var(--accent-text, var(--accent)); }
+/* Saudi pages: cards and two-column tables */
+.sa-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; }
+.sa-cards a, .sa-cards li > div { display: grid; gap: 0.4rem; height: 100%; padding: 1.2rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); color: var(--text); text-align: start; }
+.sa-cards a:hover { border-color: var(--accent); }
+.sa-cards b { font-size: 1.05rem; }
+.sa-cards span { color: var(--text-2); line-height: 1.6; }
+.geo-table--2 .geo-table__row { grid-template-columns: minmax(0, 0.45fr) minmax(0, 1fr); }

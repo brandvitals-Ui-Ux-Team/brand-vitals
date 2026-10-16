@@ -57,7 +57,7 @@ Contact: info@brandvitals.io · WhatsApp +20 109 086 1397 · Sunday to Thursday,
 ## Company
 - [About](https://brandvitals.io/about.html) · [Careers](https://brandvitals.io/careers.html) · [Contact and free growth audit](https://brandvitals.io/contact.html)
 - [Privacy policy](https://brandvitals.io/privacy.html) · [Terms of service](https://brandvitals.io/terms.html)
-- Arabic versions of every page live under https://brandvitals.io/ar/
+- Arabic versions of every page live under https://brandvitals.io/ar/ (Egyptian Arabic); a Saudi Arabic set lives under https://brandvitals.io/sa/ (home, performance marketing, Vitals Stage, Vitals Hire)
 - Full summaries of every service, industry, brand and tool page: https://brandvitals.io/llms-full.txt
 
 ## بالعربي
@@ -66,3 +66,4 @@ Brand Vitals شريك النمو في مصر والسعودية: وكالة تس
 - المنصات: Vitals GO (موافقات العملاء والشغل الإضافي المدفوع) · Vitals Crew (مواهب إبداعية متقيّمة) · Vitals Hire (توظيف تسويق بفرز حقيقي)
 - أدوات مجانية: فحص Vitals (https://brandvitals.io/ar/vitals-score.html) · Vitals Forecast (https://brandvitals.io/ar/forecast.html)
 - مراجع: دليل التسويق في مصر والسعودية (https://brandvitals.io/ar/egypt-vs-saudi-marketing.html) · قاموس المصطلحات (https://brandvitals.io/ar/glossary.html)
+- باللهجة السعودية: الرئيسية (https://brandvitals.io/sa/) · إعلانات سناب شات وتيك توك (https://brandvitals.io/sa/performance-marketing.html) · Vitals Stage (https://brandvitals.io/sa/stage.html) · Vitals Hire (https://brandvitals.io/sa/hire.html)
