@@ -304,3 +304,4 @@
 .rc-demo__b > span { display: grid; gap: 1px; flex: 1; min-width: 0; }
 .rc-demo__b > svg:last-child { color: var(--text-3); flex: none; }
 @media (prefers-reduced-motion: reduce) { .rc-pick__b { transition: none; } .rc-pick__b:hover { transform: none; } }
+.rc-check--plain > span { display: block; line-height: 1.5; }
