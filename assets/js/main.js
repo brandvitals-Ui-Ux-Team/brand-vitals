@@ -191,11 +191,13 @@
       const els = document.querySelectorAll("[data-reveal]");
       if (!els.length) return;
       if (reduceMotion) { els.forEach(el => el.classList.add("is-inview")); return; }
+      // On phones, reveal before the content scrolls in, so a fast scroll never shows empty bands.
+      const small = window.matchMedia("(max-width: 767px)").matches;
       const io = new IntersectionObserver(entries => {
         entries.forEach(e => {
           if (e.isIntersecting) { e.target.classList.add("is-inview"); io.unobserve(e.target); }
         });
-      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+      }, small ? { threshold: 0.01, rootMargin: "0px 0px 20% 0px" } : { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
       els.forEach(el => io.observe(el));
     }
   };
@@ -937,6 +939,163 @@
     }
   };
 
+
+  /* ------------------------------------------------------------------
+     MOBILE BAR — under 768 px, a sticky bottom bar with the page's
+     primary CTA and a WhatsApp button. Shows once the hero is gone,
+     hides while the page's form is on screen.
+  ------------------------------------------------------------------ */
+  const MobileBar = {
+    init() {
+      const hero = document.querySelector("main > section");
+      const src = hero && (hero.querySelector("a.btn--primary[href]") || document.querySelector(".nav a.btn--primary[href]"));
+      if (!src) return;
+      const label = src.querySelector("[data-en]") || src;
+      const bar = document.createElement("div");
+      bar.className = "m-cta";
+      bar.inert = true;
+      const go = document.createElement("a");
+      go.className = "btn btn--primary m-cta__go";
+      go.href = src.getAttribute("href");
+      const span = document.createElement("span");
+      span.textContent = label.textContent.trim();
+      if (label.dataset.en) { span.dataset.en = label.dataset.en; span.dataset.ar = label.dataset.ar; }
+      go.appendChild(span);
+      const wa = document.createElement("a");
+      wa.className = "m-cta__wa";
+      wa.target = "_blank";
+      wa.rel = "noopener";
+      wa.href = "https://wa.me/" + Forms.waNumber();
+      wa.setAttribute("aria-label", I18n.lang === "ar" ? "كلّمنا على واتساب" : "Chat with us on WhatsApp");
+      wa.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm6 15.6c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.3-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.5c-.3-.7-.5-.6-.8-.6h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.4c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 2-.8 2.2-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg>';
+      wa.addEventListener("click", () => Analytics.event("contact", { channel: "whatsapp_bar" }));
+      bar.append(go, wa);
+      document.body.appendChild(bar);
+      const form = document.querySelector("main form");
+      const formSec = form && (form.closest("section") || form);
+      const mq = window.matchMedia("(max-width: 767px)");
+      let heroIn = true, formIn = false;
+      const sync = () => {
+        const on = mq.matches && !heroIn && !formIn;
+        bar.classList.toggle("is-on", on);
+        bar.inert = !on;
+        document.body.classList.toggle("has-mcta", on);
+      };
+      new IntersectionObserver(es => { heroIn = es[0].isIntersecting; sync(); }).observe(hero);
+      if (formSec) new IntersectionObserver(es => { formIn = es[0].isIntersecting; sync(); }, { rootMargin: "0px 0px -30% 0px" }).observe(formSec);
+      mq.addEventListener("change", sync);
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     STACK CARDS — side-by-side comparisons ([data-stack]) also get one
+     card per option for phones; CSS shows one layout or the other.
+  ------------------------------------------------------------------ */
+  const StackCards = {
+    read(box) {
+      if (box.classList.contains("cw-vs")) {
+        const heads = [...box.querySelectorAll(".cw-vs__side")];
+        const rows = [...box.querySelectorAll(".cw-vs__row")].map(r => [r.querySelector(".cw-vs__topic"), ...r.querySelectorAll(".cw-vs__cell")]);
+        return { heads: heads.map(h => h.querySelector("b")), rows };
+      }
+      const [head, ...rest] = [...box.children];
+      return { heads: [...head.children].slice(1), rows: rest.map(r => [...r.children]) };
+    },
+    init() {
+      document.querySelectorAll("[data-stack]").forEach(box => {
+        const { heads, rows } = this.read(box);
+        const wrap = document.createElement("div");
+        wrap.className = "stack-cards";
+        heads.forEach((h, i) => {
+          const card = document.createElement("article");
+          card.className = "stack-card" + (i === heads.length - 1 ? " stack-card--us" : "");
+          const t = document.createElement("h3");
+          t.textContent = h.textContent.trim();
+          const dl = document.createElement("dl");
+          rows.forEach(r => {
+            const d = document.createElement("div");
+            const dt = document.createElement("dt"); dt.textContent = r[0].textContent.trim();
+            const dd = document.createElement("dd"); dd.textContent = r[i + 1].textContent.trim();
+            d.append(dt, dd); dl.appendChild(d);
+          });
+          card.append(t, dl);
+          wrap.appendChild(card);
+        });
+        box.after(wrap);
+      });
+    }
+  };
+
+
+  /* ------------------------------------------------------------------
+     TABS — [data-tabs] shows one child panel at a time; each panel's
+     first [class*="__tag"] becomes its tab label.
+  ------------------------------------------------------------------ */
+  const Tabs = {
+    init() {
+      document.querySelectorAll("[data-tabs]").forEach((box, n) => {
+        const panels = [...box.children];
+        if (panels.length < 2) return;
+        const list = document.createElement("div");
+        list.className = "tabs";
+        list.setAttribute("role", "tablist");
+        const tabs = panels.map((p, i) => {
+          const lab = p.querySelector('[class*="__tag"]');
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "tabs__b";
+          b.id = "tab-" + n + "-" + i;
+          b.setAttribute("role", "tab");
+          b.textContent = lab ? lab.textContent.trim() : String(i + 1);
+          if (!p.id) p.id = "panel-" + n + "-" + i;
+          b.setAttribute("aria-controls", p.id);
+          p.setAttribute("role", "tabpanel");
+          p.setAttribute("aria-labelledby", b.id);
+          list.appendChild(b);
+          return b;
+        });
+        const pick = i => {
+          tabs.forEach((b, k) => { b.setAttribute("aria-selected", String(k === i)); b.tabIndex = k === i ? 0 : -1; });
+          panels.forEach((p, k) => { p.hidden = k !== i; });
+        };
+        tabs.forEach((b, i) => {
+          b.addEventListener("click", () => pick(i));
+          b.addEventListener("keydown", e => {
+            const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+            if (!d) return;
+            const k = (i + (document.dir === "rtl" ? -d : d) + tabs.length) % tabs.length;
+            pick(k); tabs[k].focus();
+          });
+        });
+        box.classList.add("is-tabbed");
+        box.before(list);
+        // a link to a panel's id (e.g. #companies) opens that tab
+        const fromHash = () => panels.findIndex(p => "#" + p.id === location.hash);
+        pick(Math.max(0, fromHash()));
+        window.addEventListener("hashchange", () => { const h = fromHash(); if (h >= 0) pick(h); });
+      });
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     FAQ MORE — long FAQs show five questions, then "More questions".
+  ------------------------------------------------------------------ */
+  const FaqMore = {
+    init() {
+      document.querySelectorAll(".acc").forEach(acc => {
+        const items = [...acc.querySelectorAll(":scope > .acc-item")];
+        if (items.length <= 5) return;
+        items.slice(5).forEach(i => (i.hidden = true));
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn btn--ghost acc-more";
+        b.textContent = I18n.lang === "ar" ? "أسئلة تانية" : "More questions";
+        b.addEventListener("click", () => { items.forEach(i => (i.hidden = false)); b.remove(); items[5].querySelector("button")?.focus(); });
+        acc.after(b);
+      });
+    }
+  };
+
   /* ------------------------------------------------------------------
      CURRENCY TOGGLE — [data-cur-toggle="selectId"] swaps the select's options
      (EGP set in the select, other sets in a hidden select[data-cur-options])
@@ -1109,7 +1268,8 @@
       // Appear once the loader has finished, then show the label briefly.
       const show = () => {
         a.classList.add("is-in");
-        if (reduceMotion) return;
+        // No auto-expanding label on phones: it covers the hero (the sticky bar carries WhatsApp there).
+        if (reduceMotion || window.matchMedia("(max-width: 767px)").matches) return;
         setTimeout(() => { a.classList.add("is-intro"); setTimeout(() => a.classList.remove("is-intro"), 3600); }, 1400);
       };
       const wait = () => (document.body.classList.contains("is-loaded") ? setTimeout(show, 500) : setTimeout(wait, 200));
@@ -1263,6 +1423,10 @@
     CurToggle.init();
     Wireframes.init();
     Cycle.init();
+    StackCards.init();
+    FaqMore.init();
+    Tabs.init();
+    MobileBar.init();
     Signals.init();
     Magnetic.init();
     Ripple.init();

@@ -1620,3 +1620,114 @@ a.post-card { color: inherit; }
 .wf-ctx { position: relative; margin-top: 8px; padding: 8px 10px; padding-inline-end: 96px; border: 1px dashed var(--line-strong); border-radius: 10px; font-size: 0.8rem; color: var(--text-3); }
 .wf-ctx .wf-chip { top: 50%; transform: translateY(-50%); }
 [dir="rtl"] .wf-chip { letter-spacing: 0.08em; }
+
+/* ==========================================================================
+   MOBILE PASS (under 768 px): shorter pages, start-aligned text, carousels,
+   stacked comparison cards, one sticky CTA bar
+   ========================================================================== */
+.stack-cards, .m-cta { display: none; }
+.acc-more { margin: 1.25rem auto 0; display: flex; }
+@media (max-width: 767px) {
+  :root { --section-y: 60px; --section-y-tight: 56px; }
+  .section-head { margin-bottom: 1.75rem; }
+
+  /* readable: paragraphs and lists start-aligned, at least 16 px */
+  main p, main li, main dd, main .lead { text-align: start; }
+  main p:not([class*="eyebrow"]):not([class*="kicker"]):not([class*="__k"]):not([class*="tag"]):not(.fam-grp),
+  main li:not([class*="chip"]):not([class*="tag"]) { font-size: max(1rem, 1em); }
+  .lead { font-size: 1.05rem; }
+
+  /* lists of cards become a snap carousel with a peek of the next card */
+  [data-rail], .process__grid, .results-grid, .industry-grid, .eco-grid, .svc-grid, .phases, .pkg-grid, .inc-grid, .svc, .types,
+  .go-steps, .go-plans, .cw-seats, .cw-track, .bh-jobs, .rq-pillars, .plan-cards {
+    display: flex !important; flex-wrap: nowrap; gap: 12px; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter);
+    margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); padding-bottom: 6px;
+    scrollbar-width: none; border: 0;
+  }
+  [data-rail]::-webkit-scrollbar, .process__grid::-webkit-scrollbar, .results-grid::-webkit-scrollbar, .industry-grid::-webkit-scrollbar, .eco-grid::-webkit-scrollbar,
+  .svc-grid::-webkit-scrollbar, .phases::-webkit-scrollbar, .pkg-grid::-webkit-scrollbar, .inc-grid::-webkit-scrollbar, .svc::-webkit-scrollbar, .types::-webkit-scrollbar,
+  .go-steps::-webkit-scrollbar, .go-plans::-webkit-scrollbar, .cw-seats::-webkit-scrollbar, .cw-track::-webkit-scrollbar, .bh-jobs::-webkit-scrollbar,
+  .rq-pillars::-webkit-scrollbar, .plan-cards::-webkit-scrollbar { display: none; }
+  [data-rail] > *, .process__grid > *, .results-grid > *, .industry-grid > *, .eco-grid > *, .svc-grid > *, .phases > *, .pkg-grid > *, .inc-grid > *, .svc > *, .types > *,
+  .go-steps > *, .go-plans > *, .cw-seats > *, .cw-track > *, .bh-jobs > *, .rq-pillars > *, .plan-cards > * {
+    flex: 0 0 84%; min-width: 0; scroll-snap-align: start;
+  }
+  .industry-grid > *, .phases > *, .types > *, .inc-grid > * { flex-basis: 72%; }
+  .svc-grid--list .svc-card { padding: 1.1rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+  .phases .phase { padding: 1.25rem 1.1rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+  [dir="rtl"] .phases .phase, [dir="rtl"] .phases--vertical .phase { padding: 1.25rem 1.1rem; }
+  .phases--vertical .phase { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "h" "p"; }
+  .types--tiles .type-tile { padding: 0; }
+
+  /* comparisons: one stacked card per option */
+  [data-stack] { display: none !important; }
+  .stack-cards { display: grid; gap: 12px; }
+  .stack-card { padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+  .stack-card--us { border-color: var(--accent); }
+  .stack-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .stack-card dl div { display: grid; gap: 0.15rem; padding: 0.65rem 0; border-top: 1px solid var(--line); }
+  .stack-card dt { font-size: 0.85rem; color: var(--text-2); }
+  .stack-card dd { margin: 0; font-weight: 600; }
+
+  /* shorter footer: link columns side by side */
+  .footer__grid, .footer__grid--brand { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; gap: 1.75rem 1rem; padding-bottom: 2rem; }
+  .footer__grid > :first-child { grid-column: 1 / -1; }
+  .footer__grid > :last-child:nth-child(even) { grid-column: 1 / -1; }
+
+  /* faster, shorter reveals */
+  [data-reveal].is-inview { animation-duration: 0.45s; animation-delay: 0s; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* one sticky CTA bar replaces the floating WhatsApp bubble */
+  .m-cta { display: flex; position: fixed; z-index: 70; inset-inline: 0; bottom: 0; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg) 94%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line);
+    transform: translateY(110%); transition: transform 0.3s var(--ease-out); }
+  .m-cta.is-on { transform: none; }
+  .m-cta__go { flex: 1; justify-content: center; min-height: 48px; }
+  .m-cta__wa { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: #25D366; color: #fff; }
+  .m-cta__wa svg { width: 26px; height: 26px; }
+  .wa-fab { display: none !important; }
+  .to-top { bottom: calc(1.1rem + env(safe-area-inset-bottom)) !important; }
+  body.has-mcta .to-top { bottom: calc(80px + env(safe-area-inset-bottom)) !important; }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) { .m-cta { transition: none; } }
+@media (max-width: 767px) {
+  /* forms: short fields two to a row, long ones full width; 16 px inputs so phones don't zoom */
+  .form-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.9rem 0.6rem; }
+  .form-grid .field:has(textarea), .form-grid .field:has(input[type="email"]), .form-grid .field:has(.cur-toggle), .form-grid .field:has([data-cur-toggle]) { grid-column: 1 / -1; }
+  .field input, .field select, .field textarea { font-size: 16px; }
+  .field label, .field > span { font-size: 0.85rem; }
+  /* sub-brand pages already list every brand in the family row right above the footer */
+  body:has(.fam-sec) .footer__grid > :has(> .footer__h[data-en="Brands"]) { display: none; }
+  body:has(.fam-sec) .footer__grid > :last-child { grid-column: auto; }
+}
+
+/* tabs ([data-tabs]) */
+.tabs { display: inline-flex; gap: 4px; padding: 4px; margin: 0 auto 1.25rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); }
+.section-head + .tabs, .rq-center + .tabs { display: flex; width: fit-content; }
+.tabs__b { min-height: 44px; padding: 0 1.2rem; border: 0; border-radius: 999px; background: none; color: var(--text-2); font: inherit; font-weight: 600; cursor: pointer; }
+.tabs__b[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tabs__b:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.is-tabbed { display: block !important; max-width: 720px; margin-inline: auto; }
+@media (max-width: 767px) {
+  .gl-ba { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; gap: 0.5rem; }
+  .gl-ba__col { padding: 1rem 0.85rem; }
+  .gl-ba__col li { font-size: 0.95rem; }
+  .go-sec, .cw-fees { display: flex !important; flex-wrap: nowrap; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .go-sec > *, .cw-fees > * { flex: 0 0 84%; scroll-snap-align: start; }
+}
+@media (max-width: 767px) {
+  .stack-cards { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .stack-card { flex: 0 0 84%; scroll-snap-align: start; }
+  .pf__kind, .pf__bar { display: none; }
+  .pf__tab { padding-block: 0.6rem; }
+}
+@media (max-width: 767px) {
+  :root { --fs-h2: 1.8rem; }
+  .field textarea { min-height: 96px; height: 96px; }
+  .section-head .lead, .section-head p.lead { margin-top: 0.6rem; }
+}
+@media (max-width: 767px) {
+  .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+}

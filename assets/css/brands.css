@@ -1364,3 +1364,24 @@ body[data-brand="studio"] {
   .bh-people .wf-media figcaption { font-size: 0.6rem; }
   .bh-people .wf-chip { font-size: 0.5rem; padding: 1px 5px; top: 6px; inset-inline-end: 6px; }
 }
+@media (max-width: 767px) {
+  .pkg__wire, .gh-strip { display: none; }
+}
+@media (max-width: 767px) {
+  .gl-hero { padding-top: 92px; }
+  .gl-h2, .cw-h2, .rq-h2 { font-size: 1.8rem; }
+  .gl-ba__col ul { gap: 0.35rem; }
+  .gl-ba__col li { padding-block: 0.45rem; }
+  .fam-sec { padding-block: 1.5rem; }
+  .fam-row { gap: 0.5rem; }
+  .fam-row__grp a { min-height: 56px; }
+}
+@media (max-width: 767px) {
+  .pkg__top:not(:has(.pkg__flag)) { display: none; }
+  .pkg__top .pkg__code { display: none; }
+  .pf__meta { display: none; }
+  .gl-hero .gl-note { margin-top: 0; }
+}
+@media (max-width: 767px) {
+  .gl-hero { padding-bottom: 40px; }
+}
