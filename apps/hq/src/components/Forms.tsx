@@ -87,7 +87,7 @@ export function ClientForm({ onClose, client }: { onClose: () => void; client?: 
       </div>
       <div className="form-row">
         <Field label={L("Email", "البريد")}><input className="inp" type="email" value={v.email || ""} onChange={set("email")} dir="ltr" /></Field>
-        <Field label={L("Client's language", "لغة العميل")}><select className="sel" value={v.lang} onChange={set("lang")}><option value="ar">العربية</option><option value="en">English</option></select></Field>
+        <Field label={L("Review language", "لغة المراجعة")}><select className="sel" value={v.lang === "en" ? "en" : "ar-" + (v.dialect || "eg")} onChange={e => { const x = e.target.value; setV({ ...v, lang: x === "en" ? "en" : "ar", dialect: x === "ar-sa" ? "sa" : "eg" }); }}><option value="ar-eg">{L("Egyptian Arabic", "عربي مصري")}</option><option value="ar-sa">{L("Saudi Arabic", "عربي سعودي")}</option><option value="en">English</option></select></Field>
       </div>
       <Field label={L("How should work reach them?", "الشغل يوصلهم إزاي؟")} hint={L("Every review, reminder and extra-work request uses this channel. You can still pick another one each time.", "كل مراجعة وتذكير وطلب شغل إضافي هيتبعت على القناة دي. وتقدر تختار غيرها في أي مرة.")}>
         <div className="chips">{(Object.keys(CHANNELS) as Channel[]).map(ch => <button type="button" key={ch} className={"chip-btn" + ((v.preferred_channel || "whatsapp") === ch ? " on" : "")} onClick={() => setV({ ...v, preferred_channel: ch })}><ChannelIcon ch={ch} />{L(CHANNELS[ch].en, CHANNELS[ch].ar)}</button>)}</div>

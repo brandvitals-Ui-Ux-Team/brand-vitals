@@ -6,16 +6,17 @@ import { api } from "../lib/api";
 import { onChange } from "../lib/bus";
 import { date, money } from "../lib/format";
 import { I18nProvider, useI18n } from "../lib/i18n";
-import type { ChangeOrderPayload, Lang } from "../lib/types";
+import type { ChangeOrderPayload, Dialect, Lang } from "../lib/types";
 import { nameKey } from "./Review";
 
 export function ChangeOrderReview() {
   const { token = "" } = useParams();
   const [data, setData] = useState<ChangeOrderPayload | null | undefined>(undefined);
   const [lang, setLang] = useState<Lang | undefined>();
-  const load = useCallback(() => api.changeOrderGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); }).catch(() => setData(null)), [token]);
+  const [dialect, setDialect] = useState<Dialect | undefined>();
+  const load = useCallback(() => api.changeOrderGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); setDialect(d?.client.dialect); }).catch(() => setData(null)), [token]);
   useEffect(() => { load(); return onChange(load); }, [load]);
-  return <I18nProvider force={lang}><Body data={data} token={token} setLang={setLang} reload={load} /></I18nProvider>;
+  return <I18nProvider force={lang} dialect={dialect}><Body data={data} token={token} setLang={setLang} reload={load} /></I18nProvider>;
 }
 
 function Body({ data, token, setLang, reload }: { data: ChangeOrderPayload | null | undefined; token: string; setLang: (l: Lang) => void; reload: () => void }) {

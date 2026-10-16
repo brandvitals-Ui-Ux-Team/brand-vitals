@@ -194,7 +194,7 @@ export class LocalBackend implements Backend {
     const w = this.db.workspaces.find(x => x.id === d.workspace_id)!;
     const s = d.scope_item_id ? this.db.scope_items.find(x => x.id === d.scope_item_id) : null;
     return {
-      workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang, portal_token: c.portal_token }, project: { name: p.name },
+      workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang, dialect: c.dialect, portal_token: c.portal_token }, project: { name: p.name },
       deliverable: { id: d.id, title: d.title, kind: d.kind, status: d.status, current_version: d.current_version, revision_count: d.revision_count, approved_at: d.approved_at, publish_date: d.publish_date },
       revisions_included: s ? s.revisions_included : null,
       versions: this.db.versions.filter(v => v.deliverable_id === d.id).sort((a, b) => b.number - a.number),
@@ -230,7 +230,7 @@ export class LocalBackend implements Backend {
     const p = this.db.projects.find(x => x.id === co.project_id)!;
     const c = this.db.clients.find(x => x.id === p.client_id)!;
     const w = this.db.workspaces.find(x => x.id === co.workspace_id)!;
-    return { workspace: { name: w.name }, client: { name: c.name, lang: c.lang }, project: { name: p.name },
+    return { workspace: { name: w.name }, client: { name: c.name, lang: c.lang, dialect: c.dialect }, project: { name: p.name },
       change_order: { title: co.title, description: co.description, amount: co.amount, currency: co.currency, status: co.status, decided_by: co.decided_by, decided_at: co.decided_at, created_at: co.created_at } };
   }
   async changeOrderRespond(tok: string, dcs: CODecision) {
@@ -268,7 +268,7 @@ export class LocalBackend implements Backend {
     if (!i) return null;
     const c = this.db.clients.find(x => x.id === i.client_id)!;
     const w = this.db.workspaces.find(x => x.id === i.workspace_id)!;
-    return { workspace: { name: w.name }, client: { name: c.name, lang: c.lang },
+    return { workspace: { name: w.name }, client: { name: c.name, lang: c.lang, dialect: c.dialect },
       invoice: { number: i.number, title: i.title, lines: i.lines, amount: i.amount, currency: i.currency, status: i.status, payment_url: i.payment_url, due_date: i.due_date, sent_at: i.sent_at, paid_at: i.paid_at, created_at: i.created_at } };
   }
   async portalMessages(tok: string) { const c = this.db.clients.find(x => x.portal_token === tok); return c ? this.shared(c.id, "client") : []; }
@@ -293,7 +293,7 @@ export class LocalBackend implements Backend {
       });
     const change_orders = this.db.change_orders.filter(x => pids.has(x.project_id) && x.status !== "draft").sort((a, b) => b.created_at.localeCompare(a.created_at))
       .map(x => ({ title: x.title, amount: x.amount, currency: x.currency, status: x.status, token: x.token, created_at: x.created_at }));
-    return { workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang }, items, change_orders };
+    return { workspace: { name: w.name, currency: w.currency }, client: { name: c.name, lang: c.lang, dialect: c.dialect }, items, change_orders };
   }
 }
 

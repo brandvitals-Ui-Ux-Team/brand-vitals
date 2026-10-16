@@ -9,16 +9,17 @@ import { api } from "../lib/api";
 import { onChange } from "../lib/bus";
 import { date, money } from "../lib/format";
 import { I18nProvider, useI18n } from "../lib/i18n";
-import type { Lang, PortalItem, PortalPayload, Version } from "../lib/types";
+import type { Dialect, Lang, PortalItem, PortalPayload, Version } from "../lib/types";
 import { nameKey } from "./Review";
 
 export function Portal() {
   const { token = "" } = useParams();
   const [data, setData] = useState<PortalPayload | null | undefined>(undefined);
   const [lang, setLang] = useState<Lang | undefined>();
-  const load = useCallback(() => api.portalGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); }).catch(() => setData(null)), [token]);
+  const [dialect, setDialect] = useState<Dialect | undefined>();
+  const load = useCallback(() => api.portalGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); setDialect(d?.client.dialect); }).catch(() => setData(null)), [token]);
   useEffect(() => { load(); return onChange(load); }, [load]);
-  return <I18nProvider force={lang}><Body data={data} setLang={setLang} reload={load} token={token} /></I18nProvider>;
+  return <I18nProvider force={lang} dialect={dialect}><Body data={data} setLang={setLang} reload={load} token={token} /></I18nProvider>;
 }
 
 const asVersion = (i: PortalItem) => (i.thumb ? ({ ...i.thumb, file_name: i.title } as unknown as Version) : null);

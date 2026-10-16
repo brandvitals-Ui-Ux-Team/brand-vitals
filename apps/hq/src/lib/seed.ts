@@ -30,7 +30,7 @@ export function seed(u: SessionUser): DB {
 
   const clients: Client[] = [
     { id: uid(), workspace_id: W, name: "Nile Roastery", contact_name: "Omar Hassan", phone: "201000000001", email: "omar@nileroastery.example", lang: "ar", notes: "Specialty coffee, 4 branches in Cairo.", portal_token: token(), preferred_channel: "whatsapp", chat_webhook: "", created_at: ago(58) },
-    { id: uid(), workspace_id: W, name: "Atlas Residences", contact_name: "Faisal Al-Otaibi", phone: "966500000002", email: "faisal@atlas.example", lang: "ar", notes: "Riyadh luxury development launch.", portal_token: token(), preferred_channel: "email", chat_webhook: "", created_at: ago(45) },
+    { id: uid(), workspace_id: W, name: "Atlas Residences", contact_name: "Faisal Al-Otaibi", phone: "966500000002", email: "faisal@atlas.example", lang: "ar", dialect: "sa", notes: "Riyadh luxury development launch.", portal_token: token(), preferred_channel: "email", chat_webhook: "", created_at: ago(45) },
     { id: uid(), workspace_id: W, name: "Glow Lab Skincare", contact_name: "Nour Samir", phone: "201000000003", email: "nour@glowlab.example", lang: "en", notes: "D2C skincare, Shopify store.", portal_token: token(), preferred_channel: "slack", chat_webhook: "", created_at: ago(30) }
   ];
   const [nile, atlas, glow] = clients;

@@ -8,16 +8,17 @@ import { api } from "../lib/api";
 import { onChange } from "../lib/bus";
 import { ago } from "../lib/format";
 import { I18nProvider, useI18n } from "../lib/i18n";
-import type { Lang, Pin, ReviewPayload } from "../lib/types";
+import type { Dialect, Lang, Pin, ReviewPayload } from "../lib/types";
 
 // What the client sees when they open the WhatsApp link. No account needed.
 export function Review() {
   const { token = "" } = useParams();
   const [data, setData] = useState<ReviewPayload | null | undefined>(undefined);
   const [lang, setLang] = useState<Lang | undefined>();
-  const load = useCallback(() => api.reviewGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); }).catch(() => setData(null)), [token]);
+  const [dialect, setDialect] = useState<Dialect | undefined>();
+  const load = useCallback(() => api.reviewGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); setDialect(d?.client.dialect); }).catch(() => setData(null)), [token]);
   useEffect(() => { load(); return onChange(load); }, [load]);
-  return <I18nProvider force={lang}><ReviewBody data={data} token={token} setLang={setLang} reload={load} /></I18nProvider>;
+  return <I18nProvider force={lang} dialect={dialect}><ReviewBody data={data} token={token} setLang={setLang} reload={load} /></I18nProvider>;
 }
 
 export const nameKey = "hq-client-name";

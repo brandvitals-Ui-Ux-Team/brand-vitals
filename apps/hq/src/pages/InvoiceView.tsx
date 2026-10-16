@@ -6,13 +6,14 @@ import { Spinner } from "../components/ui";
 import { api } from "../lib/api";
 import { date, money } from "../lib/format";
 import { I18nProvider, useI18n } from "../lib/i18n";
-import type { InvoicePayload, Lang } from "../lib/types";
+import type { InvoicePayload, Dialect, Lang } from "../lib/types";
 
 export function InvoiceView() {
   const { token = "" } = useParams();
   const [data, setData] = useState<InvoicePayload | null | undefined>(undefined);
   const [lang, setLang] = useState<Lang | undefined>();
-  const load = useCallback(() => api.invoiceGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); }).catch(() => setData(null)), [token]);
+  const [dialect, setDialect] = useState<Dialect | undefined>();
+  const load = useCallback(() => api.invoiceGet(token).then(d => { setData(d); setLang(l => l || d?.client.lang); setDialect(d?.client.dialect); }).catch(() => setData(null)), [token]);
   useEffect(() => { load(); }, [load]);
   // After paying, the provider redirects back with ?paid=1; the webhook may land a moment later.
   useEffect(() => {
@@ -21,7 +22,7 @@ export function InvoiceView() {
     return () => clearInterval(t);
   }, [data, load]);
   useEffect(() => { if (data && new URLSearchParams(location.search).get("print")) setTimeout(() => window.print(), 400); }, [data]);
-  return <I18nProvider force={lang}><Body data={data} setLang={setLang} /></I18nProvider>;
+  return <I18nProvider force={lang} dialect={dialect}><Body data={data} setLang={setLang} /></I18nProvider>;
 }
 
 function Body({ data, setLang }: { data: InvoicePayload | null | undefined; setLang: (l: Lang) => void }) {

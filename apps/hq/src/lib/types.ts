@@ -1,6 +1,8 @@
 // Domain model for Vitals GO. Mirrors supabase/migrations/*.sql.
 export type ID = string;
 export type Lang = "en" | "ar";
+/** Arabic copy set a client reads: Egyptian (default) or Saudi. */
+export type Dialect = "eg" | "sa";
 export type Role = "owner" | "admin" | "member";
 
 export interface Workspace {
@@ -11,7 +13,7 @@ export interface Member { id: ID; workspace_id: ID; user_id: ID; role: Role; nam
 export interface Invite { id: ID; workspace_id: ID; email: string; role: Role; token: string; accepted_at: string | null; created_at: string }
 
 export interface Client {
-  id: ID; workspace_id: ID; name: string; contact_name: string; phone: string; email: string; lang: Lang; notes: string; portal_token: string;
+  id: ID; workspace_id: ID; name: string; contact_name: string; phone: string; email: string; lang: Lang; dialect?: Dialect; notes: string; portal_token: string;
   preferred_channel: Channel; chat_webhook: string; created_at: string;
 }
 
@@ -98,7 +100,7 @@ export interface Invoice {
   token: string; due_date: string | null; sent_at: string | null; paid_at: string | null; created_at: string;
 }
 export interface InvoicePayload {
-  workspace: { name: string }; client: { name: string; lang: Lang };
+  workspace: { name: string }; client: { name: string; lang: Lang; dialect?: Dialect };
   invoice: Pick<Invoice, "number" | "title" | "lines" | "amount" | "currency" | "status" | "payment_url" | "due_date" | "sent_at" | "paid_at" | "created_at">;
 }
 
@@ -114,7 +116,7 @@ export interface SessionUser { id: ID; email: string; name: string }
 // What a client sees on the public review page (no login).
 export interface ReviewPayload {
   workspace: { name: string; currency: string };
-  client: { name: string; lang: Lang; portal_token?: string };
+  client: { name: string; lang: Lang; dialect?: Dialect; portal_token?: string };
   project: { name: string };
   deliverable: Pick<Deliverable, "id" | "title" | "kind" | "status" | "current_version" | "revision_count" | "approved_at" | "publish_date">;
   revisions_included: number | null;
@@ -123,7 +125,7 @@ export interface ReviewPayload {
 }
 export interface ChangeOrderPayload {
   workspace: { name: string };
-  client: { name: string; lang: Lang };
+  client: { name: string; lang: Lang; dialect?: Dialect };
   project: { name: string };
   change_order: Pick<ChangeOrder, "title" | "description" | "amount" | "currency" | "status" | "decided_by" | "decided_at" | "created_at">;
 }
@@ -136,7 +138,7 @@ export interface PortalItem {
 }
 export interface PortalPayload {
   workspace: { name: string; currency: string };
-  client: { name: string; lang: Lang };
+  client: { name: string; lang: Lang; dialect?: Dialect };
   items: PortalItem[];
   change_orders: { title: string; amount: number; currency: string; status: COStatus; token: string; created_at: string }[];
 }
