@@ -29,7 +29,8 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
-    "cheerio": "^1.2.0"
+    "cheerio": "^1.2.0",
+    "puppeteer-core": "^25.13.0"
   },
   "engines": {
     "node": ">=20"
