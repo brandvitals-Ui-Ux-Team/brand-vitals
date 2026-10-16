@@ -905,6 +905,31 @@
   };
 
   /* ------------------------------------------------------------------
+     CURRENCY TOGGLE — [data-cur-toggle="selectId"] swaps the select's options
+     (EGP set in the select, other sets in a hidden select[data-cur-options])
+     and keeps input[name=currency] in step, so the form sends the currency.
+  ------------------------------------------------------------------ */
+  const CurToggle = {
+    init() {
+      document.querySelectorAll("[data-cur-toggle]").forEach(box => {
+        const sel = document.getElementById(box.dataset.curToggle);
+        if (!sel || !sel.form) return;
+        const hid = sel.form.querySelector('input[name="currency"]');
+        const sets = { EGP: [...sel.options].map(o => o.cloneNode(true)) };
+        sel.form.querySelectorAll("select[data-cur-options]").forEach(s => { sets[s.dataset.curOptions] = [...s.options].map(o => o.cloneNode(true)); });
+        box.addEventListener("click", e => {
+          const b = e.target.closest("[data-cur]");
+          if (!b || !sets[b.dataset.cur]) return;
+          const lang = document.documentElement.lang === "ar" ? "ar" : "en";
+          sel.replaceChildren(...sets[b.dataset.cur].map(o => { const c = o.cloneNode(true); c.textContent = c.getAttribute("data-" + lang) || c.textContent; return c; }));
+          if (hid) hid.value = b.dataset.cur;
+          box.querySelectorAll("[data-cur]").forEach(x => { x.classList.toggle("is-on", x === b); x.setAttribute("aria-pressed", String(x === b)); });
+        });
+      });
+    }
+  };
+
+  /* ------------------------------------------------------------------
      STEPS — multi-step forms ([data-steps]): Next validates the current
      step, the last step shows a review, then the normal Forms submit runs.
   ------------------------------------------------------------------ */
@@ -1202,6 +1227,7 @@
     Progress.init();
     Reveal.init();
     Counters.init();
+    CurToggle.init();
     Signals.init();
     Magnetic.init();
     Ripple.init();

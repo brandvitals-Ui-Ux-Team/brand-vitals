@@ -213,6 +213,13 @@
       </div>
     </section>
 
+    <!-- Phased opening -->
+    <section class="sb-notice-wrap">
+      <div class="container">
+        <p class="sb-notice"><span class="sb-notice__dot" aria-hidden="true"></span><span data-en="Opening in phases. Now taking: event production and coverage (photo, video, live social)." data-ar="بنفتح على مراحل. متاح دلوقتي: إنتاج وتغطية الإيفنتات (تصوير، فيديو، سوشيال لايف).">Opening in phases. Now taking: event production and coverage (photo, video, live social).</span></p>
+      </div>
+    </section>
+
     <!-- ============ SERVICES ============ -->
     <section class="section" id="services">
       <div class="container">
@@ -387,6 +394,14 @@
                     <option value="workshop" data-en="Workshop or seminar" data-ar="ورشة عمل أو ندوة">Workshop or seminar</option>
                     <option value="unsure" data-en="Not sure yet" data-ar="لسه مش متأكد">Not sure yet</option>
                   </select>
+                  <select hidden aria-hidden="true" tabindex="-1" data-cur-options="SAR">
+                    <option value="" data-en="Choose a range" data-ar="اختار">Choose a range</option>
+                    <option value="sar-under-50k" data-en="Under 50,000 SAR" data-ar="أقل من 50,000 ريال">Under 50,000 SAR</option>
+                    <option value="sar-50k-150k" data-en="50,000 to 150,000 SAR" data-ar="من 50,000 لـ 150,000 ريال">50,000 to 150,000 SAR</option>
+                    <option value="sar-150k-400k" data-en="150,000 to 400,000 SAR" data-ar="من 150,000 لـ 400,000 ريال">150,000 to 400,000 SAR</option>
+                    <option value="sar-400k-plus" data-en="400,000+ SAR" data-ar="أكتر من 400,000 ريال">400,000+ SAR</option>
+                    <option value="unsure" data-en="Not sure yet" data-ar="لسه مش متأكد">Not sure yet</option>
+                  </select>
                   <span class="err" data-en="Please choose a type." data-ar="من فضلك اختار النوع.">Please choose a type.</span>
                 </div>
                 <div class="field">
@@ -419,6 +434,11 @@
                 </div>
                 <div class="field">
                   <label for="lv-budget" data-en="Budget (optional)" data-ar="الميزانية (اختياري)">Budget (optional)</label>
+                  <div class="cur-toggle" data-cur-toggle="lv-budget" role="group" aria-label="Currency">
+                    <button type="button" class="is-on" data-cur="EGP" aria-pressed="true" data-en="EGP" data-ar="جنيه">EGP</button>
+                    <button type="button" data-cur="SAR" aria-pressed="false" data-en="SAR" data-ar="ريال">SAR</button>
+                  </div>
+                  <input type="hidden" name="currency" value="EGP">
                   <select id="lv-budget" name="budget">
                     <option value="" data-en="Choose a range" data-ar="اختار">Choose a range</option>
                     <option value="under-250k" data-en="Under 250,000 EGP" data-ar="أقل من 250,000 جنيه">Under 250,000 EGP</option>

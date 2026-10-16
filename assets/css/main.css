@@ -1595,3 +1595,11 @@ a.post-card { color: inherit; }
 .eco-grp { margin: 28px 0 14px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); }
 .eco-grp:first-of-type { margin-top: 0; }
 [dir="rtl"] .eco-grp { letter-spacing: 0; }
+
+/* Phased-opening notice band and the EGP / SAR budget toggle */
+.sb-notice-wrap { padding: 0 0 clamp(1.5rem, 3vw, 2.5rem); }
+.sb-notice { display: flex; align-items: flex-start; gap: 12px; margin: 0 auto; max-width: 860px; padding: 14px 20px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); font-weight: 600; color: var(--text); }
+.sb-notice__dot { flex: none; width: 9px; height: 9px; margin-top: 8px; border-radius: 50%; background: var(--accent); }
+.cur-toggle { display: inline-flex; gap: 2px; padding: 3px; margin: 2px 0 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.cur-toggle button { min-height: 36px; padding: 0 16px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; color: var(--text-2); }
+.cur-toggle button.is-on { background: var(--accent); color: var(--accent-ink, #fff); }
