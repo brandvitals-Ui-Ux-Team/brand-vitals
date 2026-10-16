@@ -1203,3 +1203,6 @@ body[data-brand="studio"] {
 .go-plan__price span { font-size: 0.8rem; color: var(--text-3); }
 .gl-beta { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: 0.85rem; font-weight: 600; color: var(--text-2); }
 .gl-beta__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+.cw-freelancer { margin-top: 10px; font-size: 0.95rem; color: var(--text-2); }
+.cw-freelancer a { color: var(--accent); font-weight: 700; }

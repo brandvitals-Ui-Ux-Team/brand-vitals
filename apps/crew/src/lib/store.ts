@@ -15,7 +15,7 @@ export const ME = {
   talent: { id: "t-mariam", name: "Mariam Adel" },
   ops: { name: "Omar Khaled" }
 };
-export const FEE = 0.1; // client-side service fee, shown at hire time
+export const FEE = 0.2; // client-side service fee, shown at hire time (see PRICING-NOTES.md)
 // Quality rules. A job moves to another vetted member, at our cost, when either limit is hit;
 // the client keeps the same price and the same deadline.
 export const MAX_QA_ROUNDS = 3;   // the 3rd delivery our QA returns ends the assignment

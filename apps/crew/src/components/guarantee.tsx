@@ -56,7 +56,7 @@ export function TheRules({ compact }: { compact?: boolean }) {
     ["01", L("Portfolio first", "البورتفوليو الأول"), L("Nobody works before a reviewer approves their portfolio, test and interview.", "محدش بيشتغل قبل ما مراجع يوافق على البورتفوليو والاختبار والمقابلة."), "lime"],
     ["02", L(`${MAX_QA_ROUNDS} QA rounds, then switch`, `${MAX_QA_ROUNDS} جولات مراجعة، وبعدين تبديل`), L(`If our QA returns the work ${MAX_QA_ROUNDS} times, the job moves to another vetted member.`, `لو المراجعة رجّعت الشغل ${MAX_QA_ROUNDS} مرات، الشغلانة بتتحول لعضو معتمد تاني.`), "pink"],
     ["03", L(`${CLIENT_CHANCES} chances with the client`, `فرصتين مع العميل`), L("Normal revisions are fine. If the work doesn't match the brief or reference twice, the third try goes to someone else.", "التعديلات العادية مفيش مشكلة. لو الشغل ماطلعش زي البريف أو الريفرنس مرتين، المحاولة التالتة بتروح لحد تاني."), "violet"],
-    ["04", L("Your deadline is ours", "ميعادك مسؤوليتنا"), L("Every switch happens inside our buffer and at our cost. The client's price and date never move.", "أي تبديل بيحصل جوه وقتنا وعلى حسابنا. سعر العميل وميعاده مابيتغيروش."), "sky"]
+    ["04", L("Your deadline is ours", "ميعادك مسؤوليتنا"), L("Every switch happens inside the time buffer we plan into every job, at our cost. The client's price stays the same.", "أي تبديل بيحصل جوه الوقت الاحتياطي اللي بنحسبه لكل جوب، وعلى حسابنا. وسعر العميل مابيتغيرش."), "sky"]
   ];
   return <div className={"rules" + (compact ? " rules--compact" : "")}>{rules.map(([n, t, d, c]) => <div key={n} className={"rule rule--" + c}><span className="rule__n">{n}</span><b>{t}</b><span className="small">{d}</span></div>)}</div>;
 }

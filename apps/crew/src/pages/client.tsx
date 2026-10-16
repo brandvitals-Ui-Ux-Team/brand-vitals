@@ -21,7 +21,7 @@ function NextSteps() {
     ["Vetted members send proposals", "الأعضاء المعتمدين بيقدموا", "Only people who passed our 4 gates can apply.", "بس اللي عدّوا ٤ مراحل اعتماد يقدروا يقدموا."],
     ["You get the best 3", "بيوصلك أحسن ٣", "We screen every proposal and tell you why we picked each.", "بنراجع كل العروض ونقولك ليه اخترنا كل واحد."],
     ["Hire and pay into escrow", "اختار وادفع بضمان", "Money is released only when you approve.", "الفلوس بتتصرف لما توافق بس."],
-    ["Every delivery is QA'd", "كل تسليم بيتراجع", "3 failed rounds or 2 off-brief? We switch at our cost. Same date.", "٣ جولات فاشلة أو مرتين مش زي البريف؟ بنغيّر على حسابنا. نفس الميعاد."]
+    ["Every delivery is QA'd", "كل تسليم بيتراجع", "3 failed rounds or 2 off-brief? We switch at our cost, inside the time buffer we plan into every job.", "٣ جولات فاشلة أو مرتين مش زي البريف؟ بنبدّل على حسابنا، جوه الوقت الاحتياطي اللي بنحسبه لكل جوب."]
   ];
   return <ol className="next-steps">{steps.map(([en, ar, den, dar], i) => <li key={i}><span className="next-steps__n">{i + 1}</span><div><b>{L(en, ar)}</b><span className="small muted">{L(den, dar)}</span></div></li>)}</ol>;
 }
@@ -287,7 +287,7 @@ export function ClientBrief() {
           <div><span>{L("Vitals Crew fee", "رسوم Vitals Crew")} ({FEE * 100}%)</span><b>{money(hire.price * FEE)}</b></div>
           <div className="receipt__t"><span>{L("Total, held in escrow", "الإجمالي، محجوز بضمان")}</span><b>{money(hire.price * (1 + FEE))}</b></div>
         </div>
-        <div className="callout callout--ok"><ShieldCheck /><span className="small">{L("The fee covers vetting, QA on every delivery and a free replacement if needed. Your deadline is guaranteed.", "الرسوم بتغطي الاعتماد ومراجعة كل تسليم واستبدال مجاني لو احتجنا. وميعادك مضمون.")}</span></div>
+        <div className="callout callout--ok"><ShieldCheck /><span className="small">{L("The fee covers vetting, QA on every delivery and a free replacement if needed, inside the time buffer we plan into every job.", "الرسوم بتغطي الاعتماد ومراجعة كل تسليم واستبدال مجاني لو احتجنا، جوه الوقت الاحتياطي اللي بنحسبه لكل جوب.")}</span></div>
       </div>
     </Modal>}
     {changes && <ChangesModal strikes={b.client_strikes} onClose={() => setChanges(null)} onSend={(n, k) => { actions.clientDecide(changes, false, n, k); setChanges(null); toast(k === "off_brief" ? L("Logged as not matching the brief", "اتسجّل إنه مش زي البريف") : L("Sent to the freelancer", "اتبعت للفريلانسر")); }} />}
