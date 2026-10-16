@@ -17,10 +17,11 @@ const list = (pad, headTag, headCls) => [
   ...GROUPS.flatMap(g => [`${pad}${t(g.head, headTag, headCls)}`, ...g.brands.map(b => item(b, pad))])
 ].join("\n");
 
-const fam = (cls, current, pad) => [
-  `${pad}<a class="${cls}__i ${cls}__i--parent" href="${PARENT.href}"><img src="${PARENT.mark}" alt="" width="44" height="44"><b>${esc(PARENT.name)}</b>${t(PARENT.d)}</a>`,
-  ...GROUPS.flatMap(g => [`${pad}${t(g.short, "p", "fam-grp")}`, ...g.brands.filter(b => b.key !== current).map(b =>
-    `${pad}<a class="${cls}__i" href="${b.href}"><img src="${b.mark}" alt="" width="44" height="44"><b>${esc(b.name)}${badge(b)}</b>${t(b.d)}</a>`)])
+// compact family row at the bottom of sub-brand pages: the parent, then all six brands by group
+const famRow = (current, pad) => [
+  `${pad}<a class="fam-row__parent" href="${PARENT.href}"><img src="${PARENT.mark}" alt="" width="28" height="28"><span>${t(["A Brand Vitals company", "من شركات Brand Vitals"])}</span></a>`,
+  ...GROUPS.map(g => `${pad}<div class="fam-row__grp">${t(g.short, "span", "fam-row__h")}${g.brands.map(b =>
+    `<a class="fam-row__i" href="${b.href}"${b.key === current ? ' aria-current="page"' : ""}><img src="${b.mark}" alt="" width="28" height="28"><span>${esc(b.name)}</span></a>`).join("")}</div>`)
 ].join("\n");
 
 const footer = (current, pad) => [
@@ -38,8 +39,8 @@ function rebuild(file, s) {
   swap(/(<div class="drawer__sub" id="drawerEco" hidden>\n)(\s*)[\s\S]*?(\n\s*<\/div>)/, (m, open, pad, close) => open + list(pad, "p", "eco-menu__head eco-menu__head--drawer") + close);
   // footer column (Ecosystem on the main site, Brands on sub-brand pages)
   swap(/(<h2 class="footer__h"[^>]*data-en="(?:Ecosystem|Brands)"[^>]*>[^<]*<\/h2>\s*<ul>\n)(\s*)[\s\S]*?(\n\s*<\/ul>)/, (m, open, pad, close) => open + footer(current, pad) + close);
-  // family blocks at the bottom of sub-brand pages
-  swap(/(<div class="(cw-fam|bv-fam)[^"]*"[^>]*>\n)(\s*)[\s\S]*?(\n\s*<\/div>)/, (m, open, cls, pad, close) => open + fam(cls, current, pad) + close);
+  // family row at the bottom of sub-brand pages
+  swap(/(<nav class="fam-row" data-fam>)[\s\S]*?\n([ \t]*)(<\/nav>)/, (m, open, pad, close) => open + "\n" + famRow(current, pad + "  ") + "\n" + pad + close);
   return [s, n];
 }
 

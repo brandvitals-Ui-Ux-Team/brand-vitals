@@ -20,7 +20,7 @@ export function Jobs() {
   const [panel, setPanel] = useState(false);
   const me = candidateOf(db, ME.candidate);
   const q = sp.get("q") || "";
-  const where = sp.get("where") || "";
+  const where = sp.get("where") || sp.get("city") || "";
   const sort = sp.get("sort") || (me ? "relevance" : "newest");
   const many = (k: string) => (sp.get(k) || "").split(",").filter(Boolean);
   const sel = { field: many("field"), type: many("type"), mode: many("mode"), level: many("level") };

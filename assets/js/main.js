@@ -905,11 +905,6 @@
   };
 
   /* ------------------------------------------------------------------
-     CURRENCY TOGGLE — [data-cur-toggle="selectId"] swaps the select's options
-     (EGP set in the select, other sets in a hidden select[data-cur-options])
-     and keeps input[name=currency] in step, so the form sends the currency.
-  ------------------------------------------------------------------ */
-  /* ------------------------------------------------------------------
      WIREFRAMES — proof sections waiting for real work stay hidden; ?wireframe=1 shows them.
   ------------------------------------------------------------------ */
   const Wireframes = {
@@ -919,6 +914,34 @@
     }
   };
 
+  /* ------------------------------------------------------------------
+     CYCLE — [data-cycle] shows its screens in turn every 4 s (each
+     screen group keeps one img.is-on). Still under reduced motion,
+     paused while off screen or in a background tab.
+  ------------------------------------------------------------------ */
+  const Cycle = {
+    init() {
+      document.querySelectorAll("[data-cycle]").forEach(box => {
+        if (reduceMotion) return;
+        const groups = [...box.querySelectorAll(".bh-laptop__screen, .bh-phone__screen")].map(g => [...g.querySelectorAll("img")]);
+        const n = Math.min(...groups.map(g => g.length));
+        if (!(n > 1)) return;
+        let i = 0, seen = false;
+        new IntersectionObserver(es => { seen = es[0].isIntersecting; }).observe(box);
+        setInterval(() => {
+          if (!seen || document.hidden) return;
+          i = (i + 1) % n;
+          groups.forEach(g => g.forEach((img, k) => img.classList.toggle("is-on", k === i)));
+        }, 4000);
+      });
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     CURRENCY TOGGLE — [data-cur-toggle="selectId"] swaps the select's options
+     (EGP set in the select, other sets in a hidden select[data-cur-options])
+     and keeps input[name=currency] in step, so the form sends the currency.
+  ------------------------------------------------------------------ */
   const CurToggle = {
     init() {
       document.querySelectorAll("[data-cur-toggle]").forEach(box => {
@@ -1239,6 +1262,7 @@
     Counters.init();
     CurToggle.init();
     Wireframes.init();
+    Cycle.init();
     Signals.init();
     Magnetic.init();
     Ripple.init();

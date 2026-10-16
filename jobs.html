@@ -138,50 +138,49 @@
 
   <main id="main">
 
-    <!-- ============ HERO · centered, formal: headline, two doors, a ledger of promises ============ -->
-    <section class="rq-hero wh rh">
-      <div class="rq-hero__rule" aria-hidden="true"></div>
+    <!-- ============ HERO · search first ============ -->
+    <section class="bh bh--search" data-hero>
       <div class="container">
-        <div class="wh__stage">
-          <div class="wh-side wh-side--l rh-card" aria-hidden="true">
-            <div class="rh-prof__band"></div>
-            <div class="rh-prof"><span class="rh-av">SH</span><b data-en="Sara Hassan" data-ar="سارة حسن">Sara Hassan</b><span data-en="Social Media Specialist" data-ar="أخصائية سوشيال ميديا">Social Media Specialist</span></div>
-            <div class="rh-meter"><span data-en="Profile strength" data-ar="قوة البروفايل">Profile strength</span><b>88%</b></div><div class="rh-bar"><i style="width:88%"></i></div>
-            <div class="rh-tags"><i data-en="Content strategy" data-ar="استراتيجية محتوى">Content strategy</i><i data-en="Reporting" data-ar="تقارير">Reporting</i><i>Meta Suite</i></div>
-          </div>
-          <div class="wh-side wh-side--r rh-card" aria-hidden="true">
-            <div class="rh-job"><span class="rh-co">AR</span><div><b data-en="Senior Social Media Specialist" data-ar="أخصائي سوشيال ميديا أول">Senior Social Media Specialist</b><span data-en="Atlas Residences · New Cairo" data-ar="أطلس ريزيدنسز · القاهرة الجديدة">Atlas Residences · New Cairo</span></div></div>
-            <div class="rh-pay" data-en="EGP 28,000 – 38,000 / month" data-ar="٢٨٬٠٠٠ – ٣٨٬٠٠٠ ج.م / شهريًا">EGP 28,000 – 38,000 / month</div>
-            <div class="rh-job__foot"><span class="rh-match" data-en="92% match" data-ar="توافق ٩٢٪">92% match</span><span class="rh-apply" data-en="Apply" data-ar="قدّم">Apply</span></div>
-            <div class="rh-tags"><i data-en="Full-time" data-ar="دوام كامل">Full-time</i><i data-en="On-site" data-ar="من المكتب">On-site</i><i data-en="Senior" data-ar="خبير">Senior</i></div>
-          </div>
-          <div class="browser wh__browser rh-win" data-reveal>
-            <div class="browser__bar" aria-hidden="true"><span class="browser__dots"><i></i><i></i><i></i></span><span class="browser__url">brandvitals.io/jobs</span><span class="rh-ok" data-en="✓ Screened by Brand Vitals" data-ar="✓ اتفرز من Brand Vitals">✓ Screened by Brand Vitals</span></div>
-            <div class="wh__copy">
-              <p class="rq-kicker" data-en="A Brand Vitals hiring platform" data-ar="منصة توظيف من براند ڤايتلز">A Brand Vitals hiring platform</p>
-              <h1 class="rq-hero__t"><span data-en="Creative and marketing jobs," data-ar="وظايف الكرييتيف والماركتينج،">Creative and marketing jobs,</span> <span class="rq-accent" data-en="screened by people who do the work." data-ar="بفرز ناس بتشتغل في نفس المجال.">screened by people who do the work.</span></h1>
-              <p class="lead rq-hero__lead" data-en="Build one profile and apply in a step. Brand Vitals reads every application and sends companies only the people who fit, with a note on why." data-ar="اعمل بروفايل واحد وقدّم في خطوة. Brand Vitals بتقرا كل طلب وبتبعت للشركات المناسبين بس، ومعاهم ملاحظة بالسبب.">Build one profile and apply in a step. Brand Vitals reads every application and sends companies only the people who fit, with a note on why.</p>
-              <p class="rq-soon"><span class="rq-soon__dot" aria-hidden="true"></span><span data-en="Launching first in Saudi Arabia: marketing and creative roles, Saudization-ready." data-ar="بنبدأ في السعودية: وظائف التسويق والإبداع، وجاهزين للسعودة.">Launching first in Saudi Arabia: marketing and creative roles, Saudization-ready.</span></p>
-              <div class="rq-hero__cta">
-          <a class="btn btn--primary btn--lg" href="/jobs/search"><span data-en="Preview the platform" data-ar="شوف المنصة">Preview the platform</span></a>
-          <a class="btn btn--ghost btn--lg" href="#brief"><span data-en="Join the company waitlist" data-ar="سجّل في قائمة الشركات">Join the company waitlist</span></a>
+        <div class="bh__copy" data-reveal>
+          <p class="sb-kicker" data-en="A Brand Vitals hiring platform" data-ar="منصة توظيف من براند ڤايتلز">A Brand Vitals hiring platform</p>
+          <h1 data-en="Marketing and creative jobs, screened." data-ar="وظايف التسويق والكرييتيف، بفرز حقيقي.">Marketing and creative jobs, screened.</h1>
+          <form class="bh-search" action="/jobs/search" method="get" role="search">
+            <label class="bh-search__f"><span class="sr-only" data-en="Job title or skill" data-ar="المسمى الوظيفي أو المهارة">Job title or skill</span><input name="q" type="search" placeholder="Job title or skill" data-en-ph="Job title or skill" data-ar-ph="المسمى الوظيفي أو المهارة" autocomplete="off"></label>
+            <label class="bh-search__f"><span class="sr-only" data-en="City" data-ar="المدينة">City</span><input name="city" type="text" placeholder="City" data-en-ph="City" data-ar-ph="المدينة" autocomplete="address-level2"></label>
+            <button class="btn btn--primary btn--lg" type="submit"><span data-en="Search jobs" data-ar="دوّر على وظايف">Search jobs</span></button>
+          </form>
+          <p class="bh__note"><a href="#brief"><span data-en="Hiring? Join the company waitlist" data-ar="بتعيّن؟ سجّل في قائمة الشركات">Hiring? Join the company waitlist</span></a></p>
         </div>
-            </div>
-          </div>
+        <div class="bh-jobs" data-reveal style="--rd:.1s">
+          <article class="bh-job">
+            <div class="bh-job__top"><span class="ros__tag" data-en="Sample" data-ar="مثال">Sample</span></div>
+            <h3 data-en="Performance Marketing Manager" data-ar="مدير تسويق أداء">Performance Marketing Manager</h3>
+            <p class="bh-job__co"><span data-en="Glow Lab Skincare" data-ar="جلو لاب للعناية بالبشرة">Glow Lab Skincare</span> · <span data-en="Riyadh (remote)" data-ar="الرياض (عن بُعد)">Riyadh (remote)</span></p>
+            <p class="bh-job__pay" data-en="SAR 18,000 – 24,000 / month" data-ar="١٨٬٠٠٠ – ٢٤٬٠٠٠ ريال / شهريًا">SAR 18,000 – 24,000 / month</p>
+            <p class="bh-job__tags"><i data-en="Full-time" data-ar="دوام كامل">Full-time</i><i data-en="Senior" data-ar="خبير">Senior</i></p>
+          </article>
+          <article class="bh-job">
+            <div class="bh-job__top"><span class="ros__tag" data-en="Sample" data-ar="مثال">Sample</span></div>
+            <h3 data-en="PR &amp; Communications Lead" data-ar="قائد العلاقات العامة والاتصال">PR &amp; Communications Lead</h3>
+            <p class="bh-job__co"><span data-en="Glow Lab Skincare" data-ar="جلو لاب للعناية بالبشرة">Glow Lab Skincare</span> · <span data-en="Riyadh" data-ar="الرياض">Riyadh</span></p>
+            <p class="bh-job__pay" data-en="SAR 26,000 – 34,000 / month" data-ar="٢٦٬٠٠٠ – ٣٤٬٠٠٠ ريال / شهريًا">SAR 26,000 – 34,000 / month</p>
+            <p class="bh-job__tags"><i data-en="Full-time" data-ar="دوام كامل">Full-time</i><i data-en="Lead" data-ar="قيادي">Lead</i></p>
+          </article>
+          <article class="bh-job">
+            <div class="bh-job__top"><span class="ros__tag" data-en="Sample" data-ar="مثال">Sample</span></div>
+            <h3 data-en="Graphic Designer" data-ar="مصمم جرافيك">Graphic Designer</h3>
+            <p class="bh-job__co"><span data-en="Atlas Residences" data-ar="أطلس ريزيدنسز">Atlas Residences</span> · <span data-en="New Cairo" data-ar="القاهرة الجديدة">New Cairo</span></p>
+            <p class="bh-job__pay" data-en="EGP 18,000 – 26,000 / month" data-ar="١٨٬٠٠٠ – ٢٦٬٠٠٠ ج.م / شهريًا">EGP 18,000 – 26,000 / month</p>
+            <p class="bh-job__tags"><i data-en="Full-time" data-ar="دوام كامل">Full-time</i><i data-en="Mid-level" data-ar="متوسط">Mid-level</i></p>
+          </article>
         </div>
-        <ol class="rh-pipe" data-reveal style="--rd:.12s">
-          <li class="is-done"><b>1</b><span data-en="Applied" data-ar="اتقدّم">Applied</span></li>
-          <li class="is-edge"><b>2</b><span data-en="Screened by Brand Vitals" data-ar="اتفرز من Brand Vitals">Screened by Brand Vitals</span></li>
-          <li><b>3</b><span data-en="With the company" data-ar="عند الشركة">With the company</span></li>
-          <li><b>4</b><span data-en="Interview" data-ar="مقابلة">Interview</span></li>
-          <li><b>5</b><span data-en="Offer" data-ar="عرض">Offer</span></li>
-        </ol>
-        <dl class="rq-ledger" data-reveal style="--rd:.2s">
-          <div><dt>48h</dt><dd data-en="an answer on every application" data-ar="رد على كل طلب">an answer on every application</dd></div>
-          <div><dt>100%</dt><dd data-en="of applications read by a person" data-ar="من الطلبات بيقراها شخص">of applications read by a person</dd></div>
-          <div><dt data-en="5-point" data-ar="5 درجات">5-point</dt><dd data-en="fit score on every shortlisted profile" data-ar="تقييم توافق لكل بروفايل مرشّح">fit score on every shortlisted profile</dd></div>
-          <div><dt>8</dt><dd data-en="fields, creative and marketing only" data-ar="مجالات، كرييتيف وماركتينج بس">fields, creative and marketing only</dd></div>
-        </dl>
+      </div>
+    </section>
+
+    <!-- Saudi-first -->
+    <section class="sb-notice-wrap">
+      <div class="container">
+        <p class="sb-notice"><span class="sb-notice__dot" aria-hidden="true"></span><span data-en="Launching first in Saudi Arabia: marketing and creative roles, Saudization-ready." data-ar="بنبدأ في السعودية: وظائف التسويق والإبداع، وجاهزين للسعودة.">Launching first in Saudi Arabia: marketing and creative roles, Saudization-ready.</span></p>
       </div>
     </section>
 
@@ -189,7 +188,7 @@
     <section class="section" id="how">
       <div class="container">
         <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="01 · How it works" data-ar="01 · طريقة الشغل">01 · How it works</p>
+          <p class="rq-kicker" data-en="How it works" data-ar="طريقة الشغل">How it works</p>
           <h2 class="rq-h2" data-en="A job board, with one step in the middle." data-ar="موقع وظايف، وفي النص خطوة زيادة.">A job board, with one step in the middle.</h2>
           <p class="lead" data-en="Profiles and applications work the way you already know. The difference is the screening between them." data-ar="البروفايل والتقديم شغالين زي ما إنت متعود. الفرق هو الفرز اللي في النص.">Profiles and applications work the way you already know. The difference is the screening between them.</p>
         </div>
@@ -231,27 +230,11 @@
       </div>
     </section>
 
-    <!-- ============ FOR HR TEAMS ============ -->
-    <section class="section section--tight" id="hr">
-      <div class="container">
-        <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="For HR teams" data-ar="لفرق الموارد البشرية">For HR teams</p>
-          <h2 class="rq-h2" data-en="Less sorting. Better interviews." data-ar="فرز أقل. ومقابلات أفضل.">Less sorting. Better interviews.</h2>
-        </div>
-        <div class="rq-hr" data-reveal>
-          <div><h3 data-en="Structured screening" data-ar="فرز منظّم">Structured screening</h3><p data-en="Every shortlisted profile comes with a fit score out of five, the skills matched and missing, and one line on why." data-ar="كل ملف مرشّح يصلك بدرجة توافق من خمسة، والمهارات المطابقة والناقصة، وسطر يوضح السبب.">Every shortlisted profile comes with a fit score out of five, the skills matched and missing, and one line on why.</p></div>
-          <div><h3 data-en="Saudization ready" data-ar="جاهز للتوطين">Saudization ready</h3><p data-en="Mark roles reserved for Saudi nationals, so they are screened and shown that way from the start." data-ar="حدّد الوظائف المخصّصة للسعوديين، فتُفرز وتُعرض على هذا الأساس من البداية.">Mark roles reserved for Saudi nationals, so they are screened and shown that way from the start.</p></div>
-          <div><h3 data-en="Salary shown on every job" data-ar="الراتب ظاهر في كل وظيفة">Salary shown on every job</h3><p data-en="Ranges are required. It saves interviews with people whose expectations never matched." data-ar="نطاق الراتب إلزامي، وهذا يوفّر مقابلات مع أشخاص توقعاتهم لا تناسبك.">Ranges are required. It saves interviews with people whose expectations never matched.</p></div>
-          <div><h3 data-en="One pipeline" data-ar="مسار واحد">One pipeline</h3><p data-en="Screened, interview, offer, hired: candidates are told at every step, so your brand stays respected." data-ar="اتفرز، مقابلة، عرض، تعيين: يُبلَّغ المتقدم في كل خطوة، فتبقى سمعة شركتك محترمة.">Screened, interview, offer, hired: candidates are told at every step, so your brand stays respected.</p></div>
-        </div>
-      </div>
-    </section>
-
     <!-- ============ FIELDS ============ -->
     <section class="section section--tight" id="fields">
       <div class="container">
         <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="03 · Fields" data-ar="03 · المجالات">03 · Fields</p>
+          <p class="rq-kicker" data-en="Fields" data-ar="المجالات">Fields</p>
           <h2 class="rq-h2" data-en="Creative and marketing. Nothing else." data-ar="كرييتيف وماركتينج. ومفيش غيرهم.">Creative and marketing. Nothing else.</h2>
         </div>
         <ul class="rq-fields" data-reveal>
@@ -271,7 +254,7 @@
     <section class="section section--tight">
       <div class="container">
         <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="04 · Compared" data-ar="04 · مقارنة">04 · Compared</p>
+          <p class="rq-kicker" data-en="Compared" data-ar="مقارنة">Compared</p>
           <h2 class="rq-h2" data-en="Same job post. A different inbox." data-ar="نفس إعلان الوظيفة. بس صندوق وارد مختلف.">Same job post. A different inbox.</h2>
         </div>
         <div class="rq-table" data-reveal>
@@ -288,7 +271,7 @@
     <section class="section" id="brief">
       <div class="container rq-start">
         <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="05 · Hiring?" data-ar="05 · بتوظّف؟">05 · Hiring?</p>
+          <p class="rq-kicker" data-en="Hiring?" data-ar="بتوظّف؟">Hiring?</p>
           <h2 class="rq-h2" data-en="Tell us the role. We'll send the right people." data-ar="قولنا الوظيفة، وإحنا نبعتلك الناس الصح.">Tell us the role. We'll send the right people.</h2>
           <p class="lead" data-en="Post it in the platform, or send it here and a screener will call you within one business day." data-ar="انشرها من المنصة، أو ابعتها هنا وحد من فريق الفرز هيكلمك خلال يوم عمل.">Post it in the platform, or send it here and a screener will call you within one business day.</p>
         </div>
@@ -363,7 +346,7 @@
     <section class="section section--tight" id="faq">
       <div class="container sb-faq">
         <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="06 · FAQ" data-ar="06 · أسئلة شائعة">06 · FAQ</p>
+          <p class="rq-kicker" data-en="FAQ" data-ar="أسئلة شائعة">FAQ</p>
           <h2 class="rq-h2" data-en="What people ask first." data-ar="أول الأسئلة.">What people ask first.</h2>
         </div>
         <div class="acc" data-reveal>
@@ -387,26 +370,17 @@
       </div>
     </section>
 
-    <!-- ============ THE FAMILY ============ -->
-    <section class="section section--tight">
+    <!-- ============ THE FAMILY · one compact row ============ -->
+    <section class="fam-sec" aria-label="The Brand Vitals ecosystem" data-ar-label="منظومة Brand Vitals">
       <div class="container">
-        <div class="rq-center" data-reveal>
-          <p class="rq-kicker" data-en="A Brand Vitals company" data-ar="إحدى شركات براند ڤايتلز">A Brand Vitals company</p>
-          <h2 class="rq-h2" data-en="One family. One standard of quality." data-ar="عيلة واحدة. ومعيار جودة واحد.">One family. One standard of quality.</h2>
-          <p class="lead" data-en="Vitals Jobs is run by the Brand Vitals team, the same people who hire for our own agency." data-ar="Vitals Jobs بيديرها فريق براند ڤايتلز، نفس الناس اللي بتوظّف للوكالة بتاعتنا.">Vitals Jobs is run by the Brand Vitals team, the same people who hire for our own agency.</p>
-        </div>
-        <div class="cw-fam rq-fam" data-reveal>
-          <a class="cw-fam__i cw-fam__i--parent" href="index.html"><img src="assets/img/favicon.svg" alt="" width="44" height="44"><b>Brand Vitals</b><span data-en="Growth agency" data-ar="وكالة النمو">Growth agency</span></a>
-          <p class="fam-grp" data-en="Studios" data-ar="الاستوديوهات">Studios</p>
-          <a class="cw-fam__i" href="frames.html"><img src="assets/img/brands/frames-mark.svg" alt="" width="44" height="44"><b>Vitals Frames</b><span data-en="Production studio" data-ar="ستوديو إنتاج">Production studio</span></a>
-          <a class="cw-fam__i" href="web.html"><img src="assets/img/brands/web-mark.svg" alt="" width="44" height="44"><b>Vitals Web</b><span data-en="Websites, launched fast" data-ar="مواقع تنطلق بسرعة">Websites, launched fast</span></a>
-          <a class="cw-fam__i" href="stage.html"><img src="assets/img/brands/stage-mark.svg" alt="" width="44" height="44"><b>Vitals Stage <em class="eco-badge" data-en="Coming soon" data-ar="قريبًا">Coming soon</em></b><span data-en="Launches, activations and events" data-ar="إطلاقات وفعاليات وتفعيلات">Launches, activations and events</span></a>
-          <p class="fam-grp" data-en="Platforms" data-ar="المنصات">Platforms</p>
-          <a class="cw-fam__i" href="go.html"><img src="assets/img/brands/go-mark.svg" alt="" width="44" height="44"><b>Vitals GO <em class="eco-badge" data-en="Beta" data-ar="تجريبي">Beta</em></b><span data-en="Client approvals &amp; paid extras" data-ar="موافقات العملاء والشغل الإضافي المدفوع">Client approvals &amp; paid extras</span></a>
-          <a class="cw-fam__i" href="crew.html"><img src="assets/img/brands/crew-mark.svg" alt="" width="44" height="44"><b>Vitals Crew <em class="eco-badge" data-en="Founding members" data-ar="أول الأعضاء">Founding members</em></b><span data-en="Vetted freelancers &amp; teams" data-ar="فريلانسرز وفرق معتمدة">Vetted freelancers &amp; teams</span></a>
-        </div>
+        <nav class="fam-row" data-fam>
+          <a class="fam-row__parent" href="index.html"><img src="assets/img/favicon.svg" alt="" width="28" height="28"><span><span data-en="A Brand Vitals company" data-ar="من شركات Brand Vitals">A Brand Vitals company</span></span></a>
+          <div class="fam-row__grp"><span class="fam-row__h" data-en="Studios" data-ar="الاستوديوهات">Studios</span><a class="fam-row__i" href="frames.html"><img src="assets/img/brands/frames-mark.svg" alt="" width="28" height="28"><span>Vitals Frames</span></a><a class="fam-row__i" href="web.html"><img src="assets/img/brands/web-mark.svg" alt="" width="28" height="28"><span>Vitals Web</span></a><a class="fam-row__i" href="stage.html"><img src="assets/img/brands/stage-mark.svg" alt="" width="28" height="28"><span>Vitals Stage</span></a></div>
+          <div class="fam-row__grp"><span class="fam-row__h" data-en="Platforms" data-ar="المنصات">Platforms</span><a class="fam-row__i" href="go.html"><img src="assets/img/brands/go-mark.svg" alt="" width="28" height="28"><span>Vitals GO</span></a><a class="fam-row__i" href="crew.html"><img src="assets/img/brands/crew-mark.svg" alt="" width="28" height="28"><span>Vitals Crew</span></a><a class="fam-row__i" href="jobs.html" aria-current="page"><img src="assets/img/brands/jobs-mark.svg" alt="" width="28" height="28"><span>Vitals Jobs</span></a></div>
+        </nav>
       </div>
     </section>
+
   </main>
 
 
