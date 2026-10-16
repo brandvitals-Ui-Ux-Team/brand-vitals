@@ -37,6 +37,8 @@ export const HEADER = cut('<header class="nav">', "</header>");
 export const DRAWER = cut('<nav class="drawer"', "\n  </nav>");
 export const FOOTER = cut('<footer class="footer">', "</footer>");
 
+const FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">';
+
 export function head({ file, titleEn, titleAr, descEn, descAr, ogType = "website", schema = [] }) {
   const url = "https://brandvitals.io/" + (file === "index.html" ? "" : file);
   const graph = { "@context": "https://schema.org", "@graph": schema };

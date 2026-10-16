@@ -120,15 +120,45 @@ function toArabic(html, file) {
     const $el = $(el);
     $el.attr("style", $el.attr("style").replace(/url\((['"]?)(assets\/)/g, "url($1../$2"));
   });
-  // Inline JSON-LD keeps absolute URLs; mark the language.
+  $('[data-only="en"]').remove();
+  // Inline JSON-LD: Arabic language, Arabic FAQ, this version's URL.
   addAlternates($, file, "ar");
+  localizeLd($, file, "ar");
   return $.html();
 }
 
 function toEnglish(html, file) {
   const $ = cheerio.load(html);
+  $('[data-only="ar"]').remove();
   addAlternates($, file, "en");
+  localizeLd($, file, "en");
   return $.html();
+}
+
+// JSON-LD follows the page's language: inLanguage is the page's own, the page's URLs point at this
+// version, and the FAQPage questions mirror the FAQ that is visible on this version.
+function localizeLd($, file, lang) {
+  const base = "https://brandvitals.io/";
+  const own = base + (file === "index.html" ? "" : file);
+  const here = lang === "en" ? own : base + "ar/" + (file === "index.html" ? "" : file);
+  const faq = $(".acc .acc-item").map((_, el) => ({ q: $(el).find(".acc-item__btn > span").first().text().trim(), a: $(el).find(".acc-item__panel p").first().text().trim() })).get().filter(x => x.q && x.a);
+  $('script[type="application/ld+json"]').each((_, el) => {
+    let data;
+    try { data = JSON.parse($(el).html()); } catch { return; }
+    const walk = n => {
+      if (Array.isArray(n)) return n.forEach(walk);
+      if (!n || typeof n !== "object") return;
+      if ("inLanguage" in n) n.inLanguage = lang;
+      if (n["@type"] === "FAQPage" && faq.length) n.mainEntity = faq.map(x => ({ "@type": "Question", name: x.q, acceptedAnswer: { "@type": "Answer", text: x.a } }));
+      if (lang !== "en" && (n["@type"] === "WebPage" || n["@type"] === "Article" || n["@type"] === "BlogPosting")) {
+        for (const k of ["url", "@id"]) if (typeof n[k] === "string" && n[k].startsWith(own)) n[k] = here + n[k].slice(own.length);
+        if (n["@type"] === "WebPage") n.name = $("title").text();
+      }
+      Object.values(n).forEach(walk);
+    };
+    walk(data);
+    $(el).text("\n" + JSON.stringify(data, null, 2) + "\n  ");
+  });
 }
 
 function sitemap(pages) {

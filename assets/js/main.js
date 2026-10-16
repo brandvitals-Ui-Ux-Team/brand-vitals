@@ -1012,7 +1012,7 @@
         wrap.className = "stack-cards";
         heads.forEach((h, i) => {
           const card = document.createElement("article");
-          card.className = "stack-card" + (i === heads.length - 1 ? " stack-card--us" : "");
+          card.className = "stack-card" + (box.dataset.stack !== "plain" && i === heads.length - 1 ? " stack-card--us" : "");
           const t = document.createElement("h3");
           t.textContent = h.textContent.trim();
           const dl = document.createElement("dl");

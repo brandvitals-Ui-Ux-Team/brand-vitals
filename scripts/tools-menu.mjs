@@ -37,9 +37,14 @@ for (const f of fs.readdirSync(ROOT).filter(x => x.endsWith(".html"))) {
   // drawer: the old single link, or a previous group
   s = s.replace(/^([ \t]*)<a class="drawer__link" href="vitals-score\.html"><span class="mono">(\d+)<\/span>[^\n]*<\/a>$/m, (m, pad, n) => drawer(pad, n));
   s = s.replace(/^([ \t]*)<div class="drawer__group drawer__group--tools">[\s\S]*?aria-controls="drawerTools"><span class="mono">(\d+)<\/span>[\s\S]*?\n\1<\/div>$/m, (m, pad, n) => drawer(pad, n));
-  // footer "Industries & tools": both tools listed
-  s = s.replace(/^([ \t]*)<li><a href="vitals-score\.html" data-en="Free Vitals Score" data-ar="[^"]*">Free Vitals Score<\/a><\/li>(\n[ \t]*<li><a href="forecast\.html"[^\n]*)?$/m,
-    (m, pad) => `${pad}<li><a href="vitals-score.html" data-en="Free Vitals Score" data-ar="فحص Vitals المجاني">Free Vitals Score</a></li>\n${pad}<li><a href="forecast.html" data-en="Vitals Forecast" data-ar="Vitals Forecast">Vitals Forecast</a></li>`);
+  // footer "Industries & tools": both tools, then the market guide and the glossary
+  s = s.replace(/^([ \t]*)<li><a href="vitals-score\.html" data-en="Free Vitals Score" data-ar="[^"]*">Free Vitals Score<\/a><\/li>(\n[ \t]*<li><a href="(?:forecast|egypt-vs-saudi-marketing|glossary)\.html"[^\n]*)*$/m,
+    (m, pad) => [
+      `<li><a href="vitals-score.html" data-en="Free Vitals Score" data-ar="فحص Vitals المجاني">Free Vitals Score</a></li>`,
+      `<li><a href="forecast.html" data-en="Vitals Forecast" data-ar="Vitals Forecast">Vitals Forecast</a></li>`,
+      `<li><a href="egypt-vs-saudi-marketing.html" data-en="Egypt vs Saudi guide" data-ar="دليل مصر والسعودية">Egypt vs Saudi guide</a></li>`,
+      `<li><a href="glossary.html" data-en="Glossary" data-ar="المصطلحات">Glossary</a></li>`
+    ].map(l => pad + l).join("\n"));
   if (s !== before) { fs.writeFileSync(p, s); pages++; }
 }
 console.log("pages updated:", pages);
