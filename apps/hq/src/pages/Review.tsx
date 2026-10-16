@@ -21,14 +21,19 @@ export function Review() {
   return <I18nProvider force={lang} dialect={dialect}><ReviewBody data={data} token={token} setLang={setLang} reload={load} /></I18nProvider>;
 }
 
-export const nameKey = "hq-client-name";
+/** The reviewer name is remembered per client on this device. */
+export const LEGACY_NAME_KEY = "hq-client-name";
+export const nameKey = (client: string) => LEGACY_NAME_KEY + ":" + client;
 
 function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | null | undefined; token: string; setLang: (l: Lang) => void; reload: () => void }) {
   const { L, lang } = useI18n();
   const toast = useToast();
   const [pick, setPick] = useState<number | null>(null);
   const [mode, setMode] = useState<"idle" | "changes">("idle");
-  const [name, setName] = useState(() => localStorage.getItem(nameKey) || "");
+  const [name, setName] = useState("");
+  const nk = data?.client.name ? nameKey(data?.client.name) : "";
+  // the name this client used last time on this device (still editable)
+  useEffect(() => { if (nk && !name) setName(localStorage.getItem(nk) || localStorage.getItem(LEGACY_NAME_KEY) || ""); }, [nk]); // eslint-disable-line react-hooks/exhaustive-deps
   const [comment, setComment] = useState("");
   const [pins, setPins] = useState<Pin[]>([]);
   const [busy, setBusy] = useState(false);
@@ -46,7 +51,7 @@ function ReviewBody({ data, token, setLang, reload }: { data: ReviewPayload | nu
     if (action === "changes" && !comment.trim() && !pins.length) { toast(L("Please describe what to change", "اكتب التعديلات المطلوبة"), "err"); return; }
     setBusy(true);
     try {
-      localStorage.setItem(nameKey, name.trim());
+      localStorage.setItem(nk || LEGACY_NAME_KEY, name.trim());
       await api.reviewRespond(token, { action, name: name.trim(), comment: comment.trim(), pins: action === "changes" ? pins : [] });
       setComment(""); setPins([]); setMode("idle");
       toast(action === "approved" ? L("GO! Approved. Thank you.", "GO! اتوافق عليه. شكرًا.") : L("Sent to the team", "اتبعتت للفريق"));

@@ -7,7 +7,7 @@ import { onChange } from "../lib/bus";
 import { date, money } from "../lib/format";
 import { I18nProvider, useI18n } from "../lib/i18n";
 import type { ChangeOrderPayload, Dialect, Lang } from "../lib/types";
-import { nameKey } from "./Review";
+import { LEGACY_NAME_KEY, nameKey } from "./Review";
 
 export function ChangeOrderReview() {
   const { token = "" } = useParams();
@@ -22,7 +22,10 @@ export function ChangeOrderReview() {
 function Body({ data, token, setLang, reload }: { data: ChangeOrderPayload | null | undefined; token: string; setLang: (l: Lang) => void; reload: () => void }) {
   const { L, lang } = useI18n();
   const toast = useToast();
-  const [name, setName] = useState(() => localStorage.getItem(nameKey) || "");
+  const [name, setName] = useState("");
+  const nk = data?.client.name ? nameKey(data?.client.name) : "";
+  // the name this client used last time on this device (still editable)
+  useEffect(() => { if (nk && !name) setName(localStorage.getItem(nk) || localStorage.getItem(LEGACY_NAME_KEY) || ""); }, [nk]); // eslint-disable-line react-hooks/exhaustive-deps
   const [busy, setBusy] = useState(false);
   if (data === undefined) return <Spinner />;
   if (data === null) return <div className="center" style={{ minHeight: "100vh", padding: 20 }}><div className="card card--pad stack" style={{ maxWidth: 420, textAlign: "center" }}><Info style={{ margin: "0 auto" }} /><h2>{L("This link isn't valid", "اللينك ده مش صالح")}</h2></div></div>;
@@ -30,7 +33,7 @@ function Body({ data, token, setLang, reload }: { data: ChangeOrderPayload | nul
   const decide = async (action: "approved" | "declined") => {
     if (!name.trim()) { toast(L("Please write your name first", "اكتب اسمك الأول من فضلك"), "err"); return; }
     setBusy(true);
-    try { localStorage.setItem(nameKey, name.trim()); await api.changeOrderRespond(token, { action, name: name.trim() }); toast(action === "approved" ? L("Approved. The team will start right away.", "تمت الموافقة. الفريق هيبدأ فورًا.") : L("Declined. The team has been notified.", "تم الرفض. الفريق اتبلّغ.")); reload(); }
+    try { localStorage.setItem(nk || LEGACY_NAME_KEY, name.trim()); await api.changeOrderRespond(token, { action, name: name.trim() }); toast(action === "approved" ? L("Approved. The team will start right away.", "تمت الموافقة. الفريق هيبدأ فورًا.") : L("Declined. The team has been notified.", "تم الرفض. الفريق اتبلّغ.")); reload(); }
     catch (e) { toast(String((e as Error).message), "err"); }
     finally { setBusy(false); }
   };

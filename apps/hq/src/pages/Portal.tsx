@@ -10,7 +10,7 @@ import { onChange } from "../lib/bus";
 import { date, money } from "../lib/format";
 import { I18nProvider, useI18n } from "../lib/i18n";
 import type { Dialect, Lang, PortalItem, PortalPayload, Version } from "../lib/types";
-import { nameKey } from "./Review";
+import { LEGACY_NAME_KEY, nameKey } from "./Review";
 
 export function Portal() {
   const { token = "" } = useParams();
@@ -28,7 +28,10 @@ function Body({ data, setLang, reload, token }: { data: PortalPayload | null | u
   const { L, lang } = useI18n();
   const toast = useToast();
   const [picked, setPicked] = useState<Set<string>>(new Set());
-  const [name, setName] = useState(() => localStorage.getItem(nameKey) || "");
+  const [name, setName] = useState("");
+  const nk = data?.client.name ? nameKey(data?.client.name) : "";
+  // the name this client used last time on this device (still editable)
+  useEffect(() => { if (nk && !name) setName(localStorage.getItem(nk) || localStorage.getItem(LEGACY_NAME_KEY) || ""); }, [nk]); // eslint-disable-line react-hooks/exhaustive-deps
   const [busy, setBusy] = useState(false);
   useEffect(() => { if (data) document.title = `${data.client.name} · ${data.workspace.name}`; }, [data]);
   if (data === undefined) return <Spinner />;
@@ -43,7 +46,7 @@ function Body({ data, setLang, reload, token }: { data: PortalPayload | null | u
     if (!name.trim()) { toast(L("Please write your name first", "اكتب اسمك الأول من فضلك"), "err"); return; }
     setBusy(true);
     try {
-      localStorage.setItem(nameKey, name.trim());
+      localStorage.setItem(nk || LEGACY_NAME_KEY, name.trim());
       for (const t of picked) await api.reviewRespond(t, { action: "approved", name: name.trim(), comment: "" });
       toast(L(`Approved ${picked.size}. Thank you!`, `تمت الموافقة على ${picked.size}. شكرًا!`));
       setPicked(new Set()); reload();
