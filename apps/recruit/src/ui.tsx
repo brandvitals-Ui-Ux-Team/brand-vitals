@@ -1,6 +1,6 @@
 // Shared pieces for Vitals Jobs: labels, pills, the application pipeline, job cards, toasts,
 // notifications and the plain dashboard frame. Each account has one role, so the frame shows only that role's menu.
-import { AlertCircle, Bell, Bookmark, BookmarkCheck, Briefcase, Building2, CheckCircle2, ClipboardList, FilePlus2, Home, LogOut, MapPin, Menu, Moon, RotateCcw, Search, ShieldCheck, Sun, UserRound, UserPlus, X } from "lucide-react";
+import { AlertCircle, Bell, Bookmark, BookmarkCheck, Briefcase, Building2, CheckCircle2, ClipboardList, FilePlus2, Home, LogOut, MapPin, Menu, Moon, RotateCcw, Search, ShieldCheck, Sun, UserRound, UserPlus, X, ShieldAlert } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Link, NavLink, Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -302,6 +302,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <A to="/screening/done" icon={<ClipboardList />} label={L("Screened", "اتفرزوا")} />
       </>}
       <div className="side__foot">
+        <div className="demo-pill"><ShieldAlert /><span>{L("Preview with sample data", "نسخة تجريبية ببيانات مثال")}</span></div>
         <div className="rc-edge"><ShieldCheck /><span>{L("Every application is screened by Brand Vitals before a company sees it.", "كل طلب بيتفرز من Brand Vitals قبل ما الشركة تشوفه.")}</span></div>
         <a className="nav-a" href="/jobs.html"><span style={{ width: 17 }} />{L("About Vitals Jobs", "عن Vitals Jobs")}</a>
       </div>

@@ -1,6 +1,6 @@
 // A plain, familiar dashboard frame: light sidebar, one primary action per role, and a
 // "viewing as" menu in the top bar for the demo (client / freelancer / reviewer).
-import { Briefcase, ChevronDown, ClipboardCheck, FilePlus2, Home, LayoutGrid, ListChecks, Menu, Moon, RotateCcw, Search, Send, ShieldCheck, Sun, UserCheck, UserRound, Users, Wallet } from "lucide-react";
+import { Briefcase, ChevronDown, ClipboardCheck, FilePlus2, Home, LayoutGrid, ListChecks, Menu, Moon, RotateCcw, Search, Send, ShieldCheck, Sun, UserCheck, UserRound, Users, Wallet, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useI18n } from "../../../hq/src/lib/i18n";
@@ -80,6 +80,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <A to="/ops/talent" icon={<Users />} label={L("Members", "الأعضاء")} />
       </>}
       <div className="side__foot">
+        <div className="demo-pill"><ShieldAlert /><span>{L("Preview with sample data", "نسخة تجريبية ببيانات مثال")}</span></div>
         <div className="edge-note"><ShieldCheck /><span>{L("Every member, proposal and delivery is reviewed by Vitals.", "كل عضو وعرض وتسليم بيتراجع من Vitals.")}</span></div>
         <a className="nav-a" href="/crew.html"><span style={{ width: 17 }} />{L("About Vitals Crew", "عن Vitals Crew")}</a>
       </div>
