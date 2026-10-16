@@ -404,7 +404,11 @@
           };
           // Bots fill the hidden honeypot field; the dashboard preview never sends anything.
           if (data.website || window.__BV_PREVIEW) { succeed(); return; }
+          // Forms marked data-wa-direct (Vitals Forecast) also open WhatsApp with everything prefilled.
+          const direct = form.hasAttribute("data-wa-direct");
+          if (direct) window.open(Forms.waLink(data), "_blank", "noopener");
           if (!Track.configured()) {
+            if (direct) { succeed(); return; }
             // No database connected yet: offer to send the request on WhatsApp, from the popup.
             if (form.closest("#consultModal")) ConsultModal.close();
             Forms.whatsappNotice(form, data);
