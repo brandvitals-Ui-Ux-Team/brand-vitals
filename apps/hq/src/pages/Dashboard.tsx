@@ -1,5 +1,5 @@
 // Home: one question answered — "what needs me today?"
-import { BellRing, CalendarDays, CheckCircle2, Clock3, PencilRuler, Plus, Send, Sparkles, Wallet } from "lucide-react";
+import { BellRing, CalendarDays, CheckCircle2, Clock3, Eye, PencilRuler, Plus, Send, Sparkles, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { SendFlow } from "../components/SendFlow";
@@ -10,6 +10,7 @@ import { reminderMsg } from "../lib/channels";
 import { ago, date, isOverdue, money } from "../lib/format";
 import { useRows } from "../lib/hooks";
 import { useI18n } from "../lib/i18n";
+import { isDemo } from "../lib/api";
 import { daysBetween } from "../lib/logic";
 import type { Client, Deliverable } from "../lib/types";
 import { useWorkspace } from "../lib/ws";
@@ -35,6 +36,8 @@ export function Dashboard() {
   const remindAfter = ws.remind_after_days || 2;
 
   const waiting = deliverables.filter(d => d.status === "in_review");
+  // Demo: one fixed review link, so anyone can see the client side of the same item.
+  const asClient = isDemo ? waiting.find(d => clientOf(d.project_id)?.name === "Atlas Residences") || waiting[0] : undefined;
   const changes = deliverables.filter(d => d.status === "changes");
   const month = new Date().toISOString().slice(0, 7);
   const earned = cos.filter(c => c.status === "approved" && (c.decided_at || "").startsWith(month)).reduce((s, c) => s + Number(c.amount), 0);
@@ -82,7 +85,7 @@ export function Dashboard() {
         <h1>{hello}, {me?.name?.split(" ")[0]}</h1>
         <p className="muted">{summary.length ? summary.join(" · ") : L("All clear. Nothing is waiting on you.", "كله تمام. مفيش حاجة مستنياك.")}</p>
       </div>
-      <div className="row"><Link className="btn" to="/calendar"><CalendarDays />{L("Calendar", "التقويم")}</Link><button className="btn btn--primary btn--lg" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button></div>
+      <div className="row">{asClient && <Link className="btn btn--ghost" to={"/r/" + asClient.review_token}><Eye />{L("See it as your client", "شوفه زي العميل")}</Link>}<Link className="btn" to="/calendar"><CalendarDays />{L("Calendar", "التقويم")}</Link><button className="btn btn--primary btn--lg" onClick={() => setSend(true)}><Send />{L("Send for approval", "ابعت للموافقة")}</button></div>
     </div>
 
     {firstRun && <div className="first-run">

@@ -1,5 +1,11 @@
 // Demo workspace with fictional sample data, so every screen has something real to show.
-import { token, uid } from "./backend";
+// Demo IDs and link tokens come from a fixed-seed generator, so every visitor gets the same ones
+// and a shared demo link (a deliverable, a review link) opens the same item for anyone.
+let state = 0;
+const rnd = () => { state = (state + 0x6D2B79F5) | 0; let t = Math.imul(state ^ (state >>> 15), 1 | state); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const hex = (n: number) => Array.from({ length: n }, () => Math.floor(rnd() * 16).toString(16)).join("");
+const uid = () => `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}`;
+const token = () => Array.from({ length: 24 }, () => Math.floor(rnd() * 36).toString(36)).join("");
 import type { Activity, ChangeOrder, Client, Deliverable, Feedback, Member, Message, Project, ScopeItem, SessionUser, Task, Tables, TableName, Version, Workspace } from "./types";
 import { demoDesign } from "./designs";
 
@@ -14,6 +20,7 @@ function art(title: string, hue: number, sub: string, v: number) {
 }
 
 export function seed(u: SessionUser): DB {
+  state = 20261016;
   const W = uid();
   const ws: Workspace = { id: W, name: "Brand Vitals (demo)", currency: "EGP", owner_id: u.id, created_at: ago(60),
     wa_template_en: "Hi {client}, {item} is ready for your review: {link}",

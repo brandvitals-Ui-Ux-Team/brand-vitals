@@ -9,7 +9,7 @@ import { classify } from "./logic";
 import { seed } from "./seed";
 import type { ChangeOrderPayload, Client, ID, InvoicePayload, Pin, PortalPayload, ReviewPayload, SessionUser, SharedMessage, TableName, Tables, ThreadType, Workspace } from "./types";
 
-const KEY = "hq-demo-db-v2";
+const KEY = "hq-demo-db-v3"; // v3: fixed demo IDs and tokens
 const USER_KEY = "hq-demo-user";
 type DB = { [K in TableName]: Tables[K][] };
 
