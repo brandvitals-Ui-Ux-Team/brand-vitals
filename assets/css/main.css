@@ -1581,3 +1581,6 @@ a.post-card { color: inherit; }
 
 /* visible to screen readers and search engines only */
 .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.field-note { display: block; margin-top: 8px; font-size: 0.85rem; color: var(--text-3); }
+.field-note a { color: var(--accent); font-weight: 600; }
