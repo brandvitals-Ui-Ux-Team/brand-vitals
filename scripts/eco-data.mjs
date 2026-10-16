@@ -1,4 +1,4 @@
-// The Brand Vitals ecosystem, in one place. Descriptors follow the UI fix spec 11.2 word for word. scripts/eco.mjs rebuilds every brand list from this:
+// The ecosystem, in one place. Descriptors follow the UI fix spec 11.2 word for word. scripts/eco.mjs rebuilds every brand list from this:
 // header mega menu, mobile drawer, footer column, sub-brand family blocks and the homepage section.
 export const PARENT = {
   key: "bv", name: "Brand Vitals", href: "index.html", mark: "assets/img/favicon.svg",

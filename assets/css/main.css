@@ -1689,7 +1689,7 @@ a.post-card { color: inherit; }
   .field input, .field select, .field textarea { font-size: 16px; }
   .field label, .field > span { font-size: 0.85rem; }
   /* sub-brand pages already list every brand in the family row right above the footer */
-  body:has(.fam-sec) .footer__grid > :has(> .footer__h[data-en="Brands"]) { display: none; }
+  body:has(.fam-sec) .footer__grid > :has(> .footer__h[data-en="Ecosystem"]) { display: none; }
   body:has(.fam-sec) .footer__grid > :last-child { grid-column: auto; }
 }
 
@@ -1805,3 +1805,28 @@ a.post-card { color: inherit; }
 .eco-item--tool .eco-item__txt { display: grid; gap: 2px; }
 .eco-item--tool .eco-item__d { font-size: 0.82rem; color: var(--text-2); }
 .drawer__d { display: block; font-size: 0.82rem; color: var(--text-2); }
+
+/* ==========================================================================
+   TOP MENU (11.3): Ecosystem mega panel, "by Brand Vitals", drawer grid,
+   theme toggle in the footer
+   ========================================================================== */
+.eco-menu--mega { width: min(680px, calc(100vw - 2rem)); padding: 0.6rem; }
+.eco-menu--mega > .eco-item--parent { margin: 0 0 0.4rem; padding: 0.75rem; border-top: 0; border-bottom: 1px solid var(--line); border-radius: var(--r-md); }
+.eco-menu__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.25rem 0.6rem; }
+.eco-menu__col { display: grid; align-content: start; gap: 0.1rem; }
+.nav__parent { align-self: center; margin-inline-start: 0.6rem; padding-inline-start: 0.75rem; border-inline-start: 1px solid var(--line-strong); font-size: 0.78rem; font-weight: 600; color: var(--text-2); white-space: nowrap; min-height: 32px; display: inline-flex; align-items: center; }
+.nav__parent:hover { color: var(--text); }
+@media (max-width: 640px) { .nav__parent { display: none; } }
+.drawer__sub--eco { gap: 0.6rem; }
+.drawer__parent { display: flex; align-items: center; gap: 0.7rem; min-height: 52px; padding: 0.4rem 0; color: var(--text); }
+.drawer__parent span { display: grid; }
+.drawer__parent small { color: var(--text-2); font-size: 0.82rem; }
+.drawer__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+.drawer__mark { display: grid; justify-items: center; gap: 0.4rem; padding: 0.75rem 0.25rem; min-height: 88px; border: 1px solid var(--line); border-radius: var(--r-md); text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.drawer__mark img { width: 40px; height: 40px; border-radius: 11px; }
+.drawer__mark[aria-current="page"] { border-color: var(--accent); }
+.drawer__foot { position: sticky; bottom: 0; margin-top: 2rem; padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom)); background: var(--bg); }
+.footer__theme { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0 0.9rem; border: 1px solid var(--line-strong); border-radius: 999px; background: none; color: var(--text-2); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.footer__theme:hover { color: var(--text); }
+.footer__theme svg { width: 16px; height: 16px; }
+[data-theme="dark"] .footer__theme .icon-sun, [data-theme="light"] .footer__theme .icon-moon { display: none; }
