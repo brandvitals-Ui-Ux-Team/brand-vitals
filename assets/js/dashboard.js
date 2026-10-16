@@ -11,22 +11,25 @@
   /* ======================================================================
      CONSTANTS
      ====================================================================== */
-  // Each brand has its own dashboard: dashboard.html?brand=studio etc.
+  // Each brand has its own dashboard: dashboard.html?brand=frames etc. Form ids stay as stored (studio, live, hq, recruit).
   const BRANDS = {
-    bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers", "vitals-score"] },
-    studio: { name: "Vitals Frames", home: "frames.html", logo: "assets/img/brands/frames-light.svg", forms: ["studio"] },
+    bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers", "vitals-score", "forecast"] },
+    frames: { name: "Vitals Frames", home: "frames.html", logo: "assets/img/brands/frames-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
-    live: { name: "Vitals Stage", home: "stage.html", logo: "assets/img/brands/stage-light.svg", forms: ["live"] },
-    hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
+    stage: { name: "Vitals Stage", home: "stage.html", logo: "assets/img/brands/stage-light.svg", forms: ["live"] },
+    go: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
     crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] },
-    recruit: { name: "Vitals Jobs", home: "jobs.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
+    jobs: { name: "Vitals Jobs", home: "jobs.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
   };
-  const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
+  // Old brand keys (before the rename) still open the right dashboard and match saved pages.
+  const BRAND_ALIAS = { studio: "frames", live: "stage", hq: "go", recruit: "jobs" };
+  const brandKey = b => BRAND_ALIAS[b] || b;
+  const BRAND = (() => { try { const b = brandKey(new URLSearchParams(location.search).get("brand")); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
   const SUB_PAGES = ["frames.html", "web.html", "stage.html", "go.html", "crew.html", "jobs.html"];
-  const PAGE_BRAND = { "frames.html": "studio", "web.html": "web", "stage.html": "live", "go.html": "hq", "crew.html": "crew", "jobs.html": "recruit" };
-  const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
+  const PAGE_BRAND = { "frames.html": "frames", "web.html": "web", "stage.html": "stage", "go.html": "go", "crew.html": "crew", "jobs.html": "jobs" };
+  const pageBrand = p => brandKey((p && p.brand) || (p && PAGE_BRAND[p.path])) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
     { path: "solutions.html", ar: "الخدمات", en: "Services" },

@@ -10,19 +10,19 @@
   --bg: #F6F7FB; --bg-2: #EEF0F6; --surface: #FFFFFF; --surface-2: #FAFBFD; --sunken: #F2F4F8;
   --text: #121528; --text-2: #4A5068; --text-3: #626880;
   --line: #E4E7EF; --line-2: #D2D7E3;
-  --accent: #6C47FF; --accent-hover: #5A35F0; --accent-soft: #EFEBFF; --accent-ink: #FFFFFF; --accent-2: #06B6D4;
+  --accent: #7645FF; --accent-hover: #581CFF; --accent-soft: #EFEBFF; --accent-ink: #FFFFFF; --accent-2: #581CFF;
   --ok: #0B7650; --ok-soft: #E3F6EE; --warn: #965500; --warn-soft: #FFF3DC; --bad: #B82B44; --bad-soft: #FDE8EC; --info: #096C82; --info-soft: #E2F7FB;
   --violet-soft: #EFEBFF;
   --shadow-1: 0 1px 2px rgba(18, 21, 40, 0.05); --shadow-2: 0 10px 30px -12px rgba(18, 21, 40, 0.18);
   --r: 10px; --r-lg: 14px; --r-xl: 18px;
   --display: "Unbounded", "Alexandria", "Inter", system-ui, sans-serif;
-  --grad: linear-gradient(115deg, #6C47FF 0%, #8B5CF6 40%, #22D3EE 100%);
+  --grad: var(--accent);
 }
 :root[data-theme="dark"] {
   --bg: #0C0E1A; --bg-2: #10132A; --surface: #141830; --surface-2: #181C38; --sunken: #10132A;
   --text: #EEF0FA; --text-2: #A9AFC8; --text-3: #858BA6;
   --line: #232846; --line-2: #2F3558;
-  --accent: #9C86FF; --accent-hover: #B3A2FF; --accent-soft: rgba(156, 134, 255, 0.14); --accent-ink: #0C0E1A;
+  --accent: #895FFF; --accent-hover: #B89FFF; --accent-soft: rgba(124, 77, 255, 0.16); --accent-ink: #0C0E1A;
   --ok: #4ADE9B; --ok-soft: rgba(74, 222, 155, 0.12); --warn: #FBBF5A; --warn-soft: rgba(251, 191, 90, 0.12); --bad: #FF7D93; --bad-soft: rgba(255, 125, 147, 0.13); --info: #5EE3F5; --info-soft: rgba(34, 211, 238, 0.12);
   --violet-soft: rgba(156, 134, 255, 0.14);
 }
