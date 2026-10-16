@@ -1209,3 +1209,6 @@ body[data-brand="studio"] {
 
 .rq-soon { display: inline-flex; align-items: flex-start; gap: 10px; margin: 6px 0 4px; padding: 10px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-size: 0.95rem; color: var(--text); text-align: start; max-width: 620px; }
 .rq-soon__dot { flex: none; width: 9px; height: 9px; margin-top: 7px; border-radius: 50%; background: var(--accent); }
+
+.pkg__note { margin: 10px 0 0; font-size: 0.88rem; color: var(--text-2); }
+.pkg__pricev { font-weight: 700; color: var(--text); }

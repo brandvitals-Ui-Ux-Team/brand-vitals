@@ -829,6 +829,7 @@
       kind: { en: "Single landing page", ar: "صفحة هبوط واحدة" },
       for: { en: "For a product, campaign or service that needs to go live now.", ar: "لمنتج أو حملة أو خدمة محتاجة تنزل دلوقتي." },
       weeks: { en: "2 weeks", ar: "أسبوعين" },
+      price: { en: "Starting from EGP 25,000", ar: "تبدأ من 25,000 جنيه" },
       revisions: { en: "2 revision rounds", ar: "جولتين تعديل" },
       includes: [
         ["One conversion-focused landing page", "صفحة هبوط واحدة مبنية على التحويل"],
@@ -844,6 +845,7 @@
       kind: { en: "Multi-page company site", ar: "موقع شركة متعدد الصفحات" },
       for: { en: "For companies that need a credible home for their brand and services.", ar: "للشركات اللي محتاجة بيت رقمي يليق بالبراند والخدمات." },
       weeks: { en: "4 weeks", ar: "4 أسابيع" },
+      price: { en: "Starting from EGP 60,000", ar: "تبدأ من 60,000 جنيه" },
       revisions: { en: "3 revision rounds", ar: "3 جولات تعديل" },
       featured: true,
       includes: [
@@ -860,6 +862,8 @@
       kind: { en: "Online store", ar: "متجر إلكتروني" },
       for: { en: "For brands ready to sell online with local payments and shipping.", ar: "للبراندز الجاهزة تبيع أونلاين بدفع وشحن محلي." },
       weeks: { en: "6 weeks", ar: "6 أسابيع" },
+      price: { en: "Starting from EGP 90,000", ar: "تبدأ من 90,000 جنيه" },
+      note: { en: "Built on Salla, Zid or Shopify, set up and tracked by us.", ar: "على سلة أو زد أو Shopify، واحنا بنجهزه ونربط التتبع." },
       revisions: { en: "3 revision rounds", ar: "3 جولات تعديل" },
       includes: [
         ["Catalog, cart and checkout", "كتالوج وسلة ودفع"],
@@ -876,7 +880,8 @@
       if (!host) return;
       const esc = v => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
       const bi = (o, cls, tag) => "<" + tag + ' class="' + cls + '" data-en="' + esc(o.en) + '" data-ar="' + esc(o.ar) + '">' + esc(o.en) + "</" + tag + ">";
-      host.innerHTML = WEB_PACKAGES.map((p, i) =>
+      // The cards ship as static HTML in web.html (for search engines); only render them if the page has none.
+      if (!host.children.length) host.innerHTML = WEB_PACKAGES.map((p, i) =>
         '<article class="pkg' + (p.featured ? " pkg--featured" : "") + '" data-reveal style="--rd:' + (i * 0.08) + 's">' +
           '<div class="pkg__top"><span class="pkg__code" dir="ltr">&lt;' + esc(p.id) + "/&gt;</span>" +
           (p.featured ? '<span class="pkg__flag" data-en="Most chosen" data-ar="الأكثر طلبًا">Most chosen</span>' : "") + "</div>" +
@@ -885,7 +890,8 @@
           '<dl class="pkg__facts"><div><dt data-en="Delivery" data-ar="التسليم">Delivery</dt>' + bi(p.weeks, "pkg__v", "dd") + "</div>" +
           '<div><dt data-en="Revisions" data-ar="التعديلات">Revisions</dt>' + bi(p.revisions, "pkg__v", "dd") + "</div></dl>" +
           '<ul class="pkg__list">' + p.includes.map(([en, ar]) => '<li data-en="' + esc(en) + '" data-ar="' + esc(ar) + '">' + esc(en) + "</li>").join("") + "</ul>" +
-          '<div class="pkg__price"><span data-en="Tailored quote" data-ar="عرض سعر مخصص">Tailored quote</span></div>' +
+          (p.note ? bi(p.note, "pkg__note", "p") : "") +
+          '<div class="pkg__price">' + (p.price ? bi(p.price, "pkg__pricev", "span") : '<span data-en="Tailored quote" data-ar="سعر حسب المشروع">Tailored quote</span>') + "</div>" +
           '<a class="btn ' + (p.featured ? "btn--primary" : "btn--ghost") + ' pkg__cta" href="#brief" data-package="' + esc(p.id) + '">' +
             '<span data-en="Choose ' + esc(p.name.en) + '" data-ar="اختار ' + esc(p.name.ar) + '">Choose ' + esc(p.name.en) + "</span></a>" +
         "</article>").join("");
