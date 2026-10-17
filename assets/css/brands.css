@@ -319,12 +319,12 @@ body[data-brand].noise::after { opacity: 0.025; }
   .gl-ba { grid-template-columns: minmax(0, 1fr); }
 }
 /* GO and Stage open on a dark hero in both themes: keep the top bar light-on-dark until the page scrolls */
-:is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .nav__link { color: rgba(234, 247, 241, .85); }
-:is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .nav__link:hover { color: #fff; }
-:is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .lang-toggle, :is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .theme-toggle { color: #EAF7F1; border-color: rgba(255, 255, 255, .25); }
-:is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .nav__burger span { background: #EAF7F1; }
-[data-theme="light"] :is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .nav__logo .logo-light { display: block; }
-[data-theme="light"] :is([data-brand="go"], [data-brand="stage"]) .nav:not(.is-scrolled) .nav__logo .logo-dark { display: none; }
+[data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) :is(.nav__link, .nav__parent) { color: rgba(234, 247, 241, .85); }
+[data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) .nav__link:hover { color: #fff; }
+[data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) .lang-toggle, [data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) .theme-toggle { color: #EAF7F1; border-color: rgba(255, 255, 255, .25); }
+[data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) .nav__burger span { background: #EAF7F1; }
+[data-theme="light"] [data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) .nav__logo .logo-light { display: block; }
+[data-theme="light"] [data-brand="stage"]:not(:has(.page-hero)) .nav:not(.is-scrolled) .nav__logo .logo-dark { display: none; }
 /* headings stay in the family's display face (Alexandria), like every Vitals brand */
 [data-brand="crew"] main h1, [data-brand="crew"] main h2 { font-weight: 600; letter-spacing: -0.03em; }
 [dir="rtl"] [data-brand="crew"] main h1, [dir="rtl"] [data-brand="crew"] main h2 { letter-spacing: 0; }
@@ -723,7 +723,7 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
 .bh-search__f input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .bh-jobs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; }
 .bh-job { display: grid; gap: 0.45rem; align-content: start; padding: 1.2rem 1.25rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
-.bh-job h3 { font-size: 1.08rem; }
+.bh-job h3, .bh-job__t { font-size: 1.08rem; }
 .bh-job__co { font-size: 0.9rem; color: var(--text-2); }
 .bh-job__pay { font-weight: 600; font-size: 0.95rem; }
 .bh-job__tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
@@ -855,3 +855,93 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
 /* status chip on sub-brand heroes (Crew) */
 .soon-chip { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 0.85rem; font-weight: 600; color: var(--text); }
 .soon-chip__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+
+/* ---------- Vitals GO · light product page, every picture is a wireframe of the real app ---------- */
+.go-hero { position: relative; padding-block: clamp(7.5rem, 11vw, 9.5rem) clamp(3rem, 6vw, 4.5rem); background: radial-gradient(60% 50% at 80% 20%, color-mix(in srgb, var(--gl-green) 12%, transparent), transparent 70%), var(--bg); overflow: hidden; }
+.go-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+.go-hero__copy { display: grid; justify-items: start; gap: 1.1rem; }
+.go-kicker { font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-text, var(--accent)); }
+[dir="rtl"] .go-kicker { letter-spacing: 0; }
+.go-hero__t { font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; }
+[dir="rtl"] .go-hero__t { line-height: 1.25; letter-spacing: 0; }
+.go-hero__accent { color: var(--gl-green-2); }
+[data-theme="dark"] .go-hero__accent { color: var(--gl-green); }
+.go-hero__copy .lead { max-width: 34rem; }
+.go-hero__note { font-size: .88rem; color: var(--text-3); }
+.go-hero__shot { position: relative; margin: 0; padding-bottom: 2.4rem; padding-inline-end: 3.5rem; }
+.go-device { border: 1px solid var(--line-strong); border-radius: 14px; background: var(--surface); box-shadow: 0 30px 60px -30px rgba(4, 16, 11, .35); overflow: hidden; }
+.go-device__bar { display: flex; align-items: center; gap: .8rem; padding: .55rem .8rem; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.go-device__dots { display: inline-flex; gap: .35rem; }
+.go-device__dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); }
+.go-device__url { flex: 1; max-width: 16rem; padding: .2rem .7rem; border-radius: 6px; background: var(--bg); font-size: .72rem; color: var(--text-3); direction: ltr; }
+.go-device__screen img { display: block; width: 100%; height: auto; }
+.go-device--phone { position: absolute; inset-inline-end: 0; bottom: 0; width: 30%; border-radius: 22px; border-width: 6px; border-color: var(--text); }
+.go-device--phone .go-device__screen { aspect-ratio: 400 / 760; overflow: hidden; }
+.go-device--phone img { object-fit: cover; object-position: top; height: 100%; }
+.go-hero__cap { margin-top: 1rem; font-size: .8rem; color: var(--text-3); }
+.go-lights { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: clamp(2.5rem, 5vw, 3.5rem) 0 0; padding: 0; }
+.go-lights li { display: inline-flex; align-items: center; gap: .55rem; padding: .5rem 1rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); font-size: .88rem; font-weight: 600; }
+.go-lights li + li::before { content: "→"; margin-inline-end: .2rem; color: var(--text-3); }
+[dir="rtl"] .go-lights li + li::before { content: "←"; }
+.go-lights i { width: 10px; height: 10px; border-radius: 50%; order: 1; }
+.go-lights li > span { order: 2; }
+.go-lights--amber i { background: var(--gl-amber); }
+.go-lights--red i { background: var(--gl-red); }
+.go-lights--green i { background: var(--gl-green); }
+.go-lights--paid i { background: var(--accent); }
+
+.go-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 1.6rem); }
+.go-flow__step { display: grid; grid-template-rows: auto 1fr; border: 1px solid var(--line-strong); border-radius: 18px; background: var(--surface); overflow: hidden; }
+.go-flow__step--go { border-color: color-mix(in srgb, var(--gl-green) 55%, transparent); }
+.go-flow__shot { aspect-ratio: 16 / 11; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.go-flow__shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+[dir="rtl"] .go-flow__shot img { object-position: top right; }
+.go-flow__shot--phone { display: grid; place-items: start center; padding-top: 1.2rem; }
+.go-flow__shot--phone img { width: 46%; height: auto; border: 4px solid var(--text); border-bottom: 0; border-radius: 16px 16px 0 0; }
+.go-flow__body { padding: 1.3rem 1.4rem 1.5rem; display: grid; align-content: start; gap: .5rem; }
+.go-flow__n { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text, var(--accent)); font-weight: 700; font-size: .9rem; }
+.go-flow__step--go .go-flow__n { background: color-mix(in srgb, var(--gl-green) 16%, transparent); color: var(--gl-green-2); }
+.go-flow__body h3 { font-size: 1.3rem; }
+.go-flow__body p { color: var(--text-2); }
+
+.go-trust { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+.go-trust__col { display: grid; justify-items: start; gap: 1rem; }
+.go-trust__list { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: 1rem; }
+.go-trust__list li { display: grid; gap: .2rem; padding-inline-start: 1.1rem; border-inline-start: 2px solid var(--gl-green); color: var(--text-2); }
+.go-trust__list b { color: var(--text); }
+.go-ba { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.go-ba__col { padding: 1.4rem; border: 1px solid var(--line-strong); border-radius: 18px; background: var(--surface); }
+.go-ba__col h3 { font-size: 1.05rem; margin-bottom: .8rem; }
+.go-ba__col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+.go-ba__col li { display: flex; gap: .55rem; color: var(--text-2); font-size: .95rem; }
+.go-ba__col li::before { content: "×"; color: var(--gl-red); font-weight: 700; }
+.go-ba__col--go { border-color: color-mix(in srgb, var(--gl-green) 55%, transparent); background: color-mix(in srgb, var(--gl-green) 6%, var(--surface)); }
+.go-ba__col--go li::before { content: "✓"; color: var(--gl-green-2); }
+
+@media (max-width: 900px) {
+  .go-hero__grid, .go-trust { grid-template-columns: 1fr; }
+  .go-flow { grid-template-columns: 1fr; }
+  .go-flow__shot { aspect-ratio: 16 / 9; }
+}
+@media (max-width: 560px) {
+  .go-hero { padding-top: 6.5rem; }
+  .go-hero__shot { padding-inline-end: 2rem; padding-bottom: 1.6rem; }
+  .go-lights li:nth-child(n) { font-size: .8rem; padding: .4rem .75rem; }
+  .go-ba { grid-template-columns: 1fr; }
+  .go-hero__copy .btn-row { width: 100%; }
+}
+/* GO polish: caption clear of the phone, zoomed step screens, plain status pills */
+.go-hero__cap { max-width: 64%; }
+.go-lights li + li::before { content: none; }
+.go-flow__shot:not(.go-flow__shot--phone) img { transform: scale(1.7); transform-origin: var(--zo, 0 0); }
+.go-flow__step:first-child .go-flow__shot { --zo: 50% 22%; }
+[dir="rtl"] .go-flow__step:last-child .go-flow__shot { --zo: 100% 0; }
+[dir="rtl"] .go-lights li + li::before { content: none; }
+.go-hero__cap { max-width: none; padding-inline-end: 34%; }
+@media (max-width: 560px) { .go-lights { display: none; } .go-hero__cap { font-size: .74rem; } }
+@media (max-width: 560px) {
+  .go-trust__list li > span { display: none; }
+  .go-trust__list { gap: .6rem; }
+  .go-ba__col { padding: 1.1rem; }
+}
+@media (max-width: 560px) { #how .gl-center .lead { display: none; } }
