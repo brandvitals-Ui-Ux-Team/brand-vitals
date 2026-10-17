@@ -209,12 +209,17 @@
           document.body.classList.toggle("drawer-open", open);
           document.body.style.overflow = open ? "hidden" : "";
         });
-        drawer.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
+        const close = () => {
           drawer.classList.remove("is-open");
           burger.classList.remove("is-open");
+          burger.setAttribute("aria-expanded", "false");
           document.body.classList.remove("drawer-open");
           document.body.style.overflow = "";
-        }));
+        };
+        drawer.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
+        document.addEventListener("keydown", e => {
+          if (e.key === "Escape" && drawer.classList.contains("is-open")) { close(); burger.focus(); }
+        });
       }
 
       // Active link
