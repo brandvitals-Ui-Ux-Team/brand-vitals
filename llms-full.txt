@@ -60,7 +60,7 @@ Vitals Stage plans, manages and produces business events from Cairo: conferences
 
 ### Vitals GO: Client approvals & paid extras
 https://brandvitals.io/go.html
-Vitals GO is client approval software for agencies, in beta with founding agencies: send work on one link, the client approves on WhatsApp, email or SMS without an account, and anything outside scope is priced, approved and invoiced. One price per agency by active clients: EGP 1,500 a month (1 to 5), EGP 4,500 (6 to 15), EGP 9,500 (16 to 40); team and clients are free.
+Vitals GO is client approval software for agencies, coming soon (founding agencies get early access): send work on one link, the client approves on WhatsApp, email or SMS without an account, and anything outside scope is priced, approved and invoiced. One price per agency by active clients: EGP 1,500 a month (1 to 5), EGP 4,500 (6 to 15), EGP 9,500 (16 to 40); team and clients are free.
 
 ### Vitals Crew: Vetted creative talent
 https://brandvitals.io/crew.html

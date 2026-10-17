@@ -852,3 +852,6 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
 [data-theme="light"] [data-brand="crew"] .cw-kicker { color: var(--accent-2); }
 .cw-promise em { color: #B89FFF; }
 [data-theme="light"] [data-brand="crew"] .cw-promise .cw-kicker { color: #C9BBFF; }
+/* status chip on sub-brand heroes (Crew) */
+.soon-chip { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.soon-chip__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }

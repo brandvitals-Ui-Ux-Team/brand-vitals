@@ -17,8 +17,8 @@ export const GROUPS = [
   {
     key: "platforms", head: ["Platforms · tools you use", "المنصات · أدوات بتستخدمها"], short: ["Platforms", "المنصات"],
     brands: [
-      { key: "go", name: "Vitals GO", href: "go.html", mark: "assets/img/brands/go-mark.svg", d: ["Client approvals & paid extras", "موافقات العملاء والشغل الإضافي المدفوع"], badge: ["Beta", "تجريبي"] },
-      { key: "crew", name: "Vitals Crew", href: "crew.html", mark: "assets/img/brands/crew-mark.svg", d: ["Vetted creative talent", "مواهب إبداعية متقيّمة"], badge: ["Founding members", "أول الأعضاء"] },
+      { key: "go", name: "Vitals GO", href: "go.html", mark: "assets/img/brands/go-mark.svg", d: ["Client approvals & paid extras", "موافقات العملاء والشغل الإضافي المدفوع"], badge: ["Coming soon", "قريبًا"] },
+      { key: "crew", name: "Vitals Crew", href: "crew.html", mark: "assets/img/brands/crew-mark.svg", d: ["Vetted creative talent", "مواهب إبداعية متقيّمة"], badge: ["Coming soon", "قريبًا"] },
       { key: "jobs", name: "Vitals Hire", href: "hire.html", mark: "assets/img/brands/jobs-mark.svg", d: ["Marketing hiring, screened", "توظيف تسويق بفرز حقيقي"], badge: ["Coming soon", "قريبًا"] }
     ]
   }
