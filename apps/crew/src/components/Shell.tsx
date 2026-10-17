@@ -55,6 +55,8 @@ export function Shell({ children }: { children: ReactNode }) {
   const cur = roles.find(r => r[0] === role)!;
 
   return <div className="shell crew-shell">
+    {/* the backdrop comes before the menu and has no blur: Safari can paint a blurred layer over a later sibling */}
+    {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)", backdropFilter: "none", WebkitBackdropFilter: "none" }} onClick={() => setSide(false)} />}
     <aside className={"side" + (side ? " open" : "")} aria-label={L("Main navigation", "التنقل الرئيسي")}>
       <div className="side__brand"><NavLink to="/"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Crew" /></NavLink></div>
       {role === "client" && <>
@@ -85,7 +87,6 @@ export function Shell({ children }: { children: ReactNode }) {
         <a className="nav-a" href="/crew.html"><span style={{ width: 17 }} />{L("About Vitals Crew", "عن Vitals Crew")}</a>
       </div>
     </aside>
-    {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)" }} onClick={() => setSide(false)} />}
     <div className="main">
       <header className="top">
         <button className="icon-btn top__burger" onClick={() => setSide(true)} aria-label={L("Open menu", "فتح القائمة")}><Menu /></button>

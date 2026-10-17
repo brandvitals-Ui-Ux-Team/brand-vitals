@@ -95,7 +95,8 @@
       btn.setAttribute("aria-controls", list.id);
       this.apply(this.lang);
       const set = open => { list.hidden = !open; btn.setAttribute("aria-expanded", String(open)); };
-      btn.addEventListener("click", e => { e.stopPropagation(); set(list.hidden); if (!list.hidden) list.querySelector("a").focus(); });
+      // Only keyboard opening (detail 0) moves focus into the menu; taps leave focus alone.
+      btn.addEventListener("click", e => { e.stopPropagation(); set(list.hidden); if (!list.hidden && e.detail === 0) list.querySelector("a").focus(); });
       wrap.addEventListener("keydown", e => {
         const items = [...list.querySelectorAll("a")], i = items.indexOf(document.activeElement);
         if (e.key === "Escape") { set(false); btn.focus(); }
@@ -103,7 +104,12 @@
         else if (e.key === "ArrowUp" && !list.hidden) { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
       });
       document.addEventListener("click", e => { if (!wrap.contains(e.target)) set(false); });
-      wrap.addEventListener("focusout", e => { if (!wrap.contains(e.relatedTarget)) set(false); });
+      // iOS Safari blurs on tap without focusing the tapped link (relatedTarget is null), so closing on every
+      // focusout would hide the menu before the tap lands. Close only when focus really moved somewhere else.
+      wrap.addEventListener("focusout", () => setTimeout(() => {
+        const a = document.activeElement;
+        if (a && a !== document.body && !wrap.contains(a)) set(false);
+      }, 0));
     },
     apply(lang) {
       this.lang = lang;
@@ -843,7 +849,8 @@
           else if (e.key === "End") { e.preventDefault(); focusAt(-1); }
           else if (e.key === "Escape") { e.preventDefault(); set(false); btn.focus(); }
         });
-        item.addEventListener("focusout", e => { if (!item.contains(e.relatedTarget)) set(false); });
+        // close when focus really leaves (iOS taps blur with no relatedTarget; see the language menu)
+        item.addEventListener("focusout", () => setTimeout(() => { const a = document.activeElement; if (a && a !== document.body && !item.contains(a)) set(false); }, 0));
         document.addEventListener("click", e => { if (isOpen() && !item.contains(e.target)) set(false); });
         if (finePointer) {
           let timer;

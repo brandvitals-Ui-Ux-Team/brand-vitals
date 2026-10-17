@@ -318,7 +318,7 @@ a.li:hover, button.li:hover { background: var(--surface-2); }
 }
 @media (max-width: 860px) {
   .shell { grid-template-columns: minmax(0, 1fr); }
-  .side { position: fixed; z-index: 90; inset-block: 0; inset-inline-start: 0; width: 280px; transform: translateX(-105%); transition: transform 0.25s ease; box-shadow: var(--shadow-3); }
+  .side { position: fixed; z-index: 90; inset-block: 0; inset-inline-start: 0; width: 280px; transform: translateX(-105%); transition: transform 0.25s ease; box-shadow: var(--shadow-3); will-change: transform; -webkit-transform: translateX(-105%); }
   [dir="rtl"] .side { transform: translateX(105%); }
   .side.open { transform: none !important; }
   .top__burger { display: inline-grid; }
