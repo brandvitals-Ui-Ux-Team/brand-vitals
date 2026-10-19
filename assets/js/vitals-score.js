@@ -216,6 +216,13 @@
     clearInterval(ticker);
     const pv = P.status === "fulfilled" ? P.value : null;
     const iv = I.status === "fulfilled" ? I.value : null;
+    // Our scanner missing (static preview) or Google's quota used up is our problem, not the visitor's address:
+    // score the marketing answers and say the website scan will follow.
+    const serviceDown = !pv && !iv && /inspect (404|5dd)|PSI (403|404|429|5dd)|Failed to fetch/i.test(String(I.reason && I.reason.message) + " " + String(P.reason && P.reason.message));
+    if (serviceDown) {
+      render(url, score(url, null, null), L("Our website scanner is busy right now, so this score covers your marketing answers only. Try again in a few minutes for the full check, or send it to a strategist below.", "أداة فحص المواقع عليها ضغط دلوقتي، فالدرجة دي محسوبة من إجاباتك عن التسويق بس. جرّب تاني كمان شوية للفحص الكامل، أو ابعتها لحد من فريقنا تحت."));
+      return;
+    }
     if (!pv && !iv) {
       scan.hidden = true; form.hidden = false;
       const why = I.reason && I.reason.message ? " (" + I.reason.message + ")" : "";

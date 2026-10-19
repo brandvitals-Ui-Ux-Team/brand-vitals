@@ -1,3 +1,11 @@
 {
-  "codeHash": "57d90183cd97055f3107832356966582f75077a3655c25ec04cf0ebf510fa0ec"
+  "codeHash": "57d90183cd97055f3107832356966582f75077a3655c25ec04cf0ebf510fa0ec",
+  "launch": {
+    "frames": true,
+    "web": true,
+    "stage": false,
+    "go": false,
+    "crew": false,
+    "jobs": false
+  }
 }

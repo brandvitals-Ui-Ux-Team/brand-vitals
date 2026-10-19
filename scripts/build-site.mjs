@@ -9,6 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as cheerio from "cheerio";
 import { buildSa, alternates, SA_FILES } from "./build-sa.mjs";
+import { launchState, gateHtml, soonSource, saRedirect, gateApps } from "./launch.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "dist");
@@ -169,7 +170,7 @@ function sitemap(pages) {
     const pri = file === "index.html" ? "1.0" : /^(solutions|work|contact|vitals-score|hq)\.html$/.test(file) ? "0.9" : file === "privacy.html" ? "0.3" : "0.7";
     const alt = alternates(file).map(([l, h]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join("\n");
     const locs = [[pageUrl(file, "en"), pri], [pageUrl(file, "ar"), (pri * 0.9).toFixed(1)]];
-    if (SA_FILES.has(file)) locs.push([SITE + "/sa/" + (file === "index.html" ? "" : file), (pri * 0.9).toFixed(1)]);
+    if (SA_FILES.has(file) && !LAUNCH.closedPage(file)) locs.push([SITE + "/sa/" + (file === "index.html" ? "" : file), (pri * 0.9).toFixed(1)]);
     for (const [loc, p] of locs) rows.push(`  <url>
     <loc>${loc}</loc>
     <lastmod>${today}</lastmod>
@@ -195,13 +196,22 @@ copyTree(ROOT, OUT);
 const pages = fs.readdirSync(ROOT).filter(f => f.endsWith(".html"));
 const indexable = [];
 fs.mkdirSync(path.join(OUT, "ar"), { recursive: true });
+// Sub-brands switched off in the dashboard (cms/config.json → launch) show a "Coming soon" page and greyed-out links.
+const LAUNCH = launchState(ROOT);
 for (const file of pages) {
-  const html = fs.readFileSync(path.join(ROOT, file), "utf8");
-  fs.writeFileSync(path.join(OUT, file), toEnglish(html, file));
+  const soon = LAUNCH.closedPage(file);
+  const html = soon ? soonSource(soon, file) : fs.readFileSync(path.join(ROOT, file), "utf8");
+  fs.writeFileSync(path.join(OUT, file), gateHtml(toEnglish(html, file), LAUNCH, "en"));
   if (NO_AR.has(file)) continue;
-  fs.writeFileSync(path.join(OUT, "ar", file), toArabic(html, file));
+  fs.writeFileSync(path.join(OUT, "ar", file), gateHtml(toArabic(html, file), LAUNCH, "ar"));
   if (!/noindex/i.test(html.match(/<meta name="robots"[^>]*>/)?.[0] || "")) indexable.push(file);
 }
 const saPages = buildSa(OUT);
+for (const file of saPages) {
+  const f = path.join(OUT, "sa", file);
+  fs.writeFileSync(f, LAUNCH.closedPage(file) ? saRedirect(file) : gateHtml(fs.readFileSync(f, "utf8"), LAUNCH, "ar"));
+}
+gateApps(OUT, LAUNCH);
 fs.writeFileSync(path.join(OUT, "sitemap.xml"), sitemap(indexable));
-console.log(`site built → dist/  (${pages.length} pages, ${pages.length - NO_AR.size} Arabic, ${saPages.length} Saudi, ${indexable.length * 2 + saPages.length} sitemap URLs)`);
+const shut = [...LAUNCH.closedByPage.values()];
+console.log(`site built → dist/  (${pages.length} pages, ${pages.length - NO_AR.size} Arabic, ${saPages.length} Saudi, ${indexable.length * 2 + saPages.length} sitemap URLs)${shut.length ? " · coming soon: " + shut.join(", ") : ""}`);

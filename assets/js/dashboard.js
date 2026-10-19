@@ -207,6 +207,11 @@
     tabImages: ["الصور", "Images"],
     tabFiles: ["الكود", "Code"],
     tabSettings: ["الإعدادات", "Settings"],
+    launchTitle: ["الصفحات المفتوحة والمقفولة", "Pages open or closed"],
+    launchIntro: ["الصفحة المقفولة بتظهر رمادي ومكتوب عليها «قريبًا» في كل حتة في الموقع، ومحدش يقدر يفتحها هي أو التطبيق بتاعها. أي تغيير بيتطبق على الموقع بعد ما تنشر.", "A closed page shows grey with \"Coming soon\" everywhere on the site, and nobody can open it or its app. Changes reach the site after you publish."],
+    launchOpen: ["مفتوحة", "Open"],
+    launchClosed: ["مقفولة · قريبًا", "Closed · Coming soon"],
+    launchChanged: ["اتغيرت. انشر عشان تتطبق على الموقع.", "Changed. Publish to apply it to the site."],
     publish: ["نشر", "Publish"],
     publishNow: ["انشر دلوقتي", "Publish now"],
     publishTitle: ["نشر التغييرات على الموقع", "Publish changes to the site"],
@@ -2266,9 +2271,33 @@
     return card("overview", t("anTitle"), [h("p", { class: "muted small" }, t("anIntro")), h("div", { class: "grid2" }, rows), h("div", { class: "row" }, btn(t("anSave"), "check", save, "sm primary"))]);
   }
 
+  // Which sub-brands visitors can open. Saved in cms/config.json → launch; the site build reads it (scripts/launch.mjs).
+  const LAUNCH_DEFAULT = { frames: true, web: true, stage: false, go: false, crew: false, jobs: false };
+  function launchCard() {
+    const keys = BRAND === "bv" ? Object.keys(LAUNCH_DEFAULT) : Object.keys(LAUNCH_DEFAULT).filter(k => k === BRAND);
+    if (!keys.length) return null;
+    const state = Object.assign({}, LAUNCH_DEFAULT, cfg().launch || {});
+    const rows = keys.map(k => {
+      const sw = h("input", { type: "checkbox", role: "switch", class: "launch__sw", "aria-label": BRANDS[k].name });
+      sw.checked = !!state[k];
+      const pill = h("span", null);
+      const paint = () => { pill.className = "pill" + (sw.checked ? " pill--ok" : ""); pill.replaceChildren(h("i"), document.createTextNode(sw.checked ? t("launchOpen") : t("launchClosed"))); };
+      paint();
+      sw.addEventListener("change", () => {
+        const c = cfg();
+        c.launch = Object.assign({}, LAUNCH_DEFAULT, c.launch || {}, { [k]: sw.checked });
+        setCfg(c); paint(); changed();
+        toast(t("launchChanged"), "ok");
+      });
+      return h("label", { class: "launch__row" }, h("img", { src: "assets/img/brands/" + k + "-mark.svg", alt: "", width: 32, height: 32 }), h("b", null, BRANDS[k].name), pill, sw);
+    });
+    return card("eye", t("launchTitle"), [h("p", { class: "muted small" }, t("launchIntro")), h("div", { class: "launch" }, rows)]);
+  }
+
   function renderSettings() {
     const P = $("#panel");
     P.append(tabHead("tabSettings", "settingsIntro"));
+    const lc = launchCard(); if (lc) P.append(lc);
     P.append(backendCard());
     if (BRAND === "bv") P.append(analyticsCard());
     const owner = h("input", { class: "inp", dir: "ltr" }); owner.value = S.repo.owner;

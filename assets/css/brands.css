@@ -172,7 +172,7 @@ body[data-brand].noise::after { opacity: 0.025; }
 .pkg__list { display: grid; gap: 0.55rem; flex: 1; }
 .pkg__list li { position: relative; padding-inline-start: 1.5rem; color: var(--text-2); font-size: 0.94rem; }
 .pkg__list li::before { content: ""; position: absolute; inset-inline-start: 0; top: 0.55em; width: 0.7rem; height: 0.38rem; border-inline-start: 2px solid var(--accent-2); border-bottom: 2px solid var(--accent-2); transform: rotate(-45deg); }
-[dir="rtl"] .pkg__list li::before { transform: rotate(45deg) scaleX(-1); }
+[dir="rtl"] .pkg__list li::before { transform: rotate(-45deg) scaleX(-1); }
 .pkg__price { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); padding-top: 0.4rem; }
 [dir="rtl"] .pkg__price { font-family: var(--font-ar); letter-spacing: 0; text-transform: none; }
 .pkg__cta { justify-content: center; }
@@ -853,8 +853,6 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
 .cw-promise em { color: #B89FFF; }
 [data-theme="light"] [data-brand="crew"] .cw-promise .cw-kicker { color: #C9BBFF; }
 /* status chip on sub-brand heroes (Crew) */
-.soon-chip { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); font-size: 0.85rem; font-weight: 600; color: var(--text); }
-.soon-chip__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
 
 /* ---------- Vitals GO · light product page, every picture is a wireframe of the real app ---------- */
 .go-hero { position: relative; padding-block: clamp(7.5rem, 11vw, 9.5rem) clamp(3rem, 6vw, 4.5rem); background: radial-gradient(60% 50% at 80% 20%, color-mix(in srgb, var(--gl-green) 12%, transparent), transparent 70%), var(--bg); overflow: hidden; }
@@ -945,3 +943,7 @@ html:not([dir="rtl"]) .only-ar, html[dir="rtl"] .only-en { display: none !import
   .go-ba__col { padding: 1.1rem; }
 }
 @media (max-width: 560px) { #how .gl-center .lead { display: none; } }
+
+/* split heroes (.bh) are left-aligned: their fact row follows the copy, not the centred-hero rule */
+.bh .sb-facts { justify-content: flex-start; }
+.bh .sb-facts div { justify-items: start; text-align: start; }
