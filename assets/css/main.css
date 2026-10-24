@@ -1948,3 +1948,10 @@ a[href^="tel:"] span[dir="ltr"] { margin-inline-start: 0.3em; }
   .cta-band__card::after { bottom: 0; height: 64px; opacity: 0.14; }
 }
 @media (max-width: 640px) { .cta-band__card .lead, .cta-band__card .micro { text-align: center; margin-inline: auto; } }
+/* bug sweep 2026-10-25 */
+.case-metric { min-width: 0; }
+.case-metric__v { overflow-wrap: anywhere; font-size: clamp(1.4rem, 0.9rem + 1.8vw, 2.4rem); }
+.case-metric__l { overflow-wrap: anywhere; }
+.eco-badge { font-size: 0.68rem; }
+.case-facts dd a, dd > a[href$="-marketing.html"], .footer__col a[href*="wa.me/"] { display: inline-block; padding-block: 0.2rem; min-height: 24px; }
+.svc-card .idx + h3 { padding-inline-end: 4.5rem; }
