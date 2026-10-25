@@ -33,7 +33,9 @@ apps/jobs/             Vitals Hire app (React), served at /recruit; reuses the G
 supabase/migrations/      HQ database schema with row-level security
 supabase/tests/           runs the schema on real Postgres (PGlite) and tests RLS + client flows
 scripts/build-site.mjs    builds dist/: copies the site and generates Arabic pages under /ar/
-scripts/gen-pages.mjs     one-off generator for service/industry/case/article pages
+scripts/gen-pages.mjs     one-off generator for industry/case/article pages
+scripts/service-pages.mjs the six service pages, each with its own layout (content in scripts/content/services.mjs,
+                          geo-services.mjs and service-instruments.mjs; styles in assets/css/services.css)
 scripts/check-site.mjs    QA: broken links, titles, descriptions, hreflang, Arabic twins
 ```
 

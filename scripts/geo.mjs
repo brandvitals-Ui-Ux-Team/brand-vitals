@@ -273,6 +273,8 @@ if (isMain) {
   let n = 0;
   for (const [file, c] of Object.entries({ ...services, ...industries })) {
     const p = path.join(ROOT, file);
+    // service pages with their own layout (scripts/service-pages.mjs) carry these blocks already
+    if (/<main id="main" data-svc=/.test(fs.readFileSync(p, "utf8"))) continue;
     let s = strip(fs.readFileSync(p, "utf8"));
     s = hero(s, c);
     const anchor = s.match(/\n    <section[^>]*>(?:(?!<section)[\s\S])*?<p class="eyebrow" data-en="Proof"/);
