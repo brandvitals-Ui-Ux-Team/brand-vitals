@@ -68,6 +68,7 @@ export function head({ file, titleEn, titleAr, descEn, descAr, ogType = "website
   <script>(function(){try{var t=localStorage.getItem("oso-theme")||"dark";document.documentElement.dataset.theme=t;}catch(e){}})();</script>
   ${FONTS}
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
   <script type="application/ld+json">
 ${JSON.stringify(graph, null, 2).replace(/^/gm, "  ")}
   </script>
