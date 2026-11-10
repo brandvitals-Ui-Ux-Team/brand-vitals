@@ -1955,3 +1955,4 @@ a[href^="tel:"] span[dir="ltr"] { margin-inline-start: 0.3em; }
 .eco-badge { font-size: 0.68rem; }
 .case-facts dd a, dd > a[href$="-marketing.html"], .footer__col a[href*="wa.me/"] { display: inline-block; padding-block: 0.2rem; min-height: 24px; }
 .svc-card .idx + h3 { padding-inline-end: 4.5rem; }
+.loader, .loader * { pointer-events: none; }

@@ -303,3 +303,14 @@ main[data-svc] { --sv-text: var(--sv); --sv-soft: color-mix(in srgb, var(--sv) 1
 .sv-margin__key .k4 { color: var(--sv-text); font-weight: 700; }
 .sv-margin__key .k4::before { background: var(--sv); border-color: var(--sv); }
 .sv-ladder li:last-child .sv-ladder__c { color: var(--text-2); }
+
+/* grid items shrink to their track; long example text never pushes an instrument past the screen */
+.sv-hero__copy, .sv-hero__inst, .sv-inst, .sv-sig__copy, .sv-sig__art { min-width: 0; }
+.sv-serp__q { min-width: 0; }
+.sv-serp__typed { min-width: 0; text-overflow: ellipsis; }
+.sv-serp__title, .sv-serp__desc { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .sv-leaks li { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
+  .sv-leaks__l { justify-self: start; }
+  .sv-serp__q { font-size: .85rem; }
+}

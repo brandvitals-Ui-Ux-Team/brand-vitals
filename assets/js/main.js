@@ -180,6 +180,10 @@
       };
       requestAnimationFrame(tick);
       setTimeout(finish, quick ? 1600 : 3400); // hard cap so slow assets never trap the visitor
+      // The intro never blocks the page: taps pass through it (CSS), and any tap, key or scroll
+      // ends it at once, so the menu or button the visitor pressed simply works.
+      const skip = () => { finish(); ["pointerdown", "keydown", "wheel", "touchmove"].forEach(t => window.removeEventListener(t, skip, true)); };
+      ["pointerdown", "keydown", "wheel", "touchmove"].forEach(t => window.addEventListener(t, skip, { capture: true, passive: true }));
     }
   };
 
