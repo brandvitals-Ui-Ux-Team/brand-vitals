@@ -1570,3 +1570,116 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
+
+/* ==========================================================================
+   Monitor: the live parts of the theme (assets/css/theme.css, "part 2").
+   A sweep trace in the hero, one waveform per service pillar, and a status rail.
+   Decoration only: everything added here is aria-hidden and carries no content.
+   ========================================================================== */
+(() => {
+  "use strict";
+  const start = () => {
+    const body = document.body;
+    if (!body || body.dataset.brand || !document.querySelector('link[href*="theme.css"]') || !document.querySelector("main")) return;
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const g = (p, c, w) => Math.exp(-((p - c) ** 2) / (2 * w * w));
+    // One beat of each signal, p from 0 to 1, value roughly -0.3 to 1.
+    const WAVES = {
+      ecg: p => 0.12 * g(p, 0.2, 0.03) - 0.14 * g(p, 0.37, 0.008) + 1 * g(p, 0.4, 0.011) - 0.28 * g(p, 0.435, 0.01) + 0.26 * g(p, 0.66, 0.05),
+      pleth: p => 0.95 * g(p, 0.22, 0.075) + 0.42 * g(p, 0.46, 0.09) + 0.1 * g(p, 0.7, 0.12),
+      capno: p => { const up = 1 / (1 + Math.exp(-(p - 0.16) * 70)), down = 1 / (1 + Math.exp((p - 0.68) * 70)); return 0.85 * up * down * (0.9 + 0.1 * p); },
+      resp: p => 0.5 + 0.48 * Math.sin(p * Math.PI * 2 - Math.PI / 2)
+    };
+    const scopes = [];
+    const makeScope = (canvas, { wave, color, beat, speed, base, amp, width = 2 }) => {
+      const s = { canvas, ctx: canvas.getContext("2d"), wave: WAVES[wave], color, beat, speed, base, amp, width, x: 0, on: false, w: 0, h: 0 };
+      const size = () => {
+        const r = canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+        if (!r.width || !r.height) return;
+        s.w = r.width; s.h = r.height; canvas.width = r.width * d; canvas.height = r.height * d;
+        s.ctx.setTransform(d, 0, 0, d, 0, 0); s.x = 0; s.last = null;
+        if (still) paintAll(s);
+      };
+      s.size = size; size(); scopes.push(s);
+      new ResizeObserver(size).observe(canvas);
+      new IntersectionObserver(es => { s.on = es[0].isIntersecting; }, { rootMargin: "80px" }).observe(canvas);
+      return s;
+    };
+    const yAt = (s, x) => s.h * s.base - s.wave(((x % s.beat) + s.beat) % s.beat / s.beat) * s.amp(s.h);
+    const stroke = (s, x0, x1) => {
+      const c = s.ctx;
+      c.strokeStyle = s.color; c.lineWidth = s.width; c.lineJoin = "round"; c.lineCap = "round"; c.shadowColor = s.color; c.shadowBlur = 10;
+      c.beginPath(); c.moveTo(x0, yAt(s, x0));
+      for (let x = x0 + 1; x <= x1; x += 1) c.lineTo(x, yAt(s, x));
+      c.stroke();
+    };
+    const paintAll = s => { s.ctx.clearRect(0, 0, s.w, s.h); stroke(s, 0, s.w); };
+    let prev = 0;
+    const frame = t => {
+      const dt = Math.min(48, t - prev || 16); prev = t;
+      for (const s of scopes) {
+        if (!s.on || !s.w) continue;
+        const from = s.x, to = Math.min(s.w, s.x + s.speed * dt / 1000);
+        s.ctx.shadowBlur = 0; s.ctx.clearRect(to - 1, 0, 46, s.h); // the dark gap that runs ahead of the trace
+        stroke(s, Math.max(0, from - 1), to);
+        s.x = to >= s.w ? 0 : to;
+        if (s.x === 0) s.ctx.clearRect(0, 0, 46, s.h);
+      }
+      requestAnimationFrame(frame);
+    };
+    const css = (el, name, fallback) => (getComputedStyle(el).getPropertyValue(name) || "").trim() || fallback;
+    const accent = () => css(document.documentElement, "--accent", "#00CFFF");
+
+    // 1. the hero sweep
+    const hero = document.querySelector("main > section:first-child");
+    if (hero && getComputedStyle(hero).position !== "static") {
+      const c = document.createElement("canvas");
+      c.className = "mon-scope"; c.setAttribute("aria-hidden", "true");
+      hero.prepend(c); hero.classList.add("has-scope");
+      makeScope(c, { wave: "ecg", color: accent(), beat: 300, speed: 230, base: 0.86, amp: h => Math.min(120, h * 0.16), width: 2 });
+    }
+
+    // 2. the pillars as channels
+    const kinds = ["ecg", "pleth", "capno", "resp"], names = ["CH1 · ECG", "CH2 · PLETH", "CH3 · CO2", "CH4 · RESP"];
+    document.querySelectorAll(".grid-2 > .svc-card").forEach((card, i) => {
+      const k = i % 4, box = document.createElement("div"), c = document.createElement("canvas");
+      box.className = "mon-ch"; box.setAttribute("aria-hidden", "true");
+      box.innerHTML = `<span class="mon-wave__tag"><span>${names[k]}</span><span>LIVE</span></span>`;
+      c.className = "mon-wave"; box.append(c); card.append(box);
+      makeScope(c, { wave: kinds[k], color: css(card, "--c", accent()), beat: [150, 120, 190, 230][k], speed: [120, 96, 84, 70][k], base: k === 0 ? 0.72 : 0.9, amp: h => h * (k === 0 ? 0.6 : 0.78), width: 1.8 });
+    });
+
+    // 3. the status rail
+    const sections = [...document.querySelectorAll("main > section")];
+    if (sections.length > 2) {
+      const rail = document.createElement("div");
+      rail.className = "mon-rail"; rail.setAttribute("aria-hidden", "true");
+      rail.innerHTML = '<span class="mon-rail__n">01</span><span class="mon-rail__track"><span class="mon-rail__dot"></span></span><span class="mon-rail__clock"></span>';
+      body.append(rail);
+      const n = rail.querySelector(".mon-rail__n"), track = rail.querySelector(".mon-rail__track"), dot = rail.querySelector(".mon-rail__dot"), clock = rail.querySelector(".mon-rail__clock");
+      const marks = () => {
+        track.querySelectorAll("i").forEach(e => e.remove());
+        const H = document.documentElement.scrollHeight;
+        sections.forEach(s => { const m = document.createElement("i"); m.style.top = (100 * (s.getBoundingClientRect().top + scrollY) / H) + "%"; track.append(m); });
+      };
+      let queued = false;
+      const place = () => {
+        queued = false;
+        const max = document.documentElement.scrollHeight - innerHeight, mid = scrollY + innerHeight * 0.4;
+        dot.style.top = (max > 0 ? 100 * scrollY / max : 0) + "%";
+        let idx = 0;
+        sections.forEach((s, i) => { if (s.getBoundingClientRect().top + scrollY <= mid) idx = i; });
+        n.textContent = String(idx + 1).padStart(2, "0");
+      };
+      addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(place); } }, { passive: true });
+      addEventListener("resize", marks);
+      addEventListener("load", marks);
+      const time = zone => new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: zone }).format(new Date());
+      const tick = () => { try { clock.textContent = `CAI ${time("Africa/Cairo")} · RUH ${time("Asia/Riyadh")}`; } catch { clock.textContent = ""; } };
+      tick(); setInterval(tick, 20000); marks(); place();
+    }
+    if (!still && scopes.length) requestAnimationFrame(frame);
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
