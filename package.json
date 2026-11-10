@@ -17,18 +17,22 @@
     "dev:hq": "npm run dev --workspace apps/hq",
     "check": "node scripts/check-site.mjs",
     "test:db": "node supabase/tests/migration.test.mjs",
-    "test": "npm run build && npm run check && npm run test:db && npm run test:api",
+    "test": "npm run build && npm run check && npm run test:db && npm run test:api && npm run test:forecast",
     "gen:pages": "node scripts/gen-pages.mjs",
     "test:api": "node --test api/tests/api.test.mjs",
     "build:crew": "npm run build --workspace apps/crew",
     "dev:crew": "npm run dev --workspace apps/crew",
     "build:recruit": "npm run build --workspace apps/recruit",
     "dev:recruit": "npm run dev --workspace apps/recruit",
-    "deploy:pages": "npm run build && node scripts/deploy-pages.mjs"
+    "deploy:pages": "npm run build && node scripts/deploy-pages.mjs",
+    "test:forecast": "node --test tests/forecast.test.mjs",
+    "seo:guard": "node scripts/seo-guard.mjs",
+    "seo:baseline": "node scripts/seo-guard.mjs --save"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
-    "cheerio": "^1.2.0"
+    "cheerio": "^1.2.0",
+    "puppeteer-core": "^25.13.0"
   },
   "engines": {
     "node": ">=20"

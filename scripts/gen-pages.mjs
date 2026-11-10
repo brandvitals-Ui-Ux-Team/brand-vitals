@@ -484,7 +484,8 @@ function linkCards(html, file) {
 
 // -------------------------------------------------------------------- run
 console.log("generating pages…");
-for (const s of services) write(s.file, servicePage(s));
+// Service pages have their own layouts now: node scripts/service-pages.mjs
+// for (const s of services) write(s.file, servicePage(s));
 for (const s of industries) write(s.file, industryPage(s));
 for (const c of cases) write(c.file, casePage(c));
 for (const p of posts) write(p.file, postPage(p));

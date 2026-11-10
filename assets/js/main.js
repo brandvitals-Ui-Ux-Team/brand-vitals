@@ -36,29 +36,84 @@
   // preview, which renders the source page, still switches in place.
   const I18n = {
     lang: "en",
+    // Arabic comes in two settings: Egyptian (/ar/, the default Arabic site) and Saudi (/sa/, a smaller set).
+    dialect: "eg",
+    SA_PAGES: ["index.html", "performance-marketing.html", "stage.html", "hire.html"],
     inAr() { return /^\/ar(\/|$)/.test(location.pathname); },
-    counterpart() {
-      const p = location.pathname;
-      const next = this.inAr() ? (p.replace(/^\/ar(\/|$)/, "/") || "/") : "/ar" + (p === "/" ? "/" : p);
-      return next + location.search + location.hash;
+    inSa() { return /^\/sa(\/|$)/.test(location.pathname); },
+    file() { return location.pathname.replace(/^\/(ar|sa)(?=\/|$)/, "").split("/").pop() || "index.html"; },
+    // The same page in another language setting; Saudi falls back to the Saudi home when a page has no Saudi version.
+    target(code) {
+      const f = this.file(), name = f === "index.html" ? "" : f, q = location.search + location.hash;
+      if (code === "en") return "/" + name + q;
+      if (code === "ar") return "/ar/" + name + q;
+      return "/sa/" + (this.SA_PAGES.includes(f) ? name : "") + q;
     },
+    counterpart() { return this.target(this.lang === "en" ? "ar" : "en"); },
+    current() { return this.lang === "en" ? "en" : this.dialect === "sa" ? "sa" : "ar"; },
     init() {
-      const servedAr = this.inAr() || doc.lang === "ar";
+      const servedAr = this.inAr() || this.inSa() || /^ar/.test(doc.lang);
+      this.dialect = this.inSa() || doc.dataset.dialect === "sa" ? "sa" : "eg";
       this.lang = window.__BV_PREVIEW ? (localStorage.getItem("oso-lang") || "en") : (servedAr ? "ar" : "en");
       this.apply(this.lang);
-      document.querySelectorAll("[data-lang-toggle]").forEach(btn =>
-        btn.addEventListener("click", () => {
-          const next = this.lang === "en" ? "ar" : "en";
-          try { localStorage.setItem("oso-lang", next); } catch (e) { /* ignore */ }
-          // Static pages without an /ar/ twin (or file:// previews) switch in place.
-          if (window.__BV_PREVIEW || !/^https?:$/.test(location.protocol) || doc.dataset.i18n === "inline") { this.apply(next); return; }
-          location.href = this.counterpart();
-        })
-      );
+      const inPlace = () => window.__BV_PREVIEW || !/^https?:$/.test(location.protocol) || doc.dataset.i18n === "inline";
+      document.querySelectorAll("[data-lang-toggle]").forEach(btn => {
+        // Previews and pages without language twins keep the simple EN / عربي switch, in place.
+        if (inPlace()) {
+          btn.addEventListener("click", () => {
+            const next = this.lang === "en" ? "ar" : "en";
+            try { localStorage.setItem("oso-lang", next); } catch (e) { /* ignore */ }
+            this.apply(next);
+          });
+          return;
+        }
+        this.menu(btn);
+      });
+    },
+    // A small menu under the language button: English · عربي (مصر) · سعودي
+    menu(btn) {
+      const wrap = document.createElement("span");
+      wrap.className = "lang-wrap";
+      btn.parentNode.insertBefore(wrap, btn);
+      wrap.appendChild(btn);
+      const list = document.createElement("div");
+      list.className = "lang-menu";
+      list.id = "langMenu" + Math.random().toString(36).slice(2, 7);
+      list.hidden = true;
+      [["en", "English", "en"], ["ar", "عربي (مصر)", "ar-EG"], ["sa", "سعودي", "ar-SA"]].forEach(([code, label, hl]) => {
+        const a = document.createElement("a");
+        a.href = this.target(code);
+        a.textContent = label;
+        a.lang = hl;
+        if (code === this.current()) a.setAttribute("aria-current", "true");
+        a.addEventListener("click", () => { try { localStorage.setItem("oso-lang", code === "en" ? "en" : "ar"); localStorage.setItem("bv-dialect", code === "sa" ? "sa" : "eg"); } catch (e) { /* ignore */ } });
+        list.appendChild(a);
+      });
+      wrap.appendChild(list);
+      btn.setAttribute("aria-haspopup", "true");
+      btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-controls", list.id);
+      this.apply(this.lang);
+      const set = open => { list.hidden = !open; btn.setAttribute("aria-expanded", String(open)); };
+      // Only keyboard opening (detail 0) moves focus into the menu; taps leave focus alone.
+      btn.addEventListener("click", e => { e.stopPropagation(); set(list.hidden); if (!list.hidden && e.detail === 0) list.querySelector("a").focus(); });
+      wrap.addEventListener("keydown", e => {
+        const items = [...list.querySelectorAll("a")], i = items.indexOf(document.activeElement);
+        if (e.key === "Escape") { set(false); btn.focus(); }
+        else if (e.key === "ArrowDown" && !list.hidden) { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+        else if (e.key === "ArrowUp" && !list.hidden) { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+      });
+      document.addEventListener("click", e => { if (!wrap.contains(e.target)) set(false); });
+      // iOS Safari blurs on tap without focusing the tapped link (relatedTarget is null), so closing on every
+      // focusout would hide the menu before the tap lands. Close only when focus really moved somewhere else.
+      wrap.addEventListener("focusout", () => setTimeout(() => {
+        const a = document.activeElement;
+        if (a && a !== document.body && !wrap.contains(a)) set(false);
+      }, 0));
     },
     apply(lang) {
       this.lang = lang;
-      doc.lang = lang;
+      doc.lang = lang === "ar" && this.dialect === "sa" ? "ar-SA" : lang;
       doc.dir = lang === "ar" ? "rtl" : "ltr";
       document.querySelectorAll("[data-en]").forEach(el => {
         const val = el.dataset[lang];
@@ -70,6 +125,12 @@
         el.placeholder = lang === "ar" ? (el.dataset.arPh || "") : (el.dataset.enPh || "");
       });
       document.querySelectorAll("[data-lang-toggle]").forEach(btn => {
+        if (btn.hasAttribute("aria-haspopup")) {
+          // menu mode: the button names the current setting and opens the three choices
+          btn.textContent = { en: "EN", ar: "عربي", sa: "سعودي" }[this.current()];
+          btn.setAttribute("aria-label", lang === "en" ? "Language" : "اللغة");
+          return;
+        }
         btn.textContent = lang === "en" ? "عربي" : "EN";
         btn.setAttribute("aria-label", lang === "en" ? "التبديل إلى العربية" : "Switch to English");
       });
@@ -119,6 +180,10 @@
       };
       requestAnimationFrame(tick);
       setTimeout(finish, quick ? 1600 : 3400); // hard cap so slow assets never trap the visitor
+      // The intro never blocks the page: taps pass through it (CSS), and any tap, key or scroll
+      // ends it at once, so the menu or button the visitor pressed simply works.
+      const skip = () => { finish(); ["pointerdown", "keydown", "wheel", "touchmove"].forEach(t => window.removeEventListener(t, skip, true)); };
+      ["pointerdown", "keydown", "wheel", "touchmove"].forEach(t => window.addEventListener(t, skip, { capture: true, passive: true }));
     }
   };
 
@@ -148,12 +213,17 @@
           document.body.classList.toggle("drawer-open", open);
           document.body.style.overflow = open ? "hidden" : "";
         });
-        drawer.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
+        const close = () => {
           drawer.classList.remove("is-open");
           burger.classList.remove("is-open");
+          burger.setAttribute("aria-expanded", "false");
           document.body.classList.remove("drawer-open");
           document.body.style.overflow = "";
-        }));
+        };
+        drawer.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
+        document.addEventListener("keydown", e => {
+          if (e.key === "Escape" && drawer.classList.contains("is-open")) { close(); burger.focus(); }
+        });
       }
 
       // Active link
@@ -191,11 +261,13 @@
       const els = document.querySelectorAll("[data-reveal]");
       if (!els.length) return;
       if (reduceMotion) { els.forEach(el => el.classList.add("is-inview")); return; }
+      // On phones, reveal before the content scrolls in, so a fast scroll never shows empty bands.
+      const small = window.matchMedia("(max-width: 767px)").matches;
       const io = new IntersectionObserver(entries => {
         entries.forEach(e => {
           if (e.isIntersecting) { e.target.classList.add("is-inview"); io.unobserve(e.target); }
         });
-      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+      }, small ? { threshold: 0.01, rootMargin: "0px 0px 20% 0px" } : { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
       els.forEach(el => io.observe(el));
     }
   };
@@ -402,7 +474,23 @@
           };
           // Bots fill the hidden honeypot field; the dashboard preview never sends anything.
           if (data.website || window.__BV_PREVIEW) { succeed(); return; }
+          // Forms marked data-wa-direct (Vitals Forecast) also open WhatsApp with everything prefilled.
+          const direct = form.hasAttribute("data-wa-direct");
+          if (direct) window.open(Forms.waLink(data), "_blank", "noopener");
+          // Vitals OS, when connected, is where enquiries go: it gives each one an owner and a response deadline.
+          if (VitalsOS.on()) {
+            if (btn) btn.classList.add("is-loading");
+            if (Track.configured()) Track.lead(data).catch(() => {}); // keep the dashboard's own copy too
+            VitalsOS.lead(data).then(succeed).catch(() => {
+              if (btn) btn.classList.remove("is-loading");
+              if (direct) { succeed(); return; }
+              if (form.closest("#consultModal")) ConsultModal.close();
+              Forms.whatsappNotice(form, data);
+            });
+            return;
+          }
           if (!Track.configured()) {
+            if (direct) { succeed(); return; }
             // No database connected yet: offer to send the request on WhatsApp, from the popup.
             if (form.closest("#consultModal")) ConsultModal.close();
             Forms.whatsappNotice(form, data);
@@ -589,6 +677,21 @@
      Configured from the dashboard; does nothing until a URL and key exist.
      No cookies: an anonymous random ID in localStorage counts unique visitors.
   ------------------------------------------------------------------ */
+  // The address of the agency's Vitals OS (for example https://os.brandvitals.io). Empty = not connected.
+  // In Vitals OS the owner allows this website under Agency, Website, "Website allowed to send leads".
+  /* @cms-os-start */
+  const VITALS_OS = "";
+  /* @cms-os-end */
+  const VitalsOS = {
+    on() { return /^https:\/\//.test(VITALS_OS) && !window.__BV_PREVIEW; },
+    lead(d) {
+      return fetch(VITALS_OS.replace(/\/+$/, "") + "/api/public/lead", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: d.name, email: d.email, phone: d.phone, company: d.company, service: d.service,
+          message: [d.budget && "Budget: " + d.budget, d.message, "Form: " + d.form, "Page: " + location.pathname].filter(Boolean).join("\n") })
+      }).then(r => { if (!r.ok) throw new Error("os " + r.status); });
+    }
+  };
   /* @cms-backend-start */
   const BACKEND = {"url":"","key":""};
   /* @cms-backend-end */
@@ -782,7 +885,8 @@
           else if (e.key === "End") { e.preventDefault(); focusAt(-1); }
           else if (e.key === "Escape") { e.preventDefault(); set(false); btn.focus(); }
         });
-        item.addEventListener("focusout", e => { if (!item.contains(e.relatedTarget)) set(false); });
+        // close when focus really leaves (iOS taps blur with no relatedTarget; see the language menu)
+        item.addEventListener("focusout", () => setTimeout(() => { const a = document.activeElement; if (a && a !== document.body && !item.contains(a)) set(false); }, 0));
         document.addEventListener("click", e => { if (isOpen() && !item.contains(e.target)) set(false); });
         if (finePointer) {
           let timer;
@@ -905,11 +1009,6 @@
   };
 
   /* ------------------------------------------------------------------
-     CURRENCY TOGGLE — [data-cur-toggle="selectId"] swaps the select's options
-     (EGP set in the select, other sets in a hidden select[data-cur-options])
-     and keeps input[name=currency] in step, so the form sends the currency.
-  ------------------------------------------------------------------ */
-  /* ------------------------------------------------------------------
      WIREFRAMES — proof sections waiting for real work stay hidden; ?wireframe=1 shows them.
   ------------------------------------------------------------------ */
   const Wireframes = {
@@ -919,6 +1018,216 @@
     }
   };
 
+  /* ------------------------------------------------------------------
+     CYCLE — [data-cycle] shows its screens in turn every 4 s (each
+     screen group keeps one img.is-on). Still under reduced motion,
+     paused while off screen or in a background tab.
+  ------------------------------------------------------------------ */
+  const Cycle = {
+    init() {
+      document.querySelectorAll("[data-cycle]").forEach(box => {
+        if (reduceMotion) return;
+        const groups = [...box.querySelectorAll(".bh-laptop__screen, .bh-phone__screen")].map(g => [...g.querySelectorAll("img")]);
+        const n = Math.min(...groups.map(g => g.length));
+        if (!(n > 1)) return;
+        let i = 0, seen = false;
+        new IntersectionObserver(es => { seen = es[0].isIntersecting; }).observe(box);
+        setInterval(() => {
+          if (!seen || document.hidden) return;
+          i = (i + 1) % n;
+          groups.forEach(g => g.forEach((img, k) => img.classList.toggle("is-on", k === i)));
+        }, 4000);
+      });
+    }
+  };
+
+
+  /* ------------------------------------------------------------------
+     MOBILE BAR — under 768 px, a sticky bottom bar with the page's
+     primary CTA and a WhatsApp button. Shows once the hero is gone,
+     hides while the page's form is on screen.
+  ------------------------------------------------------------------ */
+  const MobileBar = {
+    init() {
+      const hero = document.querySelector("main > section");
+      const src = hero && (hero.querySelector("a.btn--primary[href]") || document.querySelector(".nav a.btn--primary[href]"));
+      if (!src) return;
+      const label = src.querySelector("[data-en]") || src;
+      const bar = document.createElement("div");
+      bar.className = "m-cta";
+      bar.inert = true;
+      const go = document.createElement("a");
+      go.className = "btn btn--primary m-cta__go";
+      go.href = src.getAttribute("href");
+      const span = document.createElement("span");
+      span.textContent = label.textContent.trim();
+      if (label.dataset.en) { span.dataset.en = label.dataset.en; span.dataset.ar = label.dataset.ar; }
+      go.appendChild(span);
+      const wa = document.createElement("a");
+      wa.className = "m-cta__wa";
+      wa.target = "_blank";
+      wa.rel = "noopener";
+      wa.href = "https://wa.me/" + Forms.waNumber();
+      wa.setAttribute("aria-label", I18n.lang === "ar" ? "كلّمنا على واتساب" : "Chat with us on WhatsApp");
+      wa.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm6 15.6c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.3-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.5c-.3-.7-.5-.6-.8-.6h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.4c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 2-.8 2.2-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg>';
+      wa.addEventListener("click", () => Analytics.event("contact", { channel: "whatsapp_bar" }));
+      bar.append(go, wa);
+      document.body.appendChild(bar);
+      const form = document.querySelector("main form");
+      const formSec = form && (form.closest("section") || form);
+      const mq = window.matchMedia("(max-width: 767px)");
+      let heroIn = true, formIn = false;
+      const sync = () => {
+        const on = mq.matches && !heroIn && !formIn;
+        bar.classList.toggle("is-on", on);
+        bar.inert = !on;
+        document.body.classList.toggle("has-mcta", on);
+      };
+      new IntersectionObserver(es => { heroIn = es[0].isIntersecting; sync(); }).observe(hero);
+      if (formSec) new IntersectionObserver(es => { formIn = es[0].isIntersecting; sync(); }, { rootMargin: "0px 0px -30% 0px" }).observe(formSec);
+      mq.addEventListener("change", sync);
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     STACK CARDS — side-by-side comparisons ([data-stack]) also get one
+     card per option for phones; CSS shows one layout or the other.
+  ------------------------------------------------------------------ */
+  const StackCards = {
+    read(box) {
+      if (box.classList.contains("cw-vs")) {
+        const heads = [...box.querySelectorAll(".cw-vs__side")];
+        const rows = [...box.querySelectorAll(".cw-vs__row")].map(r => [r.querySelector(".cw-vs__topic"), ...r.querySelectorAll(".cw-vs__cell")]);
+        return { heads: heads.map(h => h.querySelector("b")), rows };
+      }
+      const [head, ...rest] = [...box.children];
+      return { heads: [...head.children].slice(1), rows: rest.map(r => [...r.children]) };
+    },
+    init() {
+      document.querySelectorAll("[data-stack]").forEach(box => {
+        const { heads, rows } = this.read(box);
+        const wrap = document.createElement("div");
+        wrap.className = "stack-cards";
+        heads.forEach((h, i) => {
+          const card = document.createElement("article");
+          card.className = "stack-card" + (box.dataset.stack !== "plain" && i === heads.length - 1 ? " stack-card--us" : "");
+          const t = document.createElement("h3");
+          t.textContent = h.textContent.trim();
+          const dl = document.createElement("dl");
+          rows.forEach(r => {
+            const d = document.createElement("div");
+            const dt = document.createElement("dt"); dt.textContent = r[0].textContent.trim();
+            const dd = document.createElement("dd"); dd.textContent = r[i + 1].textContent.trim();
+            d.append(dt, dd); dl.appendChild(d);
+          });
+          card.append(t, dl);
+          wrap.appendChild(card);
+        });
+        box.after(wrap);
+      });
+    }
+  };
+
+
+  /* ------------------------------------------------------------------
+     TABS — [data-tabs] shows one child panel at a time; each panel's
+     first [class*="__tag"] becomes its tab label.
+  ------------------------------------------------------------------ */
+  const Tabs = {
+    init() {
+      document.querySelectorAll("[data-tabs]").forEach((box, n) => {
+        const panels = [...box.children];
+        if (panels.length < 2) return;
+        const list = document.createElement("div");
+        list.className = "tabs";
+        list.setAttribute("role", "tablist");
+        const tabs = panels.map((p, i) => {
+          const lab = p.querySelector('[class*="__tag"]');
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "tabs__b";
+          b.id = "tab-" + n + "-" + i;
+          b.setAttribute("role", "tab");
+          b.textContent = lab ? lab.textContent.trim() : String(i + 1);
+          if (!p.id) p.id = "panel-" + n + "-" + i;
+          b.setAttribute("aria-controls", p.id);
+          p.setAttribute("role", "tabpanel");
+          p.setAttribute("aria-labelledby", b.id);
+          list.appendChild(b);
+          return b;
+        });
+        const pick = i => {
+          tabs.forEach((b, k) => { b.setAttribute("aria-selected", String(k === i)); b.tabIndex = k === i ? 0 : -1; });
+          panels.forEach((p, k) => { p.hidden = k !== i; });
+        };
+        tabs.forEach((b, i) => {
+          b.addEventListener("click", () => pick(i));
+          b.addEventListener("keydown", e => {
+            const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+            if (!d) return;
+            const k = (i + (document.dir === "rtl" ? -d : d) + tabs.length) % tabs.length;
+            pick(k); tabs[k].focus();
+          });
+        });
+        box.classList.add("is-tabbed");
+        box.before(list);
+        // a link to a panel's id (e.g. #companies) opens that tab
+        const fromHash = () => panels.findIndex(p => "#" + p.id === location.hash);
+        pick(Math.max(0, fromHash()));
+        window.addEventListener("hashchange", () => { const h = fromHash(); if (h >= 0) pick(h); });
+      });
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     RAILS — on phones, card lists scroll sideways; any that actually
+     scroll become keyboard-focusable regions named after their section.
+  ------------------------------------------------------------------ */
+  const Rails = {
+    init() {
+      const sel = "[data-rail], .process__grid, .results-grid, .industry-grid, .eco-grid, .svc-grid, .phases, .pkg-grid, .inc-grid, .svc, .types, .go-steps, .go-plans, .cw-seats, .cw-track, .bh-jobs, .rq-pillars, .plan-cards, .go-sec, .cw-fees, .stack-cards, .go-tour__tabs, .eh-line";
+      const sync = () => document.querySelectorAll(sel).forEach(el => {
+        const scrolls = el.scrollWidth > el.clientWidth + 4 && getComputedStyle(el).overflowX !== "visible";
+        if (scrolls && !el.hasAttribute("tabindex")) {
+          el.tabIndex = 0;
+          if (!/^(UL|OL|DL)$/.test(el.tagName) && !el.hasAttribute("role")) { el.setAttribute("role", "region"); el.dataset.railRole = ""; }
+          const h = el.closest("section")?.querySelector("h2");
+          el.setAttribute("aria-label", h ? h.textContent.trim() : (I18n.lang === "ar" ? "قائمة قابلة للتمرير" : "Scrollable list"));
+          el.dataset.railFocus = "";
+        } else if (!scrolls && el.hasAttribute("data-rail-focus")) {
+          el.removeAttribute("tabindex"); el.removeAttribute("aria-label"); delete el.dataset.railFocus;
+          if (el.hasAttribute("data-rail-role")) { el.removeAttribute("role"); delete el.dataset.railRole; }
+        }
+      });
+      sync();
+      let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(sync, 200); });
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     FAQ MORE — long FAQs show five questions, then "More questions".
+  ------------------------------------------------------------------ */
+  const FaqMore = {
+    init() {
+      document.querySelectorAll(".acc").forEach(acc => {
+        const items = [...acc.querySelectorAll(":scope > .acc-item")];
+        if (items.length <= 5) return;
+        items.slice(5).forEach(i => (i.hidden = true));
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn btn--ghost acc-more";
+        b.textContent = I18n.lang === "ar" ? "أسئلة تانية" : "More questions";
+        b.addEventListener("click", () => { items.forEach(i => (i.hidden = false)); b.remove(); items[5].querySelector("button")?.focus(); });
+        acc.after(b);
+      });
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     CURRENCY TOGGLE — [data-cur-toggle="selectId"] swaps the select's options
+     (EGP set in the select, other sets in a hidden select[data-cur-options])
+     and keeps input[name=currency] in step, so the form sends the currency.
+  ------------------------------------------------------------------ */
   const CurToggle = {
     init() {
       document.querySelectorAll("[data-cur-toggle]").forEach(box => {
@@ -1086,7 +1395,8 @@
       // Appear once the loader has finished, then show the label briefly.
       const show = () => {
         a.classList.add("is-in");
-        if (reduceMotion) return;
+        // No auto-expanding label on phones: it covers the hero (the sticky bar carries WhatsApp there).
+        if (reduceMotion || window.matchMedia("(max-width: 767px)").matches) return;
         setTimeout(() => { a.classList.add("is-intro"); setTimeout(() => a.classList.remove("is-intro"), 3600); }, 1400);
       };
       const wait = () => (document.body.classList.contains("is-loaded") ? setTimeout(show, 500) : setTimeout(wait, 200));
@@ -1239,6 +1549,12 @@
     Counters.init();
     CurToggle.init();
     Wireframes.init();
+    Cycle.init();
+    StackCards.init();
+    Rails.init();
+    FaqMore.init();
+    Tabs.init();
+    MobileBar.init();
     Signals.init();
     Magnetic.init();
     Ripple.init();

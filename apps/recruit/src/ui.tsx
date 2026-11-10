@@ -1,4 +1,4 @@
-// Shared pieces for Vitals Jobs: labels, pills, the application pipeline, job cards, toasts,
+// Shared pieces for Vitals Hire: labels, pills, the application pipeline, job cards, toasts,
 // notifications and the plain dashboard frame. Each account has one role, so the frame shows only that role's menu.
 import { AlertCircle, Bell, Bookmark, BookmarkCheck, Briefcase, Building2, CheckCircle2, ClipboardList, FilePlus2, Home, LogOut, MapPin, Menu, Moon, RotateCcw, Search, ShieldCheck, Sun, UserRound, UserPlus, X, ShieldAlert } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
@@ -274,8 +274,10 @@ export function Shell({ children }: { children: ReactNode }) {
     <NavLink to={to} end={end} className={({ isActive }) => "nav-a" + (isActive ? " active" : "")}>{icon}<span>{label}</span>{!!count && <span className="count">{count}</span>}</NavLink>;
 
   return <div className="shell rc-shell">
+    {/* the backdrop comes before the menu and has no blur: Safari can paint a blurred layer over a later sibling */}
+    {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)", backdropFilter: "none", WebkitBackdropFilter: "none" }} onClick={() => setSide(false)} />}
     <aside className={"side" + (side ? " open" : "")} aria-label={L("Main navigation", "التنقل الرئيسي")}>
-      <div className="side__brand"><a href="/jobs.html"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Jobs" /></a></div>
+      <div className="side__brand"><a href="/hire.html"><img src={`${import.meta.env.BASE_URL}${theme === "dark" ? "logo-light.svg" : "logo-dark.svg"}`} alt="Vitals Hire" /></a></div>
       {(who === "candidate" || who === "guest") && <>
         <button className="big-send" onClick={() => nav("/search")}><Search />{L("Find jobs", "دوّر على وظيفة")}</button>
         <A to="/search" icon={<Briefcase />} label={L("Jobs", "الوظائف")} />
@@ -304,10 +306,9 @@ export function Shell({ children }: { children: ReactNode }) {
       <div className="side__foot">
         <div className="demo-pill"><ShieldAlert /><span>{L("Preview with sample data", "نسخة تجريبية ببيانات مثال")}</span></div>
         <div className="rc-edge"><ShieldCheck /><span>{L("Every application is screened by Brand Vitals before a company sees it.", "كل طلب بيتفرز من Brand Vitals قبل ما الشركة تشوفه.")}</span></div>
-        <a className="nav-a" href="/jobs.html"><span style={{ width: 17 }} />{L("About Vitals Jobs", "عن Vitals Jobs")}</a>
+        <a className="nav-a" href="/hire.html"><span style={{ width: 17 }} />{L("About Vitals Hire", "عن Vitals Hire")}</a>
       </div>
     </aside>
-    {side && <div className="overlay" style={{ zIndex: 80, background: "rgba(0,0,0,.3)" }} onClick={() => setSide(false)} />}
     <div className="main">
       <header className="top">
         <button className="icon-btn top__burger" onClick={() => setSide(true)} aria-label={L("Open menu", "فتح القائمة")}><Menu /></button>
@@ -326,12 +327,12 @@ export function Shell({ children }: { children: ReactNode }) {
   </div>;
 }
 
-/** /jobs/ opens your home when signed in; visitors get the Vitals Jobs page on the Brand Vitals site, so the brand is seen inside its family.
+/** /jobs/ opens your home when signed in; visitors get the Vitals Hire page on the Brand Vitals site, so the brand is seen inside its family.
  *  Opened from the phone home screen (?app=1), visitors go straight to the jobs instead. */
 export function Landing() {
   const db = useDB();
   const u = currentUser(db);
   const app = new URLSearchParams(location.search).has("app");
-  useEffect(() => { if (!u && !app) window.location.replace("/jobs.html"); }, [u, app]);
+  useEffect(() => { if (!u && !app) window.location.replace("/hire.html"); }, [u, app]);
   return u ? <Navigate replace to={homeOf(u.role)} /> : app ? <Navigate replace to="/search" /> : null;
 }

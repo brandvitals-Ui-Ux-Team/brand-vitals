@@ -8,6 +8,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as cheerio from "cheerio";
+import { buildSa, alternates, SA_FILES } from "./build-sa.mjs";
+import { launchState, gateHtml, soonSource, saRedirect, gateApps } from "./launch.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "dist");
@@ -17,7 +19,7 @@ const SITE = "https://brandvitals.io";
 const NO_AR = new Set(["dashboard.html", "404.html"]);
 // Files and folders that never ship.
 const SKIP = new Set(["node_modules", "dist", "apps", "scripts", "supabase", "api", ".git", ".github", ".vercel", ".impeccable",
-  "package.json", "package-lock.json", "server.js", "README.md", "SITEMAP.md", "vercel.json", ".gitignore", "docs", ".env.example", ".gitattributes"]);
+  "package.json", "package-lock.json", "server.js", "README.md", "SITEMAP.md", "PRICING-NOTES.md", "tests", "vercel.json", ".gitignore", "docs", ".env.example", ".gitattributes"]);
 
 const pageUrl = (file, lang) => {
   const name = file === "index.html" ? "" : file;
@@ -46,9 +48,9 @@ function addAlternates($, file, lang) {
   $('link[rel="canonical"]').attr("href", pageUrl(file, lang));
   $('meta[property="og:url"]').attr("content", pageUrl(file, lang));
   if (!indexable || NO_AR.has(file)) return;
-  head.append(`\n  <link rel="alternate" hreflang="en" href="${pageUrl(file, "en")}" data-build>`);
-  head.append(`\n  <link rel="alternate" hreflang="ar" href="${pageUrl(file, "ar")}" data-build>`);
-  head.append(`\n  <link rel="alternate" hreflang="x-default" href="${pageUrl(file, "en")}" data-build>\n`);
+  // en, ar (generic Arabic = the Egyptian /ar/ site), ar-EG, ar-SA where a Saudi page exists, x-default
+  for (const [l, h] of alternates(file)) head.append(`\n  <link rel="alternate" hreflang="${l}" href="${h}" data-build>`);
+  head.append("\n");
 }
 
 const LOCAL_ASSET = /^(assets|cms)\//;
@@ -120,15 +122,45 @@ function toArabic(html, file) {
     const $el = $(el);
     $el.attr("style", $el.attr("style").replace(/url\((['"]?)(assets\/)/g, "url($1../$2"));
   });
-  // Inline JSON-LD keeps absolute URLs; mark the language.
+  $('[data-only="en"]').remove();
+  // Inline JSON-LD: Arabic language, Arabic FAQ, this version's URL.
   addAlternates($, file, "ar");
+  localizeLd($, file, "ar");
   return $.html();
 }
 
 function toEnglish(html, file) {
   const $ = cheerio.load(html);
+  $('[data-only="ar"]').remove();
   addAlternates($, file, "en");
+  localizeLd($, file, "en");
   return $.html();
+}
+
+// JSON-LD follows the page's language: inLanguage is the page's own, the page's URLs point at this
+// version, and the FAQPage questions mirror the FAQ that is visible on this version.
+function localizeLd($, file, lang) {
+  const base = "https://brandvitals.io/";
+  const own = base + (file === "index.html" ? "" : file);
+  const here = lang === "en" ? own : base + "ar/" + (file === "index.html" ? "" : file);
+  const faq = $(".acc .acc-item").map((_, el) => ({ q: $(el).find(".acc-item__btn > span").first().text().trim(), a: $(el).find(".acc-item__panel p").first().text().trim() })).get().filter(x => x.q && x.a);
+  $('script[type="application/ld+json"]').each((_, el) => {
+    let data;
+    try { data = JSON.parse($(el).html()); } catch { return; }
+    const walk = n => {
+      if (Array.isArray(n)) return n.forEach(walk);
+      if (!n || typeof n !== "object") return;
+      if ("inLanguage" in n) n.inLanguage = lang;
+      if (n["@type"] === "FAQPage" && faq.length) n.mainEntity = faq.map(x => ({ "@type": "Question", name: x.q, acceptedAnswer: { "@type": "Answer", text: x.a } }));
+      if (lang !== "en" && (n["@type"] === "WebPage" || n["@type"] === "Article" || n["@type"] === "BlogPosting")) {
+        for (const k of ["url", "@id"]) if (typeof n[k] === "string" && n[k].startsWith(own)) n[k] = here + n[k].slice(own.length);
+        if (n["@type"] === "WebPage") n.name = $("title").text();
+      }
+      Object.values(n).forEach(walk);
+    };
+    walk(data);
+    $(el).text("\n" + JSON.stringify(data, null, 2) + "\n  ");
+  });
 }
 
 function sitemap(pages) {
@@ -136,16 +168,15 @@ function sitemap(pages) {
   const rows = [];
   for (const file of pages) {
     const pri = file === "index.html" ? "1.0" : /^(solutions|work|contact|vitals-score|hq)\.html$/.test(file) ? "0.9" : file === "privacy.html" ? "0.3" : "0.7";
-    for (const lang of ["en", "ar"]) {
-      rows.push(`  <url>
-    <loc>${pageUrl(file, lang)}</loc>
+    const alt = alternates(file).map(([l, h]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join("\n");
+    const locs = [[pageUrl(file, "en"), pri], [pageUrl(file, "ar"), (pri * 0.9).toFixed(1)]];
+    if (SA_FILES.has(file) && !LAUNCH.closedPage(file)) locs.push([SITE + "/sa/" + (file === "index.html" ? "" : file), (pri * 0.9).toFixed(1)]);
+    for (const [loc, p] of locs) rows.push(`  <url>
+    <loc>${loc}</loc>
     <lastmod>${today}</lastmod>
-    <priority>${lang === "en" ? pri : (pri * 0.9).toFixed(1)}</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="${pageUrl(file, "en")}"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="${pageUrl(file, "ar")}"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="${pageUrl(file, "en")}"/>
+    <priority>${p}</priority>
+${alt}
   </url>`);
-    }
   }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -155,7 +186,7 @@ ${rows.join("\n")}
 }
 
 // ---------------------------------------------------------------------------
-// The apps (Vitals GO in dist/app, Vitals Crew in dist/crew, Vitals Jobs in dist/recruit) are built first; keep them.
+// The apps (Vitals GO in dist/app, Vitals Crew in dist/crew, Vitals Hire in dist/recruit) are built first; keep them.
 const APP_DIRS = new Set(["app", "crew", "jobs"]);
 if (fs.existsSync(OUT)) {
   for (const e of fs.readdirSync(OUT)) if (!APP_DIRS.has(e)) fs.rmSync(path.join(OUT, e), { recursive: true, force: true });
@@ -165,12 +196,26 @@ copyTree(ROOT, OUT);
 const pages = fs.readdirSync(ROOT).filter(f => f.endsWith(".html"));
 const indexable = [];
 fs.mkdirSync(path.join(OUT, "ar"), { recursive: true });
+// Sub-brands switched off in the dashboard (cms/config.json → launch) show a "Coming soon" page and greyed-out links.
+const LAUNCH = launchState(ROOT);
+// "Team login": a footer button that opens Vitals OS, the agency's internal system (cms/config.json → os_url).
+const OS_URL = (() => { try { return String(JSON.parse(fs.readFileSync(path.join(ROOT, "cms/config.json"), "utf8")).os_url || ""); } catch { return ""; } })();
+const teamLogin = (html, lang) => !/^https?:\/\//.test(OS_URL) || html.includes("footer__dash--team") ? html : html.replace(/(<a class="footer__dash"[^>]*>[\s\S]*?<\/a>)/,
+  `$1\n          <a class="footer__dash footer__dash--team" href="${OS_URL.replace(/"/g, "&quot;")}" target="_blank" rel="nofollow noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg><span>${lang === "ar" ? "دخول الفريق" : "Team login"}</span></a>`);
 for (const file of pages) {
-  const html = fs.readFileSync(path.join(ROOT, file), "utf8");
-  fs.writeFileSync(path.join(OUT, file), toEnglish(html, file));
+  const soon = LAUNCH.closedPage(file);
+  const html = soon ? soonSource(soon, file) : fs.readFileSync(path.join(ROOT, file), "utf8");
+  fs.writeFileSync(path.join(OUT, file), teamLogin(gateHtml(toEnglish(html, file), LAUNCH, "en"), "en"));
   if (NO_AR.has(file)) continue;
-  fs.writeFileSync(path.join(OUT, "ar", file), toArabic(html, file));
+  fs.writeFileSync(path.join(OUT, "ar", file), teamLogin(gateHtml(toArabic(html, file), LAUNCH, "ar"), "ar"));
   if (!/noindex/i.test(html.match(/<meta name="robots"[^>]*>/)?.[0] || "")) indexable.push(file);
 }
+const saPages = buildSa(OUT);
+for (const file of saPages) {
+  const f = path.join(OUT, "sa", file);
+  fs.writeFileSync(f, LAUNCH.closedPage(file) ? saRedirect(file) : teamLogin(gateHtml(fs.readFileSync(f, "utf8"), LAUNCH, "ar"), "ar"));
+}
+gateApps(OUT, LAUNCH);
 fs.writeFileSync(path.join(OUT, "sitemap.xml"), sitemap(indexable));
-console.log(`site built → dist/  (${pages.length} pages, ${pages.length - NO_AR.size} Arabic, ${indexable.length * 2} sitemap URLs)`);
+const shut = [...LAUNCH.closedByPage.values()];
+console.log(`site built → dist/  (${pages.length} pages, ${pages.length - NO_AR.size} Arabic, ${saPages.length} Saudi, ${indexable.length * 2 + saPages.length} sitemap URLs)${shut.length ? " · coming soon: " + shut.join(", ") : ""}`);

@@ -11,22 +11,25 @@
   /* ======================================================================
      CONSTANTS
      ====================================================================== */
-  // Each brand has its own dashboard: dashboard.html?brand=studio etc.
+  // Each brand has its own dashboard: dashboard.html?brand=frames etc. Form ids stay as stored (studio, live, hq, recruit).
   const BRANDS = {
-    bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers", "vitals-score"] },
-    studio: { name: "Vitals Frames", home: "frames.html", logo: "assets/img/brands/frames-light.svg", forms: ["studio"] },
+    bv: { name: "Brand Vitals", home: "index.html", logo: "assets/img/logo-light.svg", forms: ["contact", "consult", "lead", "careers", "vitals-score", "forecast"] },
+    frames: { name: "Vitals Frames", home: "frames.html", logo: "assets/img/brands/frames-light.svg", forms: ["studio"] },
     web: { name: "Vitals Web", home: "web.html", logo: "assets/img/brands/web-light.svg", forms: ["web"] },
-    live: { name: "Vitals Stage", home: "stage.html", logo: "assets/img/brands/stage-light.svg", forms: ["live"] },
-    hq: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
+    stage: { name: "Vitals Stage", home: "stage.html", logo: "assets/img/brands/stage-light.svg", forms: ["live"] },
+    go: { name: "Vitals GO", home: "go.html", logo: "assets/img/brands/go-light.svg", forms: ["hq"] },
     crew: { name: "Vitals Crew", home: "crew.html", logo: "assets/img/brands/crew-light.svg", forms: ["crew"] },
-    recruit: { name: "Vitals Jobs", home: "jobs.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
+    jobs: { name: "Vitals Hire", home: "hire.html", logo: "assets/img/brands/jobs-light.svg", forms: ["recruit"] }
   };
-  const BRAND = (() => { try { const b = new URLSearchParams(location.search).get("brand"); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
+  // Old brand keys (before the rename) still open the right dashboard and match saved pages.
+  const BRAND_ALIAS = { studio: "frames", live: "stage", hq: "go", recruit: "jobs" };
+  const brandKey = b => BRAND_ALIAS[b] || b;
+  const BRAND = (() => { try { const b = brandKey(new URLSearchParams(location.search).get("brand")); return BRANDS[b] ? b : "bv"; } catch (e) { return "bv"; } })();
   const B = BRANDS[BRAND];
   const HOME = B.home;
-  const SUB_PAGES = ["frames.html", "web.html", "stage.html", "go.html", "crew.html", "jobs.html"];
-  const PAGE_BRAND = { "frames.html": "studio", "web.html": "web", "stage.html": "live", "go.html": "hq", "crew.html": "crew", "jobs.html": "recruit" };
-  const pageBrand = p => (p && p.brand) || (p && PAGE_BRAND[p.path]) || "bv";
+  const SUB_PAGES = ["frames.html", "web.html", "stage.html", "go.html", "crew.html", "hire.html"];
+  const PAGE_BRAND = { "frames.html": "frames", "web.html": "web", "stage.html": "stage", "go.html": "go", "crew.html": "crew", "hire.html": "jobs" };
+  const pageBrand = p => brandKey((p && p.brand) || (p && PAGE_BRAND[p.path])) || "bv";
   const ALL_CORE_PAGES = [
     { path: "index.html", ar: "الرئيسية", en: "Home" },
     { path: "solutions.html", ar: "الخدمات", en: "Services" },
@@ -40,7 +43,7 @@
     { path: "stage.html", ar: "Vitals Stage", en: "Vitals Stage" },
     { path: "go.html", ar: "Vitals GO", en: "Vitals GO" },
     { path: "crew.html", ar: "Vitals Crew", en: "Vitals Crew" },
-    { path: "jobs.html", ar: "Vitals Jobs", en: "Vitals Jobs" },
+    { path: "hire.html", ar: "Vitals Hire", en: "Vitals Hire" },
     { path: "blog.html", ar: "المدونة", en: "Blog" },
     { path: "vitals-score.html", ar: "فحص Vitals المجاني", en: "Free Vitals Score" },
     { path: "performance-marketing.html", ar: "خدمة: تسويق الأداء", en: "Service: Performance marketing" },
@@ -204,6 +207,11 @@
     tabImages: ["الصور", "Images"],
     tabFiles: ["الكود", "Code"],
     tabSettings: ["الإعدادات", "Settings"],
+    launchTitle: ["الصفحات المفتوحة والمقفولة", "Pages open or closed"],
+    launchIntro: ["الصفحة المقفولة بتظهر رمادي ومكتوب عليها «قريبًا» في كل حتة في الموقع، ومحدش يقدر يفتحها هي أو التطبيق بتاعها. أي تغيير بيتطبق على الموقع بعد ما تنشر.", "A closed page shows grey with \"Coming soon\" everywhere on the site, and nobody can open it or its app. Changes reach the site after you publish."],
+    launchOpen: ["مفتوحة", "Open"],
+    launchClosed: ["مقفولة · قريبًا", "Closed · Coming soon"],
+    launchChanged: ["اتغيرت. انشر عشان تتطبق على الموقع.", "Changed. Publish to apply it to the site."],
     publish: ["نشر", "Publish"],
     publishNow: ["انشر دلوقتي", "Publish now"],
     publishTitle: ["نشر التغييرات على الموقع", "Publish changes to the site"],
@@ -2263,9 +2271,33 @@
     return card("overview", t("anTitle"), [h("p", { class: "muted small" }, t("anIntro")), h("div", { class: "grid2" }, rows), h("div", { class: "row" }, btn(t("anSave"), "check", save, "sm primary"))]);
   }
 
+  // Which sub-brands visitors can open. Saved in cms/config.json → launch; the site build reads it (scripts/launch.mjs).
+  const LAUNCH_DEFAULT = { frames: true, web: true, stage: false, go: false, crew: false, jobs: false };
+  function launchCard() {
+    const keys = BRAND === "bv" ? Object.keys(LAUNCH_DEFAULT) : Object.keys(LAUNCH_DEFAULT).filter(k => k === BRAND);
+    if (!keys.length) return null;
+    const state = Object.assign({}, LAUNCH_DEFAULT, cfg().launch || {});
+    const rows = keys.map(k => {
+      const sw = h("input", { type: "checkbox", role: "switch", class: "launch__sw", "aria-label": BRANDS[k].name });
+      sw.checked = !!state[k];
+      const pill = h("span", null);
+      const paint = () => { pill.className = "pill" + (sw.checked ? " pill--ok" : ""); pill.replaceChildren(h("i"), document.createTextNode(sw.checked ? t("launchOpen") : t("launchClosed"))); };
+      paint();
+      sw.addEventListener("change", () => {
+        const c = cfg();
+        c.launch = Object.assign({}, LAUNCH_DEFAULT, c.launch || {}, { [k]: sw.checked });
+        setCfg(c); paint(); changed();
+        toast(t("launchChanged"), "ok");
+      });
+      return h("label", { class: "launch__row" }, h("img", { src: "assets/img/brands/" + k + "-mark.svg", alt: "", width: 32, height: 32 }), h("b", null, BRANDS[k].name), pill, sw);
+    });
+    return card("eye", t("launchTitle"), [h("p", { class: "muted small" }, t("launchIntro")), h("div", { class: "launch" }, rows)]);
+  }
+
   function renderSettings() {
     const P = $("#panel");
     P.append(tabHead("tabSettings", "settingsIntro"));
+    const lc = launchCard(); if (lc) P.append(lc);
     P.append(backendCard());
     if (BRAND === "bv") P.append(analyticsCard());
     const owner = h("input", { class: "inp", dir: "ltr" }); owner.value = S.repo.owner;
