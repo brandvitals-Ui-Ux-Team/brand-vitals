@@ -198,18 +198,22 @@ const indexable = [];
 fs.mkdirSync(path.join(OUT, "ar"), { recursive: true });
 // Sub-brands switched off in the dashboard (cms/config.json → launch) show a "Coming soon" page and greyed-out links.
 const LAUNCH = launchState(ROOT);
+// "Team login": a footer button that opens Vitals OS, the agency's internal system (cms/config.json → os_url).
+const OS_URL = (() => { try { return String(JSON.parse(fs.readFileSync(path.join(ROOT, "cms/config.json"), "utf8")).os_url || ""); } catch { return ""; } })();
+const teamLogin = (html, lang) => !/^https?:\/\//.test(OS_URL) || html.includes("footer__dash--team") ? html : html.replace(/(<a class="footer__dash"[^>]*>[\s\S]*?<\/a>)/,
+  `$1\n          <a class="footer__dash footer__dash--team" href="${OS_URL.replace(/"/g, "&quot;")}" target="_blank" rel="nofollow noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg><span>${lang === "ar" ? "دخول الفريق" : "Team login"}</span></a>`);
 for (const file of pages) {
   const soon = LAUNCH.closedPage(file);
   const html = soon ? soonSource(soon, file) : fs.readFileSync(path.join(ROOT, file), "utf8");
-  fs.writeFileSync(path.join(OUT, file), gateHtml(toEnglish(html, file), LAUNCH, "en"));
+  fs.writeFileSync(path.join(OUT, file), teamLogin(gateHtml(toEnglish(html, file), LAUNCH, "en"), "en"));
   if (NO_AR.has(file)) continue;
-  fs.writeFileSync(path.join(OUT, "ar", file), gateHtml(toArabic(html, file), LAUNCH, "ar"));
+  fs.writeFileSync(path.join(OUT, "ar", file), teamLogin(gateHtml(toArabic(html, file), LAUNCH, "ar"), "ar"));
   if (!/noindex/i.test(html.match(/<meta name="robots"[^>]*>/)?.[0] || "")) indexable.push(file);
 }
 const saPages = buildSa(OUT);
 for (const file of saPages) {
   const f = path.join(OUT, "sa", file);
-  fs.writeFileSync(f, LAUNCH.closedPage(file) ? saRedirect(file) : gateHtml(fs.readFileSync(f, "utf8"), LAUNCH, "ar"));
+  fs.writeFileSync(f, LAUNCH.closedPage(file) ? saRedirect(file) : teamLogin(gateHtml(fs.readFileSync(f, "utf8"), LAUNCH, "ar"), "ar"));
 }
 gateApps(OUT, LAUNCH);
 fs.writeFileSync(path.join(OUT, "sitemap.xml"), sitemap(indexable));
