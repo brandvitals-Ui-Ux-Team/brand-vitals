@@ -1572,113 +1572,65 @@
 })();
 
 /* ==========================================================================
-   Monitor: the live parts of the theme (assets/css/theme.css, "part 2").
-   A sweep trace in the hero, one waveform per service pillar, and a status rail.
+   Studio: the drawn parts of the theme (assets/css/theme.css, part 2).
+   A quiet pulse in the hero, a turning badge, a running band of services, and a
+   small wireframe of the work on each service pillar.
    Decoration only: everything added here is aria-hidden and carries no content.
    ========================================================================== */
 (() => {
   "use strict";
   const start = () => {
-    const body = document.body;
-    if (!body || body.dataset.brand || !document.querySelector('link[href*="theme.css"]') || !document.querySelector("main")) return;
+    const body = document.body, main = document.querySelector("main");
+    if (!body || body.dataset.brand || !main || !document.querySelector('link[href*="theme.css"]')) return;
+    const ar = document.documentElement.lang.startsWith("ar");
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const g = (p, c, w) => Math.exp(-((p - c) ** 2) / (2 * w * w));
-    // One beat of each signal, p from 0 to 1, value roughly -0.3 to 1.
-    const WAVES = {
-      ecg: p => 0.12 * g(p, 0.2, 0.03) - 0.14 * g(p, 0.37, 0.008) + 1 * g(p, 0.4, 0.011) - 0.28 * g(p, 0.435, 0.01) + 0.26 * g(p, 0.66, 0.05),
-      pleth: p => 0.95 * g(p, 0.22, 0.075) + 0.42 * g(p, 0.46, 0.09) + 0.1 * g(p, 0.7, 0.12),
-      capno: p => { const up = 1 / (1 + Math.exp(-(p - 0.16) * 70)), down = 1 / (1 + Math.exp((p - 0.68) * 70)); return 0.85 * up * down * (0.9 + 0.1 * p); },
-      resp: p => 0.5 + 0.48 * Math.sin(p * Math.PI * 2 - Math.PI / 2)
-    };
-    const scopes = [];
-    const makeScope = (canvas, { wave, color, beat, speed, base, amp, width = 2 }) => {
-      const s = { canvas, ctx: canvas.getContext("2d"), wave: WAVES[wave], color, beat, speed, base, amp, width, x: 0, on: false, w: 0, h: 0 };
-      const size = () => {
-        const r = canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
-        if (!r.width || !r.height) return;
-        s.w = r.width; s.h = r.height; canvas.width = r.width * d; canvas.height = r.height * d;
-        s.ctx.setTransform(d, 0, 0, d, 0, 0); s.x = 0; s.last = null;
-        if (still) paintAll(s);
-      };
-      s.size = size; size(); scopes.push(s);
-      new ResizeObserver(size).observe(canvas);
-      new IntersectionObserver(es => { s.on = es[0].isIntersecting; }, { rootMargin: "80px" }).observe(canvas);
-      return s;
-    };
-    const yAt = (s, x) => s.h * s.base - s.wave(((x % s.beat) + s.beat) % s.beat / s.beat) * s.amp(s.h);
-    const stroke = (s, x0, x1) => {
-      const c = s.ctx;
-      c.strokeStyle = s.color; c.lineWidth = s.width; c.lineJoin = "round"; c.lineCap = "round"; c.shadowColor = s.color; c.shadowBlur = 10;
-      c.beginPath(); c.moveTo(x0, yAt(s, x0));
-      for (let x = x0 + 1; x <= x1; x += 1) c.lineTo(x, yAt(s, x));
-      c.stroke();
-    };
-    const paintAll = s => { s.ctx.clearRect(0, 0, s.w, s.h); stroke(s, 0, s.w); };
-    let prev = 0;
-    const frame = t => {
-      const dt = Math.min(48, t - prev || 16); prev = t;
-      for (const s of scopes) {
-        if (!s.on || !s.w) continue;
-        const from = s.x, to = Math.min(s.w, s.x + s.speed * dt / 1000);
-        s.ctx.shadowBlur = 0; s.ctx.clearRect(to - 1, 0, 46, s.h); // the dark gap that runs ahead of the trace
-        stroke(s, Math.max(0, from - 1), to);
-        s.x = to >= s.w ? 0 : to;
-        if (s.x === 0) s.ctx.clearRect(0, 0, 46, s.h);
-      }
-      requestAnimationFrame(frame);
-    };
-    const css = (el, name, fallback) => (getComputedStyle(el).getPropertyValue(name) || "").trim() || fallback;
-    const accent = () => css(document.documentElement, "--accent", "#00CFFF");
+    const el = (cls, html) => { const d = document.createElement("div"); d.className = cls; d.setAttribute("aria-hidden", "true"); d.innerHTML = html; return d; };
 
-    // 1. the hero sweep
-    const hero = document.querySelector("main > section:first-child");
+    // 1. the pulse: one slow sweep behind the hero
+    const hero = main.querySelector(":scope > section:first-child");
     if (hero && getComputedStyle(hero).position !== "static") {
       const c = document.createElement("canvas");
       c.className = "mon-scope"; c.setAttribute("aria-hidden", "true");
       hero.prepend(c); hero.classList.add("has-scope");
-      makeScope(c, { wave: "ecg", color: accent(), beat: 300, speed: 230, base: 0.86, amp: h => Math.min(120, h * 0.16), width: 2 });
+      const g = (p, m, w) => Math.exp(-((p - m) ** 2) / (2 * w * w));
+      const beat = p => 0.12 * g(p, 0.2, 0.03) - 0.14 * g(p, 0.37, 0.008) + g(p, 0.4, 0.011) - 0.28 * g(p, 0.435, 0.01) + 0.26 * g(p, 0.66, 0.05);
+      const x2 = c.getContext("2d"), color = (getComputedStyle(document.documentElement).getPropertyValue("--accent") || "#00CFFF").trim();
+      let w = 0, h = 0, x = 0, on = true, prev = 0;
+      const y = v => h * 0.88 - beat((v % 320) / 320) * Math.min(110, h * 0.15);
+      const line = (a, b) => { x2.strokeStyle = color; x2.lineWidth = 2; x2.lineJoin = "round"; x2.shadowColor = color; x2.shadowBlur = 10; x2.beginPath(); x2.moveTo(a, y(a)); for (let i = a + 1; i <= b; i++) x2.lineTo(i, y(i)); x2.stroke(); };
+      const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); if (!r.width) return; w = r.width; h = r.height; c.width = w * d; c.height = h * d; x2.setTransform(d, 0, 0, d, 0, 0); x = 0; if (still) line(0, w); };
+      size(); new ResizeObserver(size).observe(c);
+      new IntersectionObserver(e => { on = e[0].isIntersecting; }).observe(c);
+      const frame = t => { const dt = Math.min(48, t - prev || 16); prev = t; if (on && w) { const to = Math.min(w, x + 200 * dt / 1000); x2.shadowBlur = 0; x2.clearRect(to - 1, 0, 46, h); line(Math.max(0, x - 1), to); x = to >= w ? 0 : to; if (!x) x2.clearRect(0, 0, 46, h); } requestAnimationFrame(frame); };
+      if (!still) requestAnimationFrame(frame);
     }
 
-    // 2. the pillars as channels
-    const kinds = ["ecg", "pleth", "capno", "resp"], names = ["CH1 · ECG", "CH2 · PLETH", "CH3 · CO2", "CH4 · RESP"];
-    document.querySelectorAll(".grid-2 > .svc-card").forEach((card, i) => {
-      const k = i % 4, box = document.createElement("div"), c = document.createElement("canvas");
-      box.className = "mon-ch"; box.setAttribute("aria-hidden", "true");
-      box.innerHTML = `<span class="mon-wave__tag"><span>${names[k]}</span><span>LIVE</span></span>`;
-      c.className = "mon-wave"; box.append(c); card.append(box);
-      makeScope(c, { wave: kinds[k], color: css(card, "--c", accent()), beat: [150, 120, 190, 230][k], speed: [120, 96, 84, 70][k], base: k === 0 ? 0.72 : 0.9, amp: h => h * (k === 0 ? 0.6 : 0.78), width: 1.8 });
-    });
-
-    // 3. the status rail
-    const sections = [...document.querySelectorAll("main > section")];
-    if (sections.length > 2) {
-      const rail = document.createElement("div");
-      rail.className = "mon-rail"; rail.setAttribute("aria-hidden", "true");
-      rail.innerHTML = '<span class="mon-rail__n">01</span><span class="mon-rail__track"><span class="mon-rail__dot"></span></span><span class="mon-rail__clock"></span>';
-      body.append(rail);
-      const n = rail.querySelector(".mon-rail__n"), track = rail.querySelector(".mon-rail__track"), dot = rail.querySelector(".mon-rail__dot"), clock = rail.querySelector(".mon-rail__clock");
-      const marks = () => {
-        track.querySelectorAll("i").forEach(e => e.remove());
-        const H = document.documentElement.scrollHeight;
-        sections.forEach(s => { const m = document.createElement("i"); m.style.top = (100 * (s.getBoundingClientRect().top + scrollY) / H) + "%"; track.append(m); });
-      };
-      let queued = false;
-      const place = () => {
-        queued = false;
-        const max = document.documentElement.scrollHeight - innerHeight, mid = scrollY + innerHeight * 0.4;
-        dot.style.top = (max > 0 ? 100 * scrollY / max : 0) + "%";
-        let idx = 0;
-        sections.forEach((s, i) => { if (s.getBoundingClientRect().top + scrollY <= mid) idx = i; });
-        n.textContent = String(idx + 1).padStart(2, "0");
-      };
-      addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(place); } }, { passive: true });
-      addEventListener("resize", marks);
-      addEventListener("load", marks);
-      const time = zone => new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: zone }).format(new Date());
-      const tick = () => { try { clock.textContent = `CAI ${time("Africa/Cairo")} · RUH ${time("Asia/Riyadh")}`; } catch { clock.textContent = ""; } };
-      tick(); setInterval(tick, 20000); marks(); place();
+    // 2. homepage: the badge on the hero window, and the running band under the hero
+    const win = document.querySelector(".bvh__win");
+    if (win) {
+      if (getComputedStyle(win).position === "static") win.style.position = "relative";
+      win.style.overflow = "visible";
+      win.append(el("st-badge", '<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="60"/><defs><path id="st-ring" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs><text><textPath href="#st-ring">CREATIVE ✦ CONTENT ✦ ADS ✦ GROWTH ✦ </textPath></text></svg><b>✦</b>'));
     }
-    if (!still && scopes.length) requestAnimationFrame(frame);
+    if (hero && hero.classList.contains("hero")) {
+      const words = ar ? ["براندنج", "سوشيال ميديا", "إعلانات", "محتوى", "مواقع", "SEO", "استراتيجية"] : ["Branding", "Social media", "Paid ads", "Content", "Websites", "SEO", "Strategy"];
+      const run = words.map(w => `<span>${w}</span><i>✦</i>`).join("");
+      hero.after(el("st-band", `<div class="st-band__run">${run.repeat(4)}</div>`));
+    }
+
+    // 3. the pillars: a small wireframe of the work each one produces
+    const L = ar ? { a: "الجمهور", o: "العرض", m: "الرسالة", ad: "إعلان ممول", buy: "اطلب الآن" } : { a: "Audience", o: "Offer", m: "Message", ad: "Sponsored", buy: "Shop now" };
+    const ART = [
+      // strategy: three notes on a board
+      `<div class="note n1" style="left:4px;top:26px;background:#FFC857;transform:rotate(-6deg)">${L.a}</div><div class="note n2" style="left:84px;top:8px;background:#00CFFF;transform:rotate(2deg)">${L.o}</div><div class="note n3" style="left:164px;top:34px;background:#FF7AC6;transform:rotate(5deg)">${L.m}</div>`,
+      // brand: a specimen, a mark, a palette
+      '<div class="aa" style="left:6px;top:8px">Aa</div><div class="mark" style="left:150px;top:6px">B</div><div class="sw" style="left:8px;top:104px;background:#00CFFF"></div><div class="sw" style="left:32px;top:104px;background:#FFC857"></div><div class="sw" style="left:56px;top:104px;background:#FF7AC6"></div><div class="sw" style="left:80px;top:104px;background:#ECF3F6"></div><div class="ln" style="left:150px;top:92px;width:90px"></div><div class="ln" style="left:150px;top:108px;width:60px"></div>',
+      // web: a page in a browser
+      '<div class="bx" style="inset:0 4px 0 4px;background:var(--panel)"></div><div class="dot" style="left:16px;top:12px"></div><div class="dot" style="left:30px;top:12px"></div><div class="dot" style="left:44px;top:12px"></div><div class="ln" style="left:18px;top:42px;width:120px;height:10px"></div><div class="ln" style="left:18px;top:62px;width:84px"></div><div class="pill" style="left:18px;top:82px;width:74px"></div><div class="bx" style="left:158px;top:36px;width:82px;height:70px"></div><div class="bx" style="left:18px;top:118px;width:66px;height:24px;border-radius:8px"></div><div class="bx" style="left:92px;top:118px;width:66px;height:24px;border-radius:8px"></div><div class="bx" style="left:166px;top:118px;width:66px;height:24px;border-radius:8px"></div>',
+      // growth: an ad in a phone feed
+      `<div class="phone" style="left:70px;top:0"></div><div class="dot" style="left:82px;top:12px;width:16px;height:16px"></div><div class="ln" style="left:104px;top:13px;width:44px"></div><div class="ln" style="left:104px;top:24px;width:28px;height:4px"></div><div class="bx" style="left:80px;top:40px;width:98px;height:70px;border-radius:10px"></div><div class="play" style="left:122px;top:66px"></div><div class="pill" style="left:80px;top:120px;width:98px"></div><div class="tag" style="left:0;top:34px;transform:rotate(-6deg)">${L.ad}</div><div class="tag" style="left:176px;top:96px;transform:rotate(5deg);background:#ECF3F6">${L.buy}</div><div class="heart" style="left:196px;top:30px">♥</div>`
+    ];
+    document.querySelectorAll(".grid-2 > .svc-card").forEach((card, i) => card.append(el("st-art", ART[i % 4])));
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
