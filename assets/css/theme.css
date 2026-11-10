@@ -205,3 +205,7 @@ html:not([dir="rtl"]) .st-band__run span:nth-of-type(even) { font-family: var(--
   .grid-2:has(> .svc-card) > .svc-card > .st-art { grid-column: 2; grid-row: 1 / span 4; align-self: center; margin-top: 0; height: 170px; }
 }
 @media (prefers-reduced-motion: reduce) { .st-badge svg, .st-band__run, .st-art .heart { animation: none; } }
+/* the band tilts inside its own clipped box, so it never widens the page */
+.st-band { position: relative; transform: none; background: none; border: 0; padding-block: clamp(2rem, 4vw, 3.4rem); margin-block: 0; }
+.st-band::before { content: ""; position: absolute; inset-inline: -6%; inset-block: clamp(1rem, 2vw, 1.6rem); background: var(--v-cyan); transform: rotate(-1.2deg); }
+.st-band__run { position: relative; transform-origin: left center; rotate: -1.2deg; }
