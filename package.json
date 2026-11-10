@@ -25,7 +25,9 @@
     "build:recruit": "npm run build --workspace apps/recruit",
     "dev:recruit": "npm run dev --workspace apps/recruit",
     "deploy:pages": "npm run build && node scripts/deploy-pages.mjs",
-    "test:forecast": "node --test tests/forecast.test.mjs"
+    "test:forecast": "node --test tests/forecast.test.mjs",
+    "seo:guard": "node scripts/seo-guard.mjs",
+    "seo:baseline": "node scripts/seo-guard.mjs --save"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

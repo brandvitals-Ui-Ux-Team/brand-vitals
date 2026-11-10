@@ -477,6 +477,18 @@
           // Forms marked data-wa-direct (Vitals Forecast) also open WhatsApp with everything prefilled.
           const direct = form.hasAttribute("data-wa-direct");
           if (direct) window.open(Forms.waLink(data), "_blank", "noopener");
+          // Vitals OS, when connected, is where enquiries go: it gives each one an owner and a response deadline.
+          if (VitalsOS.on()) {
+            if (btn) btn.classList.add("is-loading");
+            if (Track.configured()) Track.lead(data).catch(() => {}); // keep the dashboard's own copy too
+            VitalsOS.lead(data).then(succeed).catch(() => {
+              if (btn) btn.classList.remove("is-loading");
+              if (direct) { succeed(); return; }
+              if (form.closest("#consultModal")) ConsultModal.close();
+              Forms.whatsappNotice(form, data);
+            });
+            return;
+          }
           if (!Track.configured()) {
             if (direct) { succeed(); return; }
             // No database connected yet: offer to send the request on WhatsApp, from the popup.
@@ -665,6 +677,21 @@
      Configured from the dashboard; does nothing until a URL and key exist.
      No cookies: an anonymous random ID in localStorage counts unique visitors.
   ------------------------------------------------------------------ */
+  // The address of the agency's Vitals OS (for example https://os.brandvitals.io). Empty = not connected.
+  // In Vitals OS the owner allows this website under Agency, Website, "Website allowed to send leads".
+  /* @cms-os-start */
+  const VITALS_OS = "";
+  /* @cms-os-end */
+  const VitalsOS = {
+    on() { return /^https:\/\//.test(VITALS_OS) && !window.__BV_PREVIEW; },
+    lead(d) {
+      return fetch(VITALS_OS.replace(/\/+$/, "") + "/api/public/lead", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: d.name, email: d.email, phone: d.phone, company: d.company, service: d.service,
+          message: [d.budget && "Budget: " + d.budget, d.message, "Form: " + d.form, "Page: " + location.pathname].filter(Boolean).join("\n") })
+      }).then(r => { if (!r.ok) throw new Error("os " + r.status); });
+    }
+  };
   /* @cms-backend-start */
   const BACKEND = {"url":"","key":""};
   /* @cms-backend-end */
